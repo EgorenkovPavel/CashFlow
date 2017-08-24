@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_summary" android:icon="@android:drawable/ic_menu_camera"
+            android:title="@string/summary" />
+        <item android:id="@+id/nav_accounts" android:icon="@android:drawable/ic_menu_camera"
+            android:title="@string/Accounts" />
+         <item android:id="@+id/nav_categories" android:icon="@android:drawable/ic_menu_slideshow"
+            android:title="@string/Categories" />
+        <item android:id="@+id/nav_operations" android:icon="@android:drawable/ic_menu_gallery"
+            android:title="@string/Operations" />
+        <item android:id="@+id/nav_goals" android:icon="@android:drawable/ic_menu_gallery"
+            android:title="@string/goals" />
+        <item android:id="@+id/nav_analitics" android:icon="@android:drawable/ic_menu_gallery"
+            android:title="@string/analitics" />
+        <item android:id="@+id/nav_test" android:icon="@android:drawable/ic_menu_gallery"
+            android:title="test" />
+    </group>
+
+    <group android:checkableBehavior="none" android:id="@+id/other">
+        <item android:id="@+id/nav_operation_master" android:icon="@android:drawable/ic_menu_share"
+            android:title="@string/operation_master" />
+        <item android:id="@+id/nav_settings" android:icon="@android:drawable/ic_menu_preferences"
+            android:title="@string/Settings" />
+     </group>
+
+</menu>

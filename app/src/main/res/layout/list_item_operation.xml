@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:paddingBottom="16dp"
+    android:paddingTop="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="Sum"
+        android:id="@+id/operation_list_item_sum"
+        android:gravity="right|fill_vertical"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/operation_list_item_date"
+        android:layout_alignParentBottom="true"
+        android:textSize="24sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Data"
+        android:id="@+id/operation_list_item_date"
+
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textSize="10sp" />
+
+    <ImageView
+        android:id="@+id/operation_list_item_type"
+        android:background="@color/cardview_light_background"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+
+        android:layout_width="40dp"
+        android:layout_height="40dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Account"
+        android:id="@+id/operation_list_item_account"
+        android:textStyle="normal|bold"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="56dp"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Category"
+        android:id="@+id/operation_list_item_category"
+        android:textSize="14sp"
+        android:layout_below="@+id/operation_list_item_account"
+        android:layout_alignLeft="@+id/operation_list_item_account"
+        android:layout_alignStart="@+id/operation_list_item_account" />
+</RelativeLayout>
