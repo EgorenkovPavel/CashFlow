@@ -5,9 +5,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
+import android.provider.BaseColumns;
 import android.widget.Toast;
 
-import com.epipasha.cashflow.objects.Operation;
 
 import java.io.File;
 import java.io.FileInputStream;
