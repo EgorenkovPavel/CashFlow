@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
+import com.epipasha.cashflow.db.CashFlowContract;
+import com.epipasha.cashflow.db.CashFlowContract.AccountBalanceEntry;
+import com.epipasha.cashflow.db.CashFlowContract.AccountEntry;
 import com.epipasha.cashflow.db.CashFlowDbHelper;
 import com.epipasha.cashflow.fragments.listAdapter.RecyclerListAdapter;
 import com.epipasha.cashflow.fragments.listAdapter.RecyclerListFragment;
@@ -73,78 +76,14 @@ public class AccountListFragment extends RecyclerListFragment {
 
             public void setData(Cursor c) {
 
-                id = c.getInt(c.getColumnIndex(CashFlowDbHelper._ID));
+                id = c.getInt(c.getColumnIndex(AccountEntry._ID));
 
-                String name = c.getString(c.getColumnIndex(CashFlowDbHelper.ACCOUNT_NAME));
-                int balance = c.getInt(c.getColumnIndex(CashFlowDbHelper.ACCOUNT_BALANCE_SUM));
+                String name = c.getString(c.getColumnIndex(AccountEntry.COLUMN_TITLE));
+                int balance = c.getInt(c.getColumnIndex(AccountBalanceEntry.COLUMN_SUM));
 
                 mAccountName.setText(name);
                 mAccountSum.setText(String.format("%,d", balance));
             }
         }
-
-
-//        public class CustomViewHolder extends RecyclerViewHolder
-//                implements View.OnClickListener, View.OnLongClickListener, PopupMenu.OnMenuItemClickListener {
-//
-//            private TextView mAccountName;
-//            private TextView mAccountSum;
-//
-//            private int id;
-//
-//            public CustomViewHolder(View v) {
-//                super(v);
-//
-//                mAccountName = (TextView) v.findViewById(R.id.account_list_item_name);
-//                mAccountSum = (TextView) v.findViewById(R.id.account_list_item_sum);
-//
-//                v.setOnClickListener(this);
-//                v.setOnLongClickListener(this);
-//            }
-//
-//            @Override
-//            public void onClick(View v) {
-//
-//                Account account = CashFlowDbManager.getInstance(getActivity()).getAccount(id);
-//
-//                Intent i = new Intent(getActivity(), ListDetailActivity.class);
-//                i.putExtra("Instance", account);
-//                i.putExtra("Position", getAdapterPosition());
-//                frag.startActivityForResult(i, MainActivity.RESULT_CANCELED);
-//            }
-//
-//            @Override
-//            public boolean onLongClick(View v) {
-//                PopupMenu popup = new PopupMenu(v.getContext(), v);
-//                popup.inflate(R.menu.list_menu);
-//                popup.setOnMenuItemClickListener(this);
-//                popup.show();
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onMenuItemClick(MenuItem item) {
-//                if(item.getItemId()==R.id.list_menu_delete){
-//
-//                    Account account = CashFlowDbManager.getInstance(getActivity()).getAccount(id);
-//                    CashFlowDbManager.getInstance(frag.getActivity()).deleteAccount(account);
-//                    notifyDataSetChanged();
-//                }
-//                return false;
-//            }
-//
-//
-//            public void setData(Cursor c) {
-//
-//                id = c.getInt(c.getColumnIndex(CashFlowDbHelper._ID));
-//
-//                String name = c.getString(c.getColumnIndex(CashFlowDbHelper.ACCOUNT_NAME));
-//                int balance = c.getInt(c.getColumnIndex(CashFlowDbHelper.ACCOUNT_BALANCE_SUM));
-//
-//                mAccountName.setText(name);
-//                mAccountSum.setText(String.format("%,d", balance));
-//            }
-//        }
-
     }
 }

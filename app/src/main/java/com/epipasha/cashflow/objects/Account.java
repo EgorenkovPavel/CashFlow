@@ -9,7 +9,6 @@ import java.io.Serializable;
 public class Account implements Serializable {
     private int ID;
     private String name;
-    private Currency currency;
 
     // not from db
     private int balance = 0;
@@ -38,13 +37,7 @@ public class Account implements Serializable {
         this.name = name;
     }
 
-    public Currency getCurrency() {
-        return currency;
-    }
 
-    public void setCurrency(Currency currency) {
-        this.currency = currency;
-    }
 
     @Override
     public String toString() {

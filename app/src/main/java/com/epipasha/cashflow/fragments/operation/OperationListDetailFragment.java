@@ -399,7 +399,7 @@ public class OperationListDetailFragment extends ListDetailFragment<Operation> i
             ((TextView) convertView.findViewById(R.id.account_spinner_adapter_name))
                     .setText(account.getName());
             ((TextView) convertView.findViewById(R.id.account_spinner_adapter_balance))
-                    .setText(String.format("%,d",account.getBalance()) + " " + account.getCurrency().toString());
+                    .setText(String.format("%,d",account.getBalance()));
             return convertView;
         }
 
@@ -414,7 +414,7 @@ public class OperationListDetailFragment extends ListDetailFragment<Operation> i
             ((TextView) convertView.findViewById(R.id.account_spinner_adapter_dropdown_name))
                     .setText(account.getName());
             ((TextView) convertView.findViewById(R.id.account_spinner_adapter_dropdown_balance))
-                    .setText(String.format("%,d",account.getBalance()) + " " + account.getCurrency().toString());
+                    .setText(String.format("%,d",account.getBalance()));
             return convertView;
         }
     }

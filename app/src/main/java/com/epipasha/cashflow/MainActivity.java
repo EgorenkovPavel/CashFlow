@@ -4,10 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,31 +12,15 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
-import com.epipasha.cashflow.db.CashFlowDbHelper;
 import com.epipasha.cashflow.fragments.AnaliticFragment;
 import com.epipasha.cashflow.fragments.ListFragment;
 import com.epipasha.cashflow.fragments.account.AccountFragment;
-import com.epipasha.cashflow.fragments.account.AccountListFragment;
 import com.epipasha.cashflow.fragments.category.CategoryFragment;
-import com.epipasha.cashflow.fragments.goal.GoalFragment;
 import com.epipasha.cashflow.fragments.operation.OperationFragment;
 import com.epipasha.cashflow.fragments.summary.SummaryFragment;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -118,10 +99,6 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_operations) {
             setContantFragment(new OperationFragment());
-            getSupportActionBar().setTitle(item.getTitle());
-
-        } else if (id == R.id.nav_goals){
-            setContantFragment(new GoalFragment());
             getSupportActionBar().setTitle(item.getTitle());
 
         } else if (id == R.id.nav_analitics){

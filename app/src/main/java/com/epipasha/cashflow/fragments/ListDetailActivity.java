@@ -3,7 +3,6 @@ package com.epipasha.cashflow.fragments;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -16,11 +15,9 @@ import com.epipasha.cashflow.MainActivity;
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.fragments.account.AccountListDetailFragment;
 import com.epipasha.cashflow.fragments.category.CategoryListDetailFragment;
-import com.epipasha.cashflow.fragments.goal.GoalListDetailFragment;
 import com.epipasha.cashflow.fragments.operation.OperationListDetailFragment;
 import com.epipasha.cashflow.objects.Account;
 import com.epipasha.cashflow.objects.Category;
-import com.epipasha.cashflow.objects.Goal;
 import com.epipasha.cashflow.objects.Operation;
 
 import java.io.Serializable;
@@ -73,9 +70,6 @@ public class ListDetailActivity<T> extends AppCompatActivity {
         }else if(instance instanceof Operation) {
             frag = (ListDetailFragment<T>) new OperationListDetailFragment();
             getSupportActionBar().setTitle(getResources().getString(R.string.operation));
-        }else if(instance instanceof Goal){
-            frag = (ListDetailFragment<T>) new GoalListDetailFragment();
-            getSupportActionBar().setTitle(getResources().getString(R.string.goal));
         }
 
         FragmentManager fm = getFragmentManager();

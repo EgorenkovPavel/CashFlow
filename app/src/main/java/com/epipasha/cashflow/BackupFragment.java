@@ -1,21 +1,22 @@
 package com.epipasha.cashflow;
 
 
+import android.app.Fragment;
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 
+import com.epipasha.cashflow.db.CashFlowContract.AccountBalanceEntry;
+import com.epipasha.cashflow.db.CashFlowContract.AccountEntry;
+import com.epipasha.cashflow.db.CashFlowContract.CategoryCostEntry;
+import com.epipasha.cashflow.db.CashFlowContract.CategoryEntry;
+import com.epipasha.cashflow.db.CashFlowContract.OperationEntry;
 import com.epipasha.cashflow.db.CashFlowDbHelper;
 
 import org.json.JSONArray;
@@ -24,28 +25,18 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Iterator;
 
-import static com.github.mikephil.charting.charts.Chart.LOG_TAG;
 
-
-/**
- * A simple {@link Fragment} subclass.
- */
 public class BackupFragment extends Fragment {
 
-    EditText jsonText;
-    JSONObject db;
-
-    String[] tables = new String[]{CashFlowDbHelper.TABLE_ACCOUNT,
-            CashFlowDbHelper.TABLE_CATEGORY,
-            CashFlowDbHelper.TABLE_OPERATION,
-            CashFlowDbHelper.TABLE_ACCOUNT_BALANCE,
-            CashFlowDbHelper.TABLE_GOAL,
-            CashFlowDbHelper.TABLE_CURRENCY,
-            CashFlowDbHelper.TABLE_CATEGORY_COST};
+    String[] tables = new String[]{
+            AccountEntry.TABLE_NAME,
+            CategoryEntry.TABLE_NAME,
+            OperationEntry.TABLE_NAME,
+            AccountBalanceEntry.TABLE_NAME,
+            CategoryCostEntry.TABLE_NAME};
 
     public BackupFragment() {
         // Required empty public constructor
@@ -57,24 +48,22 @@ public class BackupFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_backup, container, false);
 
-        db = new JSONObject();
-        for (String table:tables) {
-            try {
-                db.put(table, exportDb(table));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
 
-
-        jsonText = (EditText)v.findViewById(R.id.json);
-        jsonText.setText(db.toString());
 
         Button share = (Button)v.findViewById(R.id.share);
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
+                    JSONObject db = new JSONObject();
+                    for (String table:tables) {
+                        try {
+                            db.put(table, exportDb(table));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                     File root = android.os.Environment.getExternalStorageDirectory();
                     File file = new File(root.getAbsolutePath(), "myData.txt");
                     FileOutputStream outputStream = new FileOutputStream(file);
@@ -109,7 +98,6 @@ public class BackupFragment extends Fragment {
                 }
             }
         });
-
 
         return v;
     }

@@ -98,7 +98,6 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
             // - replace the contents of the view with that element
             holder.mAccountName.setText(accounts.get(position).getName());
             holder.mAccountSum.setText(String.format("%,d",accounts.get(position).getBalance()));
-            holder.mAccountCurrency.setText(accounts.get(position).getCurrency().toString());
 
         }
 
