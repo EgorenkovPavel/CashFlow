@@ -1,1 +1,4 @@
 language: android
+notifications:
+  email:
+    - epipasha@gmail.com
