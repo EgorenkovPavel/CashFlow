@@ -1,4 +1,4 @@
 language: android
-notifications:
-  email:
-    - epipasha@gmail.com
+
+before_install:
+ - chmod +x gradlew
