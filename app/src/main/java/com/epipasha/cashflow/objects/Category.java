@@ -6,14 +6,14 @@ public class Category implements Serializable{
     private int ID;
     private String name;
     private OperationType type;
-    private int budjet;
+    private int budget;
 
-    public int getBudjet() {
-        return budjet;
+    public int getBudget() {
+        return budget;
     }
 
-    public void setBudjet(int budjet) {
-        this.budjet = budjet;
+    public void setBudget(int budget) {
+        this.budget = budget;
     }
 
     public int getID() {

@@ -18,21 +18,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Backup" />
+            android:text="@string/backup" />
 
         <Button
             android:id="@+id/restore"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Restore" />
-
-        <Button
-            android:id="@+id/resore_old_data"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Restore old data" />
+            android:text="@string/restore" />
 
     </LinearLayout>
 

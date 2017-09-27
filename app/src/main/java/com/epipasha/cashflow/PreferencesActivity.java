@@ -20,10 +20,10 @@ public class PreferencesActivity extends AppCompatActivity {
         setSupportActionBar(myToolbar);
         // Get a support ActionBar corresponding to this toolbar
         ActionBar ab = getSupportActionBar();
-        getSupportActionBar().setTitle(getResources().getString(R.string.preferences));
-
-        // Enable the Up button
-        ab.setDisplayHomeAsUpEnabled(true);
+        if(ab != null){
+            ab.setTitle(getResources().getString(R.string.preferences));
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
 
         FragmentManager fm = getFragmentManager();
         FragmentTransaction tr = fm.beginTransaction();

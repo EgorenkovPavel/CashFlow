@@ -7,7 +7,7 @@
     <string name="type">Тип</string>
     <string name="date">Дата</string>
     <string name="category">Категория</string>
-    <string name="btn_cansel">Отмена</string>
+    <string name="btn_cancel">Отмена</string>
     <string name="action_settings">Настройки</string>
     <string name="account">Счет</string>
     <string name="Settings">Настройки</string>
@@ -17,8 +17,8 @@
     <string name="in">Приход</string>
     <string name="from">Из</string>
     <string name="name">Имя</string>
-    <string name="budjet">Бюджет</string>
-    <string name="budjets">Бюджеты</string>
+    <string name="budget">Бюджет</string>
+    <string name="budgets">Бюджеты</string>
     <string name="goals">Цели</string>
     <string name="more">еще</string>
     <string name="next">Далее</string>
@@ -34,5 +34,12 @@
     <string name="total">Итого</string>
     <string name="spend">Потрачено</string>
     <string name="fact">Факт</string>
-    <string name="analitics">Аналитика</string>
+    <string name="analytics">Аналитика</string>
+    <string name="navigation_drawer_open">Открыть панель навигации</string>
+    <string name="navigation_drawer_close">Закрыть панель навигации</string>
+    <string name="operation_type">Тип операции</string>
+    <string name="summary_show_operation_master">Паказать мастер ввода операция при старте</string>
+    <string name="backup">Сохранить</string>
+    <string name="restore">Восстановить</string>
+    <string name="delete">Удалить</string>
 </resources>

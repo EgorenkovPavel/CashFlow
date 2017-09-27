@@ -2,6 +2,7 @@ package com.epipasha.cashflow.db;
 
 import android.provider.BaseColumns;
 
+@SuppressWarnings("unused")
 public class CashFlowContract {
 
     public static final class AccountEntry implements BaseColumns{
@@ -17,7 +18,7 @@ public class CashFlowContract {
 
         public static final String COLUMN_TITLE = "category_title";
         public static final String COLUMN_TYPE = "category_type";
-        public static final String COLUMN_BUDJET = "category_budjet";
+        public static final String COLUMN_BUDGET = "category_budjet";
 
     }
 

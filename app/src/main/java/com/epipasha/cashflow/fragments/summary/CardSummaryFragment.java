@@ -12,7 +12,6 @@ import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.db.CashFlowDbManager;
 import com.epipasha.cashflow.objects.OperationType;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -31,7 +30,7 @@ public class CardSummaryFragment extends Fragment {
 
     private OperationType type;
 
-    private TextView lblType, lblSum, lblBudjet;
+    private TextView lblType;
     private HorizontalBarChart chart;
 
     @Override
@@ -44,8 +43,6 @@ public class CardSummaryFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_card_summary, container, false);
 
         lblType = (TextView) v.findViewById(R.id.type);
-        lblSum = (TextView) v.findViewById(R.id.sum);
-        lblBudjet = (TextView) v.findViewById(R.id.budjet);
 
         chart = (HorizontalBarChart) v.findViewById(R.id.chart);
 
@@ -73,27 +70,27 @@ public class CardSummaryFragment extends Fragment {
         else if(type.equals(OperationType.OUT))
             lblType.setText(getResources().getString(R.string.out));
 
-        int sum = 0;
-        int budjet = 0;
+        int sum;
+        int budget;
         if(type == null){
             // TODO Переделать на один запрос
             sum = CashFlowDbManager.getInstance(getActivity()).getTotalSum(OperationType.IN, start, end)
                     - CashFlowDbManager.getInstance(getActivity()).getTotalSum(OperationType.OUT, start, end);
-            budjet = CashFlowDbManager.getInstance(getActivity()).getTotalBudjet(OperationType.IN, start, end)
-                    - CashFlowDbManager.getInstance(getActivity()).getTotalBudjet(OperationType.OUT, start, end);
+            budget = CashFlowDbManager.getInstance(getActivity()).getTotalBudget(OperationType.IN)
+                    - CashFlowDbManager.getInstance(getActivity()).getTotalBudget(OperationType.OUT);
         }else
         {
             sum = CashFlowDbManager.getInstance(getActivity()).getTotalSum(type, start, end);
-            budjet = CashFlowDbManager.getInstance(getActivity()).getTotalBudjet(type, start, end);
+            budget = CashFlowDbManager.getInstance(getActivity()).getTotalBudget(type);
         }
 
 //        lblSum.setText(String.format("%,d",sum));
-//        lblBudjet.setText(String.format("%,d",budjet));
+//        lblBudget.setText(String.format("%,d",budget));
 
         List<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(0f, budjet));
-        BarDataSet set = new BarDataSet(entries, getString(R.string.budjet));
-        set.setColor(ContextCompat.getColor(getActivity(), R.color.budjet));
+        entries.add(new BarEntry(0f, budget));
+        BarDataSet set = new BarDataSet(entries, getString(R.string.budget));
+        set.setColor(ContextCompat.getColor(getActivity(), R.color.budget));
         set.setValueTextSize(10);
 
         List<BarEntry> entries1 = new ArrayList<>();
@@ -106,7 +103,7 @@ public class CardSummaryFragment extends Fragment {
         data.addDataSet(set);
         data.addDataSet(set1);
 
-        final String[] labels = {getString(R.string.budjet), getString(R.string.fact)};
+        final String[] labels = {getString(R.string.budget), getString(R.string.fact)};
 
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -119,9 +116,9 @@ public class CardSummaryFragment extends Fragment {
         left.setAxisMinimum(0f);
         left.setEnabled(false);
 
-        YAxis rigth = chart.getAxisRight();
-        rigth.setAxisMinimum(0f);
-        rigth.setEnabled(false);
+        YAxis right = chart.getAxisRight();
+        right.setAxisMinimum(0f);
+        right.setEnabled(false);
 
         chart.getLegend().setEnabled(false);
         Description desc = new Description();

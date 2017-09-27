@@ -1,5 +1,7 @@
 package com.epipasha.cashflow.fragments.category;
 
+import static android.app.Activity.RESULT_CANCELED;
+
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 
@@ -18,7 +20,7 @@ public class CategoryFragment extends ListFragment<Category> {
         i.putExtra("Instance", new Category());
         i.putExtra("Position", -1);
         i.setClass(getActivity(), ListDetailActivity.class);
-        startActivityForResult(i, getActivity().RESULT_CANCELED);
+        startActivityForResult(i, RESULT_CANCELED);
     }
 
     @Override

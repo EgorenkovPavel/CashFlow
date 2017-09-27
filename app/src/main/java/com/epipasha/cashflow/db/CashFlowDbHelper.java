@@ -13,7 +13,7 @@ import com.epipasha.cashflow.db.CashFlowContract.OperationEntry;
 public class CashFlowDbHelper extends SQLiteOpenHelper{
 
     private static final int VERSION = 1;
-    public static final String DB_CASHFLOW = "cashflow.db";
+    private static final String DB_CASHFLOW = "cashflow.db";
 
     public CashFlowDbHelper(Context context) {
         super(context, DB_CASHFLOW, null, VERSION);
@@ -41,7 +41,7 @@ public class CashFlowDbHelper extends SQLiteOpenHelper{
                 CategoryEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 CategoryEntry.COLUMN_TITLE + " TEXT NOT NULL," +
                 CategoryEntry.COLUMN_TYPE + " INTEGER NOT NULL," +
-                CategoryEntry.COLUMN_BUDJET + " INTEGER);";
+                CategoryEntry.COLUMN_BUDGET + " INTEGER);";
 
         db.execSQL(SQL_CREATE_CATEGORY_TABLE);
 

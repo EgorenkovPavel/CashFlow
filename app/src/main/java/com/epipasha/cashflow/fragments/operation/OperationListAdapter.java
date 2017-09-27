@@ -20,22 +20,24 @@ import com.epipasha.cashflow.objects.OperationType;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
-/**
- * Created by Pavel on 10.10.2016.
- */
 public class OperationListAdapter extends RecyclerView.Adapter<OperationListAdapter.ViewHolder>
 {
-    private Fragment mFragment;
-    private ArrayList<Operation> operations;
+    private final Fragment mFragment;
+    private final ArrayList<Operation> operations;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener, PopupMenu.OnMenuItemClickListener {
         // each data item is just a string in this case
-        public TextView mDate, mAccount, mCategory, mSum;
-        public ImageView mType;
+        public final TextView mDate;
+        public final TextView mAccount;
+        public final TextView mCategory;
+        public final TextView mSum;
+        public final ImageView mType;
+
         public ViewHolder(View v) {
             super(v);
             mDate = (TextView) v.findViewById(R.id.operation_list_item_date);
@@ -93,8 +95,7 @@ public class OperationListAdapter extends RecyclerView.Adapter<OperationListAdap
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_operation, parent, false);
         // set the view's size, margins, paddings and layout parameters
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
+        return new ViewHolder(v);
     }
 
     @Override
@@ -125,10 +126,10 @@ public class OperationListAdapter extends RecyclerView.Adapter<OperationListAdap
                 break;
         }
 
-        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault());
         holder.mDate.setText(format.format(operation.getDate()));
         holder.mAccount.setText(accountName);
-        holder.mSum.setText(String.format("%,d",operation.getSum()));
+        holder.mSum.setText(String.format(Locale.getDefault(),"%,d",operation.getSum()));
 
     }
 
@@ -138,10 +139,4 @@ public class OperationListAdapter extends RecyclerView.Adapter<OperationListAdap
         return operations.size();
     }
 
-    public int addOperation(Operation operation){
-        int position = operations.size();
-        operations.add(position ,operation);
-        notifyItemInserted(position);
-        return position;
-    }
 }

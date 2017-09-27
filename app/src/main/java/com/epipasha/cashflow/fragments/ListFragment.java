@@ -1,5 +1,7 @@
 package com.epipasha.cashflow.fragments;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -18,15 +20,10 @@ import com.epipasha.cashflow.R;
 
 import java.util.ArrayList;
 
-/**
- * Created by Pavel on 10.11.2016.
- */
-
 public abstract class ListFragment<T> extends Fragment {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
     private ArrayList<T> list;
 
     @Nullable
@@ -41,8 +38,8 @@ public abstract class ListFragment<T> extends Fragment {
         mRecyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(layoutManager);
 
         DividerItemDecoration div = new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL);
         Drawable dividerDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.divider);
@@ -61,7 +58,7 @@ public abstract class ListFragment<T> extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == getActivity().RESULT_OK) {
+        if(resultCode == RESULT_OK) {
             T inst = (T) data.getSerializableExtra("Instance");
             int position = data.getIntExtra("Position",-1);
 

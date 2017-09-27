@@ -1,17 +1,11 @@
 package com.epipasha.cashflow;
 
-import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,15 +13,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.epipasha.cashflow.db.CashFlowDbManager;
-import com.epipasha.cashflow.fragments.operation.OperationListDetailFragment;
 import com.epipasha.cashflow.objects.Account;
 import com.epipasha.cashflow.objects.Category;
 import com.epipasha.cashflow.objects.Operation;
@@ -41,26 +32,20 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
 public class OperationMaster extends AppCompatActivity{
 
     private int sum = 0;
-    private ArrayList<OperationType> operationTypes;
-    private ArrayList<Account> accounts;
-    private ArrayList<Category> categories;
-    private ArrayList<Account> repAccounts;
 
     private RadioGroup groupType;
-    private Spinner spinAccount, spinAnalitic;
+    private Spinner spinAccount, spinAnalytic;
     private TextView lblSum;
-    private Button btn0, btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9, btnMore, btnNext;
-    private ImageButton btnBack;
     private HorizontalBarChart chart;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -73,7 +58,7 @@ public class OperationMaster extends AppCompatActivity{
         findViews();
 
         initAccountSpinner();
-        initAnaliticSpinner();
+        initAnalyticSpinner();
 
         setChartData();
     }
@@ -90,7 +75,7 @@ public class OperationMaster extends AppCompatActivity{
         spinAccount.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                initAnaliticSpinner();
+                initAnalyticSpinner();
             }
 
             @Override
@@ -105,45 +90,46 @@ public class OperationMaster extends AppCompatActivity{
 
     }
 
-    private void initAnaliticSpinner() {
-        Object o = spinAnalitic.getSelectedItem();
+    private void initAnalyticSpinner() {
+        Object o = spinAnalytic.getSelectedItem();
 
         switch (groupType.getCheckedRadioButtonId()){
             case R.id.btnIn :
                 ArrayList<Category> categories = CashFlowDbManager.getInstance(this).getCategories(OperationType.IN);
 
-                ArrayAdapter<Category> categoryArrayAdapter = new ArrayAdapter<Category>(this, android.R.layout.simple_spinner_item, categories);
+                ArrayAdapter<Category> categoryArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
                 categoryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinAnalitic.setAdapter(categoryArrayAdapter);
+                spinAnalytic.setAdapter(categoryArrayAdapter);
 
                 if ((o instanceof Category)&&(((Category) o).getType().equals(OperationType.IN))){
-                    spinAnalitic.setSelection(categories.indexOf(o));
+                    spinAnalytic.setSelection(categories.indexOf(o));
                 }
                 break;
             case R.id.btnOut:
 
                 ArrayList<Category> categoriesOut = CashFlowDbManager.getInstance(this).getCategories(OperationType.OUT);
 
-                ArrayAdapter<Category> categoryArrayAdapterOut = new ArrayAdapter<Category>(this, android.R.layout.simple_spinner_item, categoriesOut);
+                ArrayAdapter<Category> categoryArrayAdapterOut = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categoriesOut);
                 categoryArrayAdapterOut.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinAnalitic.setAdapter(categoryArrayAdapterOut);
+                spinAnalytic.setAdapter(categoryArrayAdapterOut);
 
                 if ((o instanceof Category)&&(((Category) o).getType().equals(OperationType.OUT))){
-                    spinAnalitic.setSelection(categoriesOut.indexOf(o));
+                    spinAnalytic.setSelection(categoriesOut.indexOf(o));
                 }
 
                 break;
             case R.id.btnTransfer:
 
                 ArrayList<Account> accountList = CashFlowDbManager.getInstance(this).getAccounts();
+                //noinspection SuspiciousMethodCalls
                 accountList.remove(spinAccount.getSelectedItem());
 
                 AccountAdapter accountArrayAdapter = new AccountAdapter(this, accountList);
                 accountArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinAnalitic.setAdapter(accountArrayAdapter);
+                spinAnalytic.setAdapter(accountArrayAdapter);
 
-                if ((o instanceof Account)&&(!spinAccount.getSelectedItem().equals((Account)o))){
-                    spinAnalitic.setSelection(accountList.indexOf(o));
+                if ((o instanceof Account)&&(!spinAccount.getSelectedItem().equals(o))){
+                    spinAnalytic.setSelection(accountList.indexOf(o));
                 }
 
                 break;
@@ -158,7 +144,7 @@ public class OperationMaster extends AppCompatActivity{
         groupType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                initAnaliticSpinner();
+                initAnalyticSpinner();
                 setChartData();
             }
         });
@@ -175,8 +161,8 @@ public class OperationMaster extends AppCompatActivity{
 
             }
         });
-        spinAnalitic = (Spinner)findViewById(R.id.spinner_analitic);
-        spinAnalitic.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinAnalytic = (Spinner)findViewById(R.id.spinner_analytic);
+        spinAnalytic.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 setChartData();
@@ -189,21 +175,21 @@ public class OperationMaster extends AppCompatActivity{
         });
 
         lblSum = (TextView) findViewById(R.id.operation_master_sum);
-        lblSum.setText(String.format("%,d",sum));
+        lblSum.setText(String.format(Locale.getDefault(),"%,d",sum));
 
-        btn0 = (Button)findViewById(R.id.digit_0);
-        btn1 = (Button)findViewById(R.id.digit_1);
-        btn2 = (Button)findViewById(R.id.digit_2);
-        btn3 = (Button)findViewById(R.id.digit_3);
-        btn4 = (Button)findViewById(R.id.digit_4);
-        btn5 = (Button)findViewById(R.id.digit_5);
-        btn6 = (Button)findViewById(R.id.digit_6);
-        btn7 = (Button)findViewById(R.id.digit_7);
-        btn8 = (Button)findViewById(R.id.digit_8);
-        btn9 = (Button)findViewById(R.id.digit_9);
-        btnBack = (ImageButton)findViewById(R.id.digit_back);
-        btnMore = (Button)findViewById(R.id.operation_master_more);
-        btnNext = (Button)findViewById(R.id.operation_master_next);
+        Button btn0 = (Button) findViewById(R.id.digit_0);
+        Button btn1 = (Button) findViewById(R.id.digit_1);
+        Button btn2 = (Button) findViewById(R.id.digit_2);
+        Button btn3 = (Button) findViewById(R.id.digit_3);
+        Button btn4 = (Button) findViewById(R.id.digit_4);
+        Button btn5 = (Button) findViewById(R.id.digit_5);
+        Button btn6 = (Button) findViewById(R.id.digit_6);
+        Button btn7 = (Button) findViewById(R.id.digit_7);
+        Button btn8 = (Button) findViewById(R.id.digit_8);
+        Button btn9 = (Button) findViewById(R.id.digit_9);
+        ImageButton btnBack = (ImageButton) findViewById(R.id.digit_back);
+        Button btnMore = (Button) findViewById(R.id.operation_master_more);
+        Button btnNext = (Button) findViewById(R.id.operation_master_next);
 
         View.OnClickListener onDigitClick = new View.OnClickListener() {
             @Override
@@ -243,7 +229,7 @@ public class OperationMaster extends AppCompatActivity{
                 }
 
                 sum = sum* 10 + digit;
-                lblSum.setText(String.format("%,d",sum));
+                lblSum.setText(String.format(Locale.getDefault(),"%,d",sum));
             }
         };
 
@@ -262,7 +248,7 @@ public class OperationMaster extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 sum = sum/10;
-                lblSum.setText(String.format("%,d",sum));
+                lblSum.setText(String.format(Locale.getDefault(),"%,d",sum));
             }
         });
         btnMore.setOnClickListener(new View.OnClickListener() {
@@ -285,24 +271,24 @@ public class OperationMaster extends AppCompatActivity{
                 }
                 operation.setAccount((Account) spinAccount.getSelectedItem());
 
-                Object analitic = spinAnalitic.getSelectedItem();
-                if (analitic==null) {
-                    Toast.makeText(getApplicationContext(), "No analitic selected!!!", Toast.LENGTH_SHORT).show();
+                Object analytic = spinAnalytic.getSelectedItem();
+                if (analytic==null) {
+                    Toast.makeText(getApplicationContext(), "No analytic selected!!!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 switch (groupType.getCheckedRadioButtonId()){
                     case R.id.btnIn :
                         operation.setType(OperationType.IN);
-                        operation.setCategory((Category) analitic);
+                        operation.setCategory((Category) analytic);
                         break;
                     case R.id.btnOut:
                         operation.setType(OperationType.OUT);
-                        operation.setCategory((Category) analitic);
+                        operation.setCategory((Category) analytic);
                         break;
                     case R.id.btnTransfer:
                         operation.setType(OperationType.TRANSFER);
-                        operation.setRecipientAccount((Account) analitic);
+                        operation.setRecipientAccount((Account) analytic);
                         break;
                 }
 
@@ -318,12 +304,12 @@ public class OperationMaster extends AppCompatActivity{
                 t.show();
 
                 initAccountSpinner();
-                initAnaliticSpinner();
+                initAnalyticSpinner();
 
                 setChartData();
 
                 sum = 0;
-                lblSum.setText(String.format("%,d",sum));
+                lblSum.setText(String.format(Locale.getDefault(),"%,d",sum));
             }
         });
 
@@ -342,30 +328,30 @@ public class OperationMaster extends AppCompatActivity{
         Date start = new Date(c.getTimeInMillis());
 
         Category cat;
-        int sum = 0, budjet = 0;
+        int sum = 0, budget = 0;
         switch (groupType.getCheckedRadioButtonId()) {
             case R.id.btnIn:
-                cat = (Category) spinAnalitic.getSelectedItem();
+                cat = (Category) spinAnalytic.getSelectedItem();
                 sum = CashFlowDbManager.getInstance(this).getCategorySum(cat, start, end);
-                budjet = CashFlowDbManager.getInstance(this).getCategoryBudjet(cat, start, end);
+                budget = CashFlowDbManager.getInstance(this).getCategoryBudget(cat);
                 break;
             case R.id.btnOut:
-                cat = (Category) spinAnalitic.getSelectedItem();
+                cat = (Category) spinAnalytic.getSelectedItem();
                 sum = CashFlowDbManager.getInstance(this).getCategorySum(cat, start, end);
-                budjet = CashFlowDbManager.getInstance(this).getCategoryBudjet(cat, start, end);
+                budget = CashFlowDbManager.getInstance(this).getCategoryBudget(cat);
                 break;
             case R.id.btnTransfer:
                 Account accountFrom = (Account) spinAccount.getSelectedItem();
-                Account accountTo = (Account) spinAnalitic.getSelectedItem();
+                Account accountTo = (Account) spinAnalytic.getSelectedItem();
                 sum = accountFrom.getBalance();
-                budjet = accountTo.getBalance();
+                budget = accountTo.getBalance();
                 break;
         }
 
         List<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(0f, budjet));
-        BarDataSet set = new BarDataSet(entries, getString(R.string.budjet));
-        set.setColor(ContextCompat.getColor(this, R.color.budjet));
+        entries.add(new BarEntry(0f, budget));
+        BarDataSet set = new BarDataSet(entries, getString(R.string.budget));
+        set.setColor(ContextCompat.getColor(this, R.color.budget));
         set.setValueTextSize(10);
 
         List<BarEntry> entries1 = new ArrayList<>();
@@ -378,7 +364,7 @@ public class OperationMaster extends AppCompatActivity{
         data.addDataSet(set);
         data.addDataSet(set1);
 
-        final String[] labels = {getString(R.string.budjet), getString(R.string.fact)};
+        final String[] labels = {getString(R.string.budget), getString(R.string.fact)};
 
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -392,9 +378,9 @@ public class OperationMaster extends AppCompatActivity{
         left.setAxisMinimum(0f);
         left.setEnabled(false);
 
-        YAxis rigth = chart.getAxisRight();
-        rigth.setAxisMinimum(0f);
-        rigth.setEnabled(false);
+        YAxis right = chart.getAxisRight();
+        right.setAxisMinimum(0f);
+        right.setEnabled(false);
 
         chart.getLegend().setEnabled(false);
 
@@ -412,40 +398,41 @@ public class OperationMaster extends AppCompatActivity{
 
     private class AccountAdapter extends ArrayAdapter<Account> {
 
-        private ArrayList<Account> accounts;
+        private final ArrayList<Account> accounts;
 
         public AccountAdapter(Context context, ArrayList<Account> accounts) {
             super(context, R.layout.account_spinner_adapter, accounts);
             this.accounts = accounts;
         }
 
+        @NonNull
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
             Account account = accounts.get(position);
 
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext())
-                        .inflate(R.layout.account_spinner_adapter, null);
+                        .inflate(R.layout.account_spinner_adapter, parent, false);
             }
             ((TextView) convertView.findViewById(R.id.account_spinner_adapter_name))
                     .setText(account.getName());
             ((TextView) convertView.findViewById(R.id.account_spinner_adapter_balance))
-                    .setText(String.format("%,d",account.getBalance()));
+                    .setText(String.format(Locale.getDefault(),"%,d",account.getBalance()));
             return convertView;
         }
 
         @Override
-        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+        public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
             Account account = accounts.get(position);
 
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext())
-                        .inflate(R.layout.account_spinner_adapter_dropdown, null);
+                        .inflate(R.layout.account_spinner_adapter_dropdown, parent, false);
             }
             ((TextView) convertView.findViewById(R.id.account_spinner_adapter_dropdown_name))
                     .setText(account.getName());
             ((TextView) convertView.findViewById(R.id.account_spinner_adapter_dropdown_balance))
-                    .setText(String.format("%,d",account.getBalance()));
+                    .setText(String.format(Locale.getDefault(),"%,d",account.getBalance()));
             return convertView;
         }
     }

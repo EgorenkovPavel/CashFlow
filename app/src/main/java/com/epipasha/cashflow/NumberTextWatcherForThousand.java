@@ -7,14 +7,11 @@ import android.widget.EditText;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
-import java.util.StringTokenizer;
+import java.util.Locale;
 
-/**
- * Created by skb on 12/14/2015.
- */
 public class NumberTextWatcherForThousand implements TextWatcher {
 
-    EditText editText;
+    private final EditText editText;
 
 
     public NumberTextWatcherForThousand(EditText editText) {
@@ -38,7 +35,7 @@ public class NumberTextWatcherForThousand implements TextWatcher {
             editText.removeTextChangedListener(this);
             String value = editText.getText().toString();
 
-            if (value != null && !value.equals(""))
+            if (!value.equals(""))
             {
                 if(value.startsWith(".")){
                     editText.setText("0.");
@@ -49,12 +46,11 @@ public class NumberTextWatcherForThousand implements TextWatcher {
 
                  if (!value.equals("") && !value.equals("0"))
                     //editText.setText(getDecimalFormattedString(str));
-                    editText.setText(String.format("%,d", getLong(editText.getText().toString())));
+                    editText.setText(String.format(Locale.getDefault(),"%,d", getLong(editText.getText().toString())));
 
                 editText.setSelection(editText.getText().toString().length());
             }
             editText.addTextChangedListener(this);
-            return;
         }
         catch (Exception ex)
         {

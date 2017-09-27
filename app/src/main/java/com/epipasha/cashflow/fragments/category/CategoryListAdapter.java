@@ -18,21 +18,20 @@ import com.epipasha.cashflow.objects.Category;
 
 import java.util.ArrayList;
 
-/**
- * Created by Pavel on 10.10.2016.
- */
+
 public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapter.ViewHolder>
 {
-    private Fragment mFragment;
-    private ArrayList<Category> categores;
+    private final Fragment mFragment;
+    private final ArrayList<Category> categories;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener, PopupMenu.OnMenuItemClickListener {
         // each data item is just a string in this case
-        public TextView mCategoryName;
-        public TextView mCategoryType;
+        public final TextView mCategoryName;
+        public final TextView mCategoryType;
+
         public ViewHolder(View v) {
             super(v);
             mCategoryName = (TextView) v.findViewById(R.id.category_list_item_name);
@@ -45,7 +44,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
         @Override
         public void onClick(View v) {
             Intent i = new Intent();
-            i.putExtra("Instance", categores.get(getAdapterPosition()));
+            i.putExtra("Instance", categories.get(getAdapterPosition()));
             i.putExtra("Position", getAdapterPosition());
             i.setClass(mFragment.getActivity(), ListDetailActivity.class);
             mFragment.startActivityForResult(i, MainActivity.RESULT_CANCELED);
@@ -63,20 +62,20 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
         @Override
         public boolean onMenuItemClick(MenuItem item) {
             if(item.getItemId()==R.id.list_menu_delete){
-                CashFlowDbManager.getInstance(mFragment.getActivity()).deleteCategory(categores.get(getAdapterPosition()));
+                CashFlowDbManager.getInstance(mFragment.getActivity()).deleteCategory(categories.get(getAdapterPosition()));
 
-                categores.remove(getAdapterPosition());
+                categories.remove(getAdapterPosition());
                 notifyItemRemoved(getAdapterPosition());
-                notifyItemRangeChanged(getAdapterPosition(), categores.size());
+                notifyItemRangeChanged(getAdapterPosition(), categories.size());
             }
             return false;
         }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public CategoryListAdapter(Fragment fragment, ArrayList<Category> categores) {
+    public CategoryListAdapter(Fragment fragment, ArrayList<Category> categories) {
         this.mFragment = fragment;
-        this.categores = categores;
+        this.categories = categories;
     }
 
     // Create new views (invoked by the layout manager)
@@ -86,8 +85,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
         // create a new view
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_category, parent, false);
         // set the view's size, margins, paddings and layout parameters
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
+        return new ViewHolder(v);
     }
 
     @Override
@@ -95,14 +93,14 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
 
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.mCategoryName.setText(categores.get(position).getName());
-        holder.mCategoryType.setText(categores.get(position).getType().toString());
+        holder.mCategoryName.setText(categories.get(position).getName());
+        holder.mCategoryType.setText(categories.get(position).getType().toString());
 
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return categores.size();
+        return categories.size();
     }
 }

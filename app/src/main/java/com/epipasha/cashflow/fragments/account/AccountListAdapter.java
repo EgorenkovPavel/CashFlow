@@ -17,11 +17,12 @@ import com.epipasha.cashflow.fragments.ListDetailActivity;
 import com.epipasha.cashflow.objects.Account;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.ViewHolder>
     {
-        private Fragment mFragment;
-        private ArrayList<Account> accounts;
+        private final Fragment mFragment;
+        private final ArrayList<Account> accounts;
 
         // Provide a reference to the views for each data item
         // Complex data items may need more than one view per item, and
@@ -29,14 +30,13 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
         public class ViewHolder extends RecyclerView.ViewHolder
                 implements View.OnClickListener, View.OnLongClickListener, PopupMenu.OnMenuItemClickListener {
             // each data item is just a string in this case
-            public TextView mAccountName;
-            public TextView mAccountSum;
-            public TextView mAccountCurrency;
+            public final TextView mAccountName;
+            public final TextView mAccountSum;
+
             public ViewHolder(View v) {
                 super(v);
                 mAccountName = (TextView) v.findViewById(R.id.account_list_item_name);
                 mAccountSum = (TextView) v.findViewById(R.id.account_list_item_sum);
-                mAccountCurrency = (TextView)v.findViewById(R.id.account_list_item_currency);
 
                 v.setOnClickListener(this);
                 v.setOnLongClickListener(this);
@@ -87,8 +87,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.list_item_account, parent, false);
             // set the view's size, margins, paddings and layout parameters
-            ViewHolder vh = new ViewHolder(v);
-            return vh;
+            return new ViewHolder(v);
         }
 
         @Override
@@ -97,7 +96,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
             // - get element from your dataset at this position
             // - replace the contents of the view with that element
             holder.mAccountName.setText(accounts.get(position).getName());
-            holder.mAccountSum.setText(String.format("%,d",accounts.get(position).getBalance()));
+            holder.mAccountSum.setText(String.format(Locale.getDefault(),"%,d",accounts.get(position).getBalance()));
 
         }
 

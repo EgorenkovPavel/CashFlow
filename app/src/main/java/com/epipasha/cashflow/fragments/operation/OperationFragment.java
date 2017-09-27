@@ -3,6 +3,8 @@ package com.epipasha.cashflow.fragments.operation;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 
+import static android.app.Activity.RESULT_CANCELED;
+
 import com.epipasha.cashflow.db.CashFlowDbManager;
 import com.epipasha.cashflow.fragments.ListDetailActivity;
 import com.epipasha.cashflow.fragments.ListFragment;
@@ -10,9 +12,6 @@ import com.epipasha.cashflow.objects.Operation;
 
 import java.util.ArrayList;
 
-/**
- * Created by Pavel on 08.11.2016.
- */
 
 public class OperationFragment extends ListFragment<Operation> {
 
@@ -22,7 +21,7 @@ public class OperationFragment extends ListFragment<Operation> {
         i.putExtra("Instance", new Operation());
         i.putExtra("Position", -1);
         i.setClass(getActivity(), ListDetailActivity.class);
-        startActivityForResult(i, getActivity().RESULT_CANCELED);
+        startActivityForResult(i, RESULT_CANCELED);
     }
 
     @Override

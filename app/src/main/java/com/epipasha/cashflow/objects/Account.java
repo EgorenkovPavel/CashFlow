@@ -1,9 +1,5 @@
 package com.epipasha.cashflow.objects;
 
-import android.content.ContentValues;
-
-import com.epipasha.cashflow.db.CashFlowDbHelper;
-
 import java.io.Serializable;
 
 public class Account implements Serializable {

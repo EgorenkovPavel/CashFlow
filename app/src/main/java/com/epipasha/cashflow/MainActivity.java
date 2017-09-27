@@ -5,17 +5,19 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.epipasha.cashflow.fragments.AnaliticFragment;
+import com.epipasha.cashflow.fragments.AnalyticFragment;
 import com.epipasha.cashflow.fragments.ListFragment;
 import com.epipasha.cashflow.fragments.account.AccountFragment;
 import com.epipasha.cashflow.fragments.category.CategoryFragment;
@@ -25,7 +27,7 @@ import com.epipasha.cashflow.fragments.summary.SummaryFragment;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static final int OPEN_OPERATION_MASTER = 1;
+    private static final int OPEN_OPERATION_MASTER = 1;
 
     private Fragment frag;
     private NavigationView navigationView;
@@ -81,29 +83,29 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         int id = item.getItemId();
 
         if (id == R.id.nav_summary) {
-            setContantFragment(new SummaryFragment());
-            getSupportActionBar().setTitle(item.getTitle());
+            setContentFragment(new SummaryFragment());
+            setActionBarTitle(item.getTitle());
 
         } else if (id == R.id.nav_accounts) {
-            setContantFragment(new AccountFragment());
-            getSupportActionBar().setTitle(item.getTitle());
+            setContentFragment(new AccountFragment());
+            setActionBarTitle(item.getTitle());
 
         } else if (id == R.id.nav_categories) {
-            setContantFragment(new CategoryFragment());
-            getSupportActionBar().setTitle(item.getTitle());
+            setContentFragment(new CategoryFragment());
+            setActionBarTitle(item.getTitle());
 
         } else if (id == R.id.nav_operations) {
-            setContantFragment(new OperationFragment());
-            getSupportActionBar().setTitle(item.getTitle());
+            setContentFragment(new OperationFragment());
+            setActionBarTitle(item.getTitle());
 
-        } else if (id == R.id.nav_analitics){
-            setContantFragment(new AnaliticFragment());
-            getSupportActionBar().setTitle(item.getTitle());
+        } else if (id == R.id.nav_analytics){
+            setContentFragment(new AnalyticFragment());
+            setActionBarTitle(item.getTitle());
 
         } else if (id == R.id.nav_operation_master){
             Intent i = new Intent(this, OperationMaster.class);
@@ -112,15 +114,10 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_settings){
             Intent i = new Intent(this, PreferencesActivity.class);
             startActivity(i);
+
+        } else if (id == R.id.nav_backup){
+             setContentFragment(new BackupFragment());
         }
-
-        else if (id == R.id.nav_test){
-             setContantFragment(new BackupFragment());
-
-
-        }
-
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -136,11 +133,16 @@ public class MainActivity extends AppCompatActivity
             navigationView.setCheckedItem(R.id.nav_summary);
             onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_summary));
         }
-
-
     }
 
-    private void setContantFragment(Fragment newFrag) {
+    private void setActionBarTitle(CharSequence title){
+        ActionBar ab = getSupportActionBar();
+        if (ab != null){
+            ab.setTitle(title);
+        }
+    }
+
+    private void setContentFragment(Fragment newFrag) {
         this.frag = newFrag;
         if(frag!=null) {
             FragmentManager fm = getFragmentManager();

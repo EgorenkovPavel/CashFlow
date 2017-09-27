@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static com.epipasha.cashflow.objects.OperationType.*;
 
@@ -42,7 +44,6 @@ public class OperationListDetailFragment extends ListDetailFragment<Operation> i
     private ArrayList<Account> accountList;
     private List<Category> categoryList;
     private ArrayList<Account> recipientAccountList;
-    private ArrayAdapter<Account> accountArrayAdapter;
     private ArrayAdapter<Category> categoryArrayAdapter;
     private ArrayAdapter<Account> recipientAccountArrayAdapter;
 
@@ -53,8 +54,6 @@ public class OperationListDetailFragment extends ListDetailFragment<Operation> i
     private Spinner recipientAccountSpinner;
     private TextView edtDate;
     private EditText edtSum;
-    private RadioButton btnIn, btnOut, btnTransfer;
-    private RadioGroup typeGroup;
     private TextView lblAccount,lblCategory, lblRecipientAccount;
 
     @Override
@@ -83,12 +82,12 @@ public class OperationListDetailFragment extends ListDetailFragment<Operation> i
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_list_detail_operation, container, false);
 
-        typeGroup = (RadioGroup)v.findViewById(R.id.operation_detail_type_group);
+        RadioGroup typeGroup = (RadioGroup) v.findViewById(R.id.operation_detail_type_group);
         typeGroup.setOnCheckedChangeListener(this);
 
-        btnIn = (RadioButton)v.findViewById(R.id.operation_detail_btnIn);
-        btnOut = (RadioButton)v.findViewById(R.id.operation_detail_btnOut);
-        btnTransfer = (RadioButton)v.findViewById(R.id.operation_detail_btnTransfer);
+        RadioButton btnIn = (RadioButton) v.findViewById(R.id.operation_detail_btnIn);
+        RadioButton btnOut = (RadioButton) v.findViewById(R.id.operation_detail_btnOut);
+        RadioButton btnTransfer = (RadioButton) v.findViewById(R.id.operation_detail_btnTransfer);
 
         lblAccount = (TextView)v.findViewById(R.id.operation_detail_label_account);
         lblCategory = (TextView)v.findViewById(R.id.operation_detail_label_category);
@@ -107,7 +106,6 @@ public class OperationListDetailFragment extends ListDetailFragment<Operation> i
             @Override
             public void onClick(View v) {
 
-                Date date = operation.getDate();
                 Calendar c = Calendar.getInstance();
                 int mYear = c.get(Calendar.YEAR);
                 int mMonth = c.get(Calendar.MONTH);
@@ -139,7 +137,7 @@ public class OperationListDetailFragment extends ListDetailFragment<Operation> i
             Account account = operation.getAccount();
             if(account!=null){
                 for (int i=0; i<accountList.size();i++) {
-                    if (((Account)accountList.get(i)).getID()==account.getID()){
+                    if (accountList.get(i).getID()==account.getID()){
                         accountSpinner.setSelection(i);
                     }
                 }
@@ -191,7 +189,7 @@ public class OperationListDetailFragment extends ListDetailFragment<Operation> i
     private void initCategorySpinner() {
         categoryList = CashFlowDbManager.getInstance(getActivity()).getCategories();
 
-        categoryArrayAdapter = new ArrayAdapter<Category>(getActivity(), android.R.layout.simple_spinner_item, categoryList);
+        categoryArrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, categoryList);
         categoryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorySpinner.setAdapter(categoryArrayAdapter);
         categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -224,7 +222,7 @@ public class OperationListDetailFragment extends ListDetailFragment<Operation> i
     private void initAccountSpinner() {
         accountList = CashFlowDbManager.getInstance(getActivity()).getAccounts();
 
-        accountArrayAdapter = new AccountAdapter(getActivity(), accountList);
+        ArrayAdapter<Account> accountArrayAdapter = new AccountAdapter(getActivity(), accountList);
         accountArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         accountSpinner.setAdapter(accountArrayAdapter);
         accountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -254,7 +252,7 @@ public class OperationListDetailFragment extends ListDetailFragment<Operation> i
         Account account = operation.getAccount();
         if(account!=null){
             for (int i=0; i<accountList.size();i++) {
-                if (((Account)accountList.get(i)).getID()==account.getID()){
+                if (accountList.get(i).getID()==account.getID()){
                     recipientAccountList.remove(i);
                 }
             }
@@ -265,7 +263,7 @@ public class OperationListDetailFragment extends ListDetailFragment<Operation> i
         account = operation.getRecipientAccount();
         if(account!=null){
             for (int i=0; i<recipientAccountList.size();i++) {
-                if (((Account)recipientAccountList.get(i)).getID()==account.getID()){
+                if (recipientAccountList.get(i).getID()==account.getID()){
                     recipientAccountSpinner.setSelection(i);
                 }
             }
@@ -283,7 +281,7 @@ public class OperationListDetailFragment extends ListDetailFragment<Operation> i
         if(category!=null){
             //categorySpinner.setSelection(categoryList.indexOf(category));
             for (int i=0; i<categoryList.size();i++) {
-                if (((Category)categoryList.get(i)).getID()==category.getID()){
+                if (categoryList.get(i).getID()==category.getID()){
                     categorySpinner.setSelection(i);
                 }
             }
@@ -291,11 +289,11 @@ public class OperationListDetailFragment extends ListDetailFragment<Operation> i
     }
 
     private void updateDateView() {
-        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault());
         edtDate.setText(format.format(operation.getDate()));
     }
 
-    private DatePickerDialog.OnDateSetListener dataListener = new DatePickerDialog.OnDateSetListener() {
+    private final DatePickerDialog.OnDateSetListener dataListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 
@@ -323,7 +321,7 @@ public class OperationListDetailFragment extends ListDetailFragment<Operation> i
         }
     };
 
-    private TimePickerDialog.OnTimeSetListener timeListener = new TimePickerDialog.OnTimeSetListener() {
+    private final TimePickerDialog.OnTimeSetListener timeListener = new TimePickerDialog.OnTimeSetListener() {
         @Override
         public void onTimeSet(TimePicker timePicker, int i, int i1) {
 
@@ -381,40 +379,41 @@ public class OperationListDetailFragment extends ListDetailFragment<Operation> i
 
     private class AccountAdapter extends ArrayAdapter<Account> {
 
-        private ArrayList<Account> accounts;
+        private final ArrayList<Account> accounts;
 
         public AccountAdapter(Context context, ArrayList<Account> accounts) {
             super(context, R.layout.account_spinner_adapter, accounts);
             this.accounts = accounts;
         }
 
+        @NonNull
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
             Account account = accounts.get(position);
 
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext())
-                        .inflate(R.layout.account_spinner_adapter, null);
+                        .inflate(R.layout.account_spinner_adapter,parent,false);
             }
             ((TextView) convertView.findViewById(R.id.account_spinner_adapter_name))
                     .setText(account.getName());
             ((TextView) convertView.findViewById(R.id.account_spinner_adapter_balance))
-                    .setText(String.format("%,d",account.getBalance()));
+                    .setText(String.format(Locale.getDefault(),"%,d",account.getBalance()));
             return convertView;
         }
 
         @Override
-        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+        public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
             Account account = accounts.get(position);
 
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext())
-                        .inflate(R.layout.account_spinner_adapter_dropdown, null);
+                        .inflate(R.layout.account_spinner_adapter_dropdown, parent, false);
             }
             ((TextView) convertView.findViewById(R.id.account_spinner_adapter_dropdown_name))
                     .setText(account.getName());
             ((TextView) convertView.findViewById(R.id.account_spinner_adapter_dropdown_balance))
-                    .setText(String.format("%,d",account.getBalance()));
+                    .setText(String.format(Locale.getDefault(),"%,d",account.getBalance()));
             return convertView;
         }
     }

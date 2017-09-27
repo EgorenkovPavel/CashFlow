@@ -1,5 +1,7 @@
 package com.epipasha.cashflow.fragments.account;
 
+import static android.app.Activity.RESULT_CANCELED;
+
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 
@@ -10,9 +12,6 @@ import com.epipasha.cashflow.objects.Account;
 
 import java.util.ArrayList;
 
-/**
- * Created by Pavel on 08.11.2016.
- */
 
 public class AccountFragment extends ListFragment<Account> {
 
@@ -22,7 +21,7 @@ public class AccountFragment extends ListFragment<Account> {
         i.setClass(getActivity(), ListDetailActivity.class);
         i.putExtra("Instance", new Account());
         i.putExtra("Position", -1);
-        startActivityForResult(i, getActivity().RESULT_CANCELED);
+        startActivityForResult(i, RESULT_CANCELED);
     }
 
     @Override

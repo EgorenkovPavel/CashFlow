@@ -1,5 +1,6 @@
 package com.epipasha.cashflow.db;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -25,7 +26,7 @@ public class CashFlowDbManager {
     private static CashFlowDbManager manager;
 
     private SQLiteDatabase db;
-    private CashFlowDbHelper dbHelper;
+    private final CashFlowDbHelper dbHelper;
 
     public static CashFlowDbManager getInstance(Context context){
         if (manager == null){
@@ -34,15 +35,15 @@ public class CashFlowDbManager {
         return manager;
     }
 
-    public CashFlowDbManager(Context context){
+    private CashFlowDbManager(Context context){
         dbHelper = new CashFlowDbHelper(context);
     }
 
-    public void openToWrite(){
+    private void openToWrite(){
         db = dbHelper.getWritableDatabase();
     }
 
-    public void close(){
+    private void close(){
         db.close();
     }
 
@@ -69,7 +70,7 @@ public class CashFlowDbManager {
                 "ORDER BY " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_TITLE +";";
         Cursor cursor = db.rawQuery(sqlQuery, null);
 
-        ArrayList<Account> list = new ArrayList<Account>();
+        ArrayList<Account> list = new ArrayList<>();
         if(cursor != null && cursor.getCount() > 0){
             cursor.moveToFirst();
             do {
@@ -81,7 +82,8 @@ public class CashFlowDbManager {
             }
             while (cursor.moveToNext());
         }
-
+        assert cursor != null;
+        cursor.close();
         close();
 
         return list;
@@ -98,34 +100,34 @@ public class CashFlowDbManager {
         return res;
     }
 
-    public int updateAccount(Account account){
+    public void updateAccount(Account account){
         openToWrite();
         ContentValues values = new ContentValues(2);
 
         values.put(AccountEntry.COLUMN_TITLE, account.getName());
 
+        @SuppressLint("DefaultLocale")
         String where = String.format("%s=%d", AccountEntry._ID, account.getID());
 
-        int res = db.update(AccountEntry.TABLE_NAME, values, where, null);
+        db.update(AccountEntry.TABLE_NAME, values, where, null);
         close();
-        return res;
     }
 
-    public int deleteAccount(Account account){
+    public void deleteAccount(Account account){
         openToWrite();
 
+        @SuppressLint("DefaultLocale")
         String where = String.format("%s=%d", AccountEntry._ID, account.getID());
 
-        int res = db.delete(AccountEntry.TABLE_NAME, where, null);
+        db.delete(AccountEntry.TABLE_NAME, where, null);
         close();
-        return res;
     }
 
 
     public ArrayList<Category> getCategories(){
         openToWrite();
         Cursor cursor = db.query(CategoryEntry.TABLE_NAME, null, null, null, null, null, CategoryEntry.COLUMN_TITLE);
-        ArrayList<Category> list = new ArrayList<Category>();
+        ArrayList<Category> list = new ArrayList<>();
         if(cursor != null && cursor.getCount() > 0){
             cursor.moveToFirst();
             do {
@@ -133,11 +135,13 @@ public class CashFlowDbManager {
                 category.setID(cursor.getInt(0));
                 category.setName(cursor.getString(1));
                 category.setType(OperationType.toEnum(cursor.getString(2)));
-                category.setBudjet(cursor.getInt(3));
+                category.setBudget(cursor.getInt(3));
                 list.add(category);
             }
             while (cursor.moveToNext());
         }
+        assert cursor != null;
+        cursor.close();
         close();
         return list;
     }
@@ -146,7 +150,7 @@ public class CashFlowDbManager {
         openToWrite();
         String where = String.format("%s=\"%s\"",CategoryEntry.COLUMN_TYPE, type.toString());
         Cursor cursor = db.query(CategoryEntry.TABLE_NAME, null, where, null, null, null, CategoryEntry.COLUMN_TITLE);
-        ArrayList<Category> list = new ArrayList<Category>();
+        ArrayList<Category> list = new ArrayList<>();
         if(cursor != null && cursor.getCount() > 0){
             cursor.moveToFirst();
             do {
@@ -154,11 +158,13 @@ public class CashFlowDbManager {
                 category.setID(cursor.getInt(0));
                 category.setName(cursor.getString(1));
                 category.setType(OperationType.toEnum(cursor.getString(2)));
-                category.setBudjet(cursor.getInt(3));
+                category.setBudget(cursor.getInt(3));
                 list.add(category);
             }
             while (cursor.moveToNext());
         }
+        assert cursor != null;
+        cursor.close();
         close();
         return list;
     }
@@ -185,17 +191,18 @@ public class CashFlowDbManager {
             cursor.moveToFirst();
             result = cursor.getInt(0);
         }
-
+        assert cursor != null;
+        cursor.close();
         close();
 
         return result;
 
     }
 
-    public int getTotalBudjet(OperationType type, Date start, Date end) {
+    public int getTotalBudget(OperationType type) {
         openToWrite();
 
-        String[] columns = new String[] {"SUM("+CategoryEntry.COLUMN_BUDJET+")"};
+        String[] columns = new String[] {"SUM("+CategoryEntry.COLUMN_BUDGET +")"};
         String where = CategoryEntry.COLUMN_TYPE + " = ?";
         String[] whereArgs = new String[]{type.toString()};
 
@@ -207,6 +214,8 @@ public class CashFlowDbManager {
             cursor.moveToFirst();
             result = cursor.getInt(0);
         }
+        assert cursor != null;
+        cursor.close();
         close();
         return result;
 
@@ -233,17 +242,18 @@ public class CashFlowDbManager {
             cursor.moveToFirst();
             result = cursor.getInt(0);
         }
-
+        assert cursor != null;
+        cursor.close();
         close();
 
         return result;
 
     }
 
-    public int getCategoryBudjet(Category category, Date start, Date end) {
+    public int getCategoryBudget(Category category) {
         openToWrite();
 
-        String[] columns = new String[] {"SUM("+CategoryEntry.COLUMN_BUDJET+")"};
+        String[] columns = new String[] {"SUM("+CategoryEntry.COLUMN_BUDGET +")"};
         String where = CategoryEntry._ID + " = ?";
         String[] whereArgs = new String[]{String.valueOf(category.getID())};
 
@@ -255,6 +265,8 @@ public class CashFlowDbManager {
             cursor.moveToFirst();
             result = cursor.getInt(0);
         }
+        assert cursor != null;
+        cursor.close();
         close();
         return result;
 
@@ -266,7 +278,7 @@ public class CashFlowDbManager {
 
         values.put(CategoryEntry.COLUMN_TITLE, category.getName());
         values.put(CategoryEntry.COLUMN_TYPE, category.getType().toString());
-        values.put(CategoryEntry.COLUMN_BUDJET, category.getBudjet());
+        values.put(CategoryEntry.COLUMN_BUDGET, category.getBudget());
 
         return values;
     }
@@ -279,22 +291,26 @@ public class CashFlowDbManager {
         return res;
     }
 
-    public int updateCategory(Category category){
+    public void updateCategory(Category category){
         openToWrite();
+
+        @SuppressLint("DefaultLocale")
         String where = String.format("%s=%d",CategoryEntry._ID, category.getID());
-        int res = db.update(CategoryEntry.TABLE_NAME, valuesCategory(category), where, null);
+
+        db.update(CategoryEntry.TABLE_NAME, valuesCategory(category), where, null);
         close();
 
-        return res;
     }
 
-    public int deleteCategory(Category category){
+    public void deleteCategory(Category category){
         openToWrite();
+
+        @SuppressLint("DefaultLocale")
         String where = String.format("%s=%d",CategoryEntry._ID, category.getID());
-        int res = db.delete(CategoryEntry.TABLE_NAME, where, null);
+
+        db.delete(CategoryEntry.TABLE_NAME, where, null);
         close();
 
-        return res;
     }
 
 
@@ -306,15 +322,15 @@ public class CashFlowDbManager {
             mapAccount.put(account.getID(), account);
         }
 
-        ArrayList<Category> categores = getCategories();
+        ArrayList<Category> categories = getCategories();
         HashMap<Integer, Category> mapCategory = new HashMap<>();
-        for (Category category:categores) {
+        for (Category category:categories) {
             mapCategory.put(category.getID(), category);
         }
 
         openToWrite();
         Cursor cursor = db.query(OperationEntry.TABLE_NAME, null, null, null, null, null, OperationEntry.COLUMN_DATE + " DESC");
-        ArrayList<Operation> list = new ArrayList<Operation>();
+        ArrayList<Operation> list = new ArrayList<>();
         if(cursor != null && cursor.getCount() > 0){
             cursor.moveToFirst();
             do {
@@ -331,6 +347,9 @@ public class CashFlowDbManager {
             }
             while (cursor.moveToNext());
         }
+
+        assert cursor != null;
+        cursor.close();
         close();
         return list;
     }
@@ -375,16 +394,17 @@ public class CashFlowDbManager {
         return values;
     }
 
-    public int updateOperation(Operation operation){
+    public void updateOperation(Operation operation){
         openToWrite();
-
-        int res = -1;
 
         db.beginTransaction();
         try {
             ContentValues values = OperationValues(operation);
+
+            @SuppressLint("DefaultLocale")
             String where = String.format("%s=%d", OperationEntry._ID, operation.getID());
-            res = db.update(OperationEntry.TABLE_NAME, values, where, null);
+
+            db.update(OperationEntry.TABLE_NAME, values, where, null);
 
             deleteBalance(operation);
             addBalance(operation);
@@ -398,18 +418,17 @@ public class CashFlowDbManager {
         }
 
         close();
-        return res;
     }
 
-    public int deleteOperation(Operation operation){
+    public void deleteOperation(Operation operation){
         openToWrite();
-
-        int res = -1;
 
         db.beginTransaction();
         try {
-            String where = String.format("%s=%d",OperationEntry._ID, operation.getID());
-            res = db.delete(OperationEntry.TABLE_NAME, where, null);
+
+            String where = String.format(Locale.getDefault(),"%s=%d",OperationEntry._ID, operation.getID());
+
+            db.delete(OperationEntry.TABLE_NAME, where, null);
 
             deleteBalance(operation);
             deleteCategoryCost(operation);
@@ -420,7 +439,6 @@ public class CashFlowDbManager {
         }
 
         close();
-        return res;
     }
 
     private void addBalance(Operation operation){
@@ -468,7 +486,10 @@ public class CashFlowDbManager {
     }
 
     private void deleteBalance(Operation operation){
+
+        @SuppressLint("DefaultLocale")
         String where = String.format("%s=%d",AccountBalanceEntry.COLUMN_OPERATION_ID, operation.getID());
+
         db.delete(AccountBalanceEntry.TABLE_NAME, where, null);
     }
 
@@ -487,7 +508,10 @@ public class CashFlowDbManager {
     }
 
     private void deleteCategoryCost(Operation operation){
+
+        @SuppressLint("DefaultLocale")
         String where = String.format("%s=%d",CategoryCostEntry.COLUMN_OPERATION_ID, operation.getID());
+
         db.delete(CategoryCostEntry.TABLE_NAME, where, null);
     }
 }

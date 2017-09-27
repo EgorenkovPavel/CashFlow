@@ -10,10 +10,10 @@
             android:title="@string/Categories" />
         <item android:id="@+id/nav_operations" android:icon="@android:drawable/ic_menu_gallery"
             android:title="@string/Operations" />
-        <item android:id="@+id/nav_analitics" android:icon="@android:drawable/ic_menu_gallery"
-            android:title="@string/analitics" />
-        <item android:id="@+id/nav_test" android:icon="@android:drawable/ic_menu_gallery"
-            android:title="test" />
+        <item android:id="@+id/nav_analytics" android:icon="@android:drawable/ic_menu_gallery"
+            android:title="@string/analytics" />
+        <item android:id="@+id/nav_backup" android:icon="@android:drawable/ic_menu_gallery"
+            android:title="@string/backup" />
     </group>
 
     <group android:checkableBehavior="none" android:id="@+id/other">

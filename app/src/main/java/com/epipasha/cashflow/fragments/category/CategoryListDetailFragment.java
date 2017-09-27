@@ -20,11 +20,11 @@ public class CategoryListDetailFragment extends ListDetailFragment<Category> {
 
     private Category category;
 
-    private EditText name, budjet;
+    private EditText name, budget;
     private RadioButton btnIn;
     private RadioButton btnOut;
 
-    private NumberTextWatcherForThousand budjetWatcher;
+    private NumberTextWatcherForThousand budgetWatcher;
 
     @Override
     public void setInstance(Category category) {
@@ -34,7 +34,7 @@ public class CategoryListDetailFragment extends ListDetailFragment<Category> {
     @Override
     public Category getInstance() {
         category.setName(name.getText().toString());
-        category.setBudjet((int) budjetWatcher.getLong(budjet.getText().toString()));
+        category.setBudget((int) budgetWatcher.getLong(budget.getText().toString()));
 
         OperationType type = null;
         if (btnIn.isChecked()){
@@ -63,13 +63,13 @@ public class CategoryListDetailFragment extends ListDetailFragment<Category> {
         name = (EditText)v.findViewById(R.id.category_detail_name);
         btnIn = (RadioButton)v.findViewById(R.id.category_detail_in);
         btnOut = (RadioButton)v.findViewById(R.id.category_detail_out);
-        budjet = (EditText)v.findViewById(R.id.category_detail_budjet);
-        budjetWatcher = new NumberTextWatcherForThousand(budjet);
-        budjet.addTextChangedListener(budjetWatcher);
+        budget = (EditText)v.findViewById(R.id.category_detail_budget);
+        budgetWatcher = new NumberTextWatcherForThousand(budget);
+        budget.addTextChangedListener(budgetWatcher);
 
         if(category!=null) {
             name.setText(category.getName());
-            budjet.setText(String.valueOf(category.getBudjet()));
+            budget.setText(String.valueOf(category.getBudget()));
 
             OperationType type = category.getType();
 

@@ -22,9 +22,6 @@ import com.epipasha.cashflow.objects.Operation;
 
 import java.io.Serializable;
 
-/**
- * Created by Pavel on 09.10.2016.
- */
 public class ListDetailActivity<T> extends AppCompatActivity {
 
     private ListDetailFragment<T> frag;
@@ -40,7 +37,9 @@ public class ListDetailActivity<T> extends AppCompatActivity {
         ActionBar ab = getSupportActionBar();
 
         // Enable the Up button
-        ab.setDisplayHomeAsUpEnabled(true);
+        if(ab != null){
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
 
         Button btnOk = (Button)findViewById(R.id.detail_btn_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {
@@ -50,8 +49,8 @@ public class ListDetailActivity<T> extends AppCompatActivity {
                 finish();
             }
         });
-        Button btnCansel = (Button)findViewById(R.id.detail_btn_cansel);
-        btnCansel.setOnClickListener(new View.OnClickListener() {
+        Button btnCancel = (Button)findViewById(R.id.detail_btn_cancel);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();

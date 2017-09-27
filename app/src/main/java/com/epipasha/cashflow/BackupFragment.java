@@ -31,7 +31,7 @@ import java.util.Iterator;
 
 public class BackupFragment extends Fragment {
 
-    String[] tables = new String[]{
+    private static final String[] TABLES = new String[]{
             AccountEntry.TABLE_NAME,
             CategoryEntry.TABLE_NAME,
             OperationEntry.TABLE_NAME,
@@ -56,7 +56,7 @@ public class BackupFragment extends Fragment {
             public void onClick(View v) {
                 try {
                     JSONObject db = new JSONObject();
-                    for (String table:tables) {
+                    for (String table: TABLES) {
                         try {
                             db.put(table, exportDb(table));
                         } catch (JSONException e) {
@@ -87,8 +87,6 @@ public class BackupFragment extends Fragment {
 
                     byte[] buffer = new byte[size];
 
-                    is.read(buffer);
-
                     is.close();
 
                     JSONObject obj = new JSONObject(new String(buffer, "UTF-8"));
@@ -113,7 +111,7 @@ public class BackupFragment extends Fragment {
         JSONArray resultSet     = new JSONArray();
 
         cursor.moveToFirst();
-        while (cursor.isAfterLast() == false) {
+        while (!cursor.isAfterLast()) {
 
             int totalColumn = cursor.getColumnCount();
             JSONObject rowObject = new JSONObject();
@@ -147,7 +145,7 @@ public class BackupFragment extends Fragment {
         CashFlowDbHelper helper = new CashFlowDbHelper(getActivity());
         SQLiteDatabase db = helper.getWritableDatabase();
 
-        for (String table:tables) {
+        for (String table: TABLES) {
             try {
                 JSONArray rows = obj.getJSONArray(table);
                 for (int i=0; i<rows.length(); i++) {
@@ -155,9 +153,9 @@ public class BackupFragment extends Fragment {
 
                     ContentValues values = new ContentValues();
 
-                    Iterator<String> iter = row.keys();
-                    while(iter.hasNext()){
-                        String key = iter.next();
+                    Iterator<String> iterator = row.keys();
+                    while(iterator.hasNext()){
+                        String key = iterator.next();
                         try {
                             values.put(key, Integer.parseInt((String) row.get(key)));
                         }catch (Exception e){
