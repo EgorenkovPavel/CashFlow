@@ -1,32 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/list_item_layout">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/two_line_list_item">
 
     <TextView
-        android:text="@string/name"
         android:id="@+id/account_list_item_name"
-        style="@style/list_item_text"
-        android:layout_toStartOf="@+id/account_list_item_currency" />
+        android:text="@string/name"
+        style="@style/two_line_list_primary_text" />
 
     <TextView
-        android:text="@string/RUB"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/account_list_item_currency"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:gravity="end|center_vertical"
-        android:textSize="24sp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/account_list_item_sum"
-        android:gravity="end|center_vertical"
-        android:textSize="24sp"
-        android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/account_list_item_currency"
-        android:layout_marginEnd="10dp"
-        android:layout_alignParentBottom="true" />
-</RelativeLayout>
+        style="@style/two_line_list_secondary_text" />
+</LinearLayout>

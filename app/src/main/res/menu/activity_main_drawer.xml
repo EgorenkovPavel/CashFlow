@@ -16,7 +16,7 @@
             android:title="@string/backup" />
     </group>
 
-    <group android:checkableBehavior="none" android:id="@+id/other">
+    <group android:checkableBehavior="none">
         <item android:id="@+id/nav_operation_master" android:icon="@android:drawable/ic_menu_share"
             android:title="@string/operation_master" />
         <item android:id="@+id/nav_settings" android:icon="@android:drawable/ic_menu_preferences"

@@ -1,25 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/list_item_layout"
-    android:layout_height="72dp"
-    android:paddingBottom="16dp"
-    android:paddingTop="16dp">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/two_line_list_item">
 
     <TextView
         android:text="@string/name"
         android:id="@+id/category_list_item_name"
-        style="@style/list_item_text"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_height="wrap_content"
-        android:textStyle="normal|bold" />
+        style="@style/two_line_list_primary_text"/>
 
     <TextView
         android:text="@string/type"
-        style="@style/list_item_text"
-        android:id="@+id/category_list_item_type"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:textSize="14sp" />
-</RelativeLayout>
+        style="@style/two_line_list_secondary_text"
+        android:id="@+id/category_list_item_type" />
+</LinearLayout>

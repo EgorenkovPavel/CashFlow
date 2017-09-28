@@ -12,7 +12,6 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/date"
-            android:id="@+id/operation_detail_label_date"
             style="@style/operation_detail_label"
             android:layout_column="0"
             android:layout_weight="0.1"/>
@@ -35,7 +34,6 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/type"
-            android:id="@+id/operation_detail_label_type"
             style="@style/operation_detail_label"
             android:layout_column="0"
             android:layout_weight="0.1"/>
@@ -150,7 +148,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sum"
-            android:id="@+id/operation_detail_label_sum"
             style="@style/operation_detail_label"
             android:labelFor="@+id/operation_detail_sum"
             android:layout_column="0"
