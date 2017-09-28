@@ -39,7 +39,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
-public class OperationMaster extends AppCompatActivity{
+public class OperationMasterActivity extends AppCompatActivity{
 
     private int sum = 0;
 

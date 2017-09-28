@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity
                     ((ListFragment)frag).addInstance();
                 }else if(frag instanceof SummaryFragment){
                     Intent i = new Intent();
-                    i.setClass(view.getContext(), OperationMaster.class);
+                    i.setClass(view.getContext(), OperationMasterActivity.class);
                     startActivityForResult(i, OPEN_OPERATION_MASTER);
                 }
             }
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity
         onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_summary));
 
         if (Prefs.isShowOperationMasterOnStart(this)){
-            Intent i = new Intent(this, OperationMaster.class);
+            Intent i = new Intent(this, OperationMasterActivity.class);
             startActivity(i);
         }
 
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity
             setActionBarTitle(item.getTitle());
 
         } else if (id == R.id.nav_operation_master){
-            Intent i = new Intent(this, OperationMaster.class);
+            Intent i = new Intent(this, OperationMasterActivity.class);
             startActivity(i);
 
         } else if (id == R.id.nav_settings){
