@@ -12,7 +12,6 @@ import com.epipasha.cashflow.objects.Account;
 
 import java.util.ArrayList;
 
-
 public class AccountFragment extends ListFragment<Account> {
 
     @Override

@@ -1,13 +1,14 @@
 package com.epipasha.cashflow;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -43,13 +44,13 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(frag instanceof ListFragment){
+                /*if(frag instanceof ListFragment){
                     ((ListFragment)frag).addInstance();
                 }else if(frag instanceof SummaryFragment){
                     Intent i = new Intent();
                     i.setClass(view.getContext(), OperationMasterActivity.class);
                     startActivityForResult(i, OPEN_OPERATION_MASTER);
-                }
+                }*/
             }
         });
 
@@ -87,12 +88,13 @@ public class MainActivity extends AppCompatActivity
 
         int id = item.getItemId();
 
-        if (id == R.id.nav_summary) {
+         if (id == R.id.nav_summary) {
             setContentFragment(new SummaryFragment());
             setActionBarTitle(item.getTitle());
 
         } else if (id == R.id.nav_accounts) {
-            setContentFragment(new AccountFragment());
+            //setContentFragment(new AccountFragment());
+            setContentFragment(new AccountListFragment());
             setActionBarTitle(item.getTitle());
 
         } else if (id == R.id.nav_categories) {
@@ -145,7 +147,7 @@ public class MainActivity extends AppCompatActivity
     private void setContentFragment(Fragment newFrag) {
         this.frag = newFrag;
         if(frag!=null) {
-            FragmentManager fm = getFragmentManager();
+            FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction tr = fm.beginTransaction();
             tr.replace(R.id.container, frag);
             tr.commit();
