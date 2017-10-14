@@ -1,6 +1,7 @@
 package com.epipasha.cashflow;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -48,9 +49,10 @@ public class OperationMasterActivity extends AppCompatActivity{
     private TextView lblSum;
     private HorizontalBarChart chart;
 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.operation_master);
+        setContentView(R.layout.activity_operation_master);
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
@@ -61,6 +63,69 @@ public class OperationMasterActivity extends AppCompatActivity{
         initAnalyticSpinner();
 
         setChartData();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+
+        int accountPos = sharedPref.getInt(getString(R.string.pref_operation_master_account_pos), 0);
+        String operationTypePos = sharedPref.getString(getString(R.string.pref_operation_master_operation_type_pos), "");
+        int analyticPos = sharedPref.getInt(getString(R.string.pref_operation_master_analytic_pos), 0);
+
+        OperationType type = OperationType.toEnum(operationTypePos);
+
+        spinAccount.setSelection(accountPos);
+        spinAnalytic.setSelection(analyticPos);
+        setCheckedOperationType(type);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt(getString(R.string.pref_operation_master_account_pos), spinAccount.getSelectedItemPosition());
+        editor.putString(getString(R.string.pref_operation_master_operation_type_pos), getCheckedOperationType().toString());
+        editor.putInt(getString(R.string.pref_operation_master_analytic_pos), spinAnalytic.getSelectedItemPosition());
+        editor.apply();
+    }
+
+    private OperationType getCheckedOperationType(){
+        switch (groupType.getCheckedRadioButtonId()){
+            case R.id.btnIn :
+                return OperationType.IN;
+            case R.id.btnOut:
+                return OperationType.OUT;
+            case R.id.btnTransfer:
+                return OperationType.TRANSFER;
+            default:
+                return OperationType.IN;
+        }
+    }
+
+    private void setCheckedOperationType(OperationType type){
+
+        if (type == null){
+            return;
+        }
+
+        switch (type){
+            case IN:
+                groupType.check(R.id.btnIn);
+                break;
+            case OUT:
+                groupType.check(R.id.btnOut);
+                break;
+            case TRANSFER:
+                groupType.check(R.id.btnTransfer);
+                break;
+            default:
+                groupType.check(R.id.btnIn);
+        }
     }
 
     private void initAccountSpinner() {

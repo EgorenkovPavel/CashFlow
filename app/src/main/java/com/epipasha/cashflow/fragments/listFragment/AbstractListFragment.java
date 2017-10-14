@@ -1,6 +1,5 @@
 package com.epipasha.cashflow.fragments.listFragment;
 
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -35,9 +34,7 @@ public abstract class AbstractListFragment extends Fragment implements LoaderMan
 
     abstract String getQuery();
 
-    public void openDialog(int id){
-
-    };
+    public abstract void openDialog(int id);
 
     public void refreshList(){
         getLoaderManager().restartLoader(LOADER_ID, null, this).forceLoad();
@@ -127,7 +124,7 @@ public abstract class AbstractListFragment extends Fragment implements LoaderMan
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         int id;
-        HashMap<Integer, View> views;
+        final HashMap<Integer, View> views;
 
         public ViewHolder(View v) {
             super(v);

@@ -1,21 +1,13 @@
 package com.epipasha.cashflow.fragments.listFragment;
 
-import static com.epipasha.cashflow.db.CashFlowContract.*;
+import static com.epipasha.cashflow.db.CashFlowContract.AccountBalanceEntry;
+import static com.epipasha.cashflow.db.CashFlowContract.AccountEntry;
 
-import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatDialogFragment;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.db.CashFlowDbHelper;
-import com.epipasha.cashflow.db.CashFlowDbManager;
 
 import java.util.HashMap;
 import java.util.Locale;

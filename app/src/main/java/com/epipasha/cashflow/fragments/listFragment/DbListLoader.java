@@ -7,10 +7,10 @@ import android.support.v4.content.AsyncTaskLoader;
 
 import com.epipasha.cashflow.db.CashFlowDbHelper;
 
-public class DbListLoader extends AsyncTaskLoader<Cursor> {
+class DbListLoader extends AsyncTaskLoader<Cursor> {
 
-    private Context context;
-    private String query;
+    private final Context context;
+    private final String query;
 
 
     public DbListLoader(Context context, String query) {
@@ -25,7 +25,6 @@ public class DbListLoader extends AsyncTaskLoader<Cursor> {
         CashFlowDbHelper dbHelper = new CashFlowDbHelper(context);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery(query, null);
-        return cursor;
+        return db.rawQuery(query, null);
     }
 }

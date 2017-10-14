@@ -19,9 +19,9 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.epipasha.cashflow.fragments.AnalyticFragment;
+import com.epipasha.cashflow.fragments.ListFragment;
 import com.epipasha.cashflow.fragments.account.AccountFragment;
 import com.epipasha.cashflow.fragments.category.CategoryFragment;
-import com.epipasha.cashflow.fragments.listFragment.AccountListFragment;
 import com.epipasha.cashflow.fragments.operation.OperationFragment;
 import com.epipasha.cashflow.fragments.summary.SummaryFragment;
 
@@ -44,13 +44,13 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*if(frag instanceof ListFragment){
+                if(frag instanceof ListFragment){
                     ((ListFragment)frag).addInstance();
                 }else if(frag instanceof SummaryFragment){
                     Intent i = new Intent();
                     i.setClass(view.getContext(), OperationMasterActivity.class);
                     startActivityForResult(i, OPEN_OPERATION_MASTER);
-                }*/
+                }
             }
         });
 

@@ -38,7 +38,6 @@
     <string name="operation">Operation</string>
     <string name="preferences">Preferences</string>
     <string name="pref_main_currency" translatable="false">pref_main_currency</string>
-    <string name="currency">Currency</string>
     <string name="RUB" translatable="false">RUB</string>
     <string name="pref_show_operation_master_on_start" translatable="false">pref_show_operation_master_on_start</string>
     <string name="main_currency">Main currency</string>
@@ -55,10 +54,8 @@
     <string name="restore">Restore</string>
     <string name="delete">Delete</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_main2">Main2Activity</string>
-
-    <string name="action_settings">Settings</string>
+    <string name="pref_operation_master_account_pos" translatable="false">pref_operation_master_account_pos</string>
+    <string name="pref_operation_master_analytic_pos" translatable="false">pref_operation_master_analytic_pos</string>
+    <string name="pref_operation_master_operation_type_pos" translatable="false">pref_operation_master_operation_type_pos</string>
 
 </resources>
