@@ -19,9 +19,9 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.epipasha.cashflow.fragments.AnalyticFragment;
-import com.epipasha.cashflow.fragments.ListFragment;
 import com.epipasha.cashflow.fragments.account.AccountFragment;
 import com.epipasha.cashflow.fragments.category.CategoryFragment;
+import com.epipasha.cashflow.fragments.listFragment.AccountListFragment;
 import com.epipasha.cashflow.fragments.operation.OperationFragment;
 import com.epipasha.cashflow.fragments.summary.SummaryFragment;
 
@@ -93,8 +93,8 @@ public class MainActivity extends AppCompatActivity
             setActionBarTitle(item.getTitle());
 
         } else if (id == R.id.nav_accounts) {
-            //setContentFragment(new AccountFragment());
-            setContentFragment(new AccountListFragment());
+            setContentFragment(new AccountFragment());
+            //setContentFragment(new AccountListFragment());
             setActionBarTitle(item.getTitle());
 
         } else if (id == R.id.nav_categories) {

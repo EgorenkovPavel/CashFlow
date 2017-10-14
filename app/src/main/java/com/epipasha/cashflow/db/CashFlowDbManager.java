@@ -100,6 +100,16 @@ public class CashFlowDbManager {
         return res;
     }
 
+    public void updateAccount(int id, ContentValues values){
+        openToWrite();
+
+        @SuppressLint("DefaultLocale")
+        String where = String.format("%s=%d", AccountEntry._ID, id);
+
+        db.update(AccountEntry.TABLE_NAME, values, where, null);
+        close();
+    }
+
     public void updateAccount(Account account){
         openToWrite();
         ContentValues values = new ContentValues(2);

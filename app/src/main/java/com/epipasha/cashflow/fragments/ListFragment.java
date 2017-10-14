@@ -31,7 +31,7 @@ public abstract class ListFragment<T> extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_list, container, false);
 
-        mRecyclerView = (RecyclerView) v.findViewById(R.id.main_activity_list);
+        mRecyclerView = (RecyclerView) v.findViewById(R.id.list);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
