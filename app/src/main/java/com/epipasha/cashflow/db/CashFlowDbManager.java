@@ -93,7 +93,7 @@ public class CashFlowDbManager {
         openToWrite();
         ContentValues values = new ContentValues(2);
 
-        values.put(AccountEntry.TABLE_NAME, account.getName());
+        values.put(AccountEntry.COLUMN_TITLE, account.getName());
 
         int res = (int)db.insertOrThrow(AccountEntry.TABLE_NAME, null, values);
         close();
@@ -103,7 +103,6 @@ public class CashFlowDbManager {
     public void updateAccount(int id, ContentValues values){
         openToWrite();
 
-        @SuppressLint("DefaultLocale")
         String where = String.format("%s=%d", AccountEntry._ID, id);
 
         db.update(AccountEntry.TABLE_NAME, values, where, null);

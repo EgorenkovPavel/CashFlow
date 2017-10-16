@@ -3,6 +3,7 @@ package com.epipasha.cashflow;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -29,14 +30,17 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int OPEN_OPERATION_MASTER = 1;
+    private static final String FRAGMENT_TAG = "fragment_tag";
+    private static final String SAVED_STATE_KEY_ITEM_ID = "item_id";
 
-    private Fragment frag;
+    private int menuItemId;
     private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -44,9 +48,10 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(frag instanceof ListFragment){
-                    ((ListFragment)frag).addInstance();
-                }else if(frag instanceof SummaryFragment){
+                Fragment frag = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+                if (frag instanceof ListFragment) {
+                    ((ListFragment) frag).addInstance();
+                } else if (frag instanceof SummaryFragment) {
                     Intent i = new Intent();
                     i.setClass(view.getContext(), OperationMasterActivity.class);
                     startActivityForResult(i, OPEN_OPERATION_MASTER);
@@ -63,13 +68,28 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        navigationView.setCheckedItem(R.id.nav_summary);
-        onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_summary));
+        if (savedInstanceState == null) {
 
-        if (Prefs.isShowOperationMasterOnStart(this)){
-            Intent i = new Intent(this, OperationMasterActivity.class);
-            startActivity(i);
+            navigationView.setCheckedItem(R.id.nav_summary);
+            onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_summary));
+
+            if (Prefs.isShowOperationMasterOnStart(this)) {
+                Intent i = new Intent(this, OperationMasterActivity.class);
+                startActivity(i);
+            }
+        }else{
+
+            menuItemId = savedInstanceState.getInt(SAVED_STATE_KEY_ITEM_ID);
+            setActionBarTitle(navigationView.getMenu().findItem(menuItemId).getTitle());
+
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt(SAVED_STATE_KEY_ITEM_ID, menuItemId);
 
     }
 
@@ -86,38 +106,38 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-        int id = item.getItemId();
+        menuItemId = item.getItemId();
 
-         if (id == R.id.nav_summary) {
+         if (menuItemId == R.id.nav_summary) {
             setContentFragment(new SummaryFragment());
             setActionBarTitle(item.getTitle());
 
-        } else if (id == R.id.nav_accounts) {
+        } else if (menuItemId == R.id.nav_accounts) {
             setContentFragment(new AccountFragment());
             //setContentFragment(new AccountListFragment());
             setActionBarTitle(item.getTitle());
 
-        } else if (id == R.id.nav_categories) {
+        } else if (menuItemId == R.id.nav_categories) {
             setContentFragment(new CategoryFragment());
             setActionBarTitle(item.getTitle());
 
-        } else if (id == R.id.nav_operations) {
+        } else if (menuItemId == R.id.nav_operations) {
             setContentFragment(new OperationFragment());
             setActionBarTitle(item.getTitle());
 
-        } else if (id == R.id.nav_analytics){
+        } else if (menuItemId == R.id.nav_analytics){
             setContentFragment(new AnalyticFragment());
             setActionBarTitle(item.getTitle());
 
-        } else if (id == R.id.nav_operation_master){
+        } else if (menuItemId == R.id.nav_operation_master){
             Intent i = new Intent(this, OperationMasterActivity.class);
             startActivity(i);
 
-        } else if (id == R.id.nav_settings){
+        } else if (menuItemId == R.id.nav_settings){
             Intent i = new Intent(this, PreferencesActivity.class);
             startActivity(i);
 
-        } else if (id == R.id.nav_backup){
+        } else if (menuItemId == R.id.nav_backup){
              setContentFragment(new BackupFragment());
         }
 
@@ -145,11 +165,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setContentFragment(Fragment newFrag) {
-        this.frag = newFrag;
-        if(frag!=null) {
+        if(newFrag!=null) {
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction tr = fm.beginTransaction();
-            tr.replace(R.id.container, frag);
+            tr.replace(R.id.container, newFrag, FRAGMENT_TAG);
             tr.commit();
         }
 

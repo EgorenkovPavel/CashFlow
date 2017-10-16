@@ -186,7 +186,6 @@ public class OperationMasterActivity extends AppCompatActivity{
             case R.id.btnTransfer:
 
                 ArrayList<Account> accountList = CashFlowDbManager.getInstance(this).getAccounts();
-                //noinspection SuspiciousMethodCalls
                 accountList.remove(spinAccount.getSelectedItem());
 
                 AccountAdapter accountArrayAdapter = new AccountAdapter(this, accountList);
@@ -261,36 +260,16 @@ public class OperationMasterActivity extends AppCompatActivity{
             public void onClick(View view) {
                 int digit = 0;
                 switch (view.getId()){
-                    case R.id.digit_0:
-                        digit = 0;
-                        break;
-                    case R.id.digit_1:
-                        digit = 1;
-                        break;
-                    case R.id.digit_2:
-                        digit = 2;
-                        break;
-                    case R.id.digit_3:
-                        digit = 3;
-                        break;
-                    case R.id.digit_4:
-                        digit = 4;
-                        break;
-                    case R.id.digit_5:
-                        digit = 5;
-                        break;
-                    case R.id.digit_6:
-                        digit = 6;
-                        break;
-                    case R.id.digit_7:
-                        digit = 7;
-                        break;
-                    case R.id.digit_8:
-                        digit = 8;
-                        break;
-                    case R.id.digit_9:
-                        digit = 9;
-                        break;
+                    case R.id.digit_0: digit = 0; break;
+                    case R.id.digit_1: digit = 1; break;
+                    case R.id.digit_2: digit = 2; break;
+                    case R.id.digit_3: digit = 3; break;
+                    case R.id.digit_4: digit = 4; break;
+                    case R.id.digit_5: digit = 5; break;
+                    case R.id.digit_6: digit = 6; break;
+                    case R.id.digit_7: digit = 7; break;
+                    case R.id.digit_8: digit = 8; break;
+                    case R.id.digit_9: digit = 9; break;
                 }
 
                 sum = sum* 10 + digit;
@@ -381,6 +360,10 @@ public class OperationMasterActivity extends AppCompatActivity{
     }
 
     private void setChartData(){
+
+        if((spinAccount.getCount() == 0)||(spinAnalytic.getCount() == 0)){
+            return;
+        }
 
         GregorianCalendar c = new GregorianCalendar();
         Date end = new Date(c.getTimeInMillis());
