@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -24,20 +23,10 @@ import com.epipasha.cashflow.objects.Account;
 import com.epipasha.cashflow.objects.Category;
 import com.epipasha.cashflow.objects.Operation;
 import com.epipasha.cashflow.objects.OperationType;
-import com.github.mikephil.charting.animation.Easing;
-import com.github.mikephil.charting.charts.HorizontalBarChart;
-import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.Locale;
 
 public class OperationMasterActivity extends AppCompatActivity{
@@ -47,7 +36,6 @@ public class OperationMasterActivity extends AppCompatActivity{
     private RadioGroup groupType;
     private Spinner spinAccount, spinAnalytic;
     private TextView lblSum;
-    private HorizontalBarChart chart;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,37 +49,52 @@ public class OperationMasterActivity extends AppCompatActivity{
 
         initAccountSpinner();
         initAnalyticSpinner();
-
-        setChartData();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        restoreFromPrefs();
+    }
 
+    private void restoreFromPrefs(){
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
 
-        int accountPos = sharedPref.getInt(getString(R.string.pref_operation_master_account_pos), 0);
         String operationTypePos = sharedPref.getString(getString(R.string.pref_operation_master_operation_type_pos), "");
-        int analyticPos = sharedPref.getInt(getString(R.string.pref_operation_master_analytic_pos), 0);
-
         OperationType type = OperationType.toEnum(operationTypePos);
+        setCheckedOperationType(type);
+
+        int accountPos = sharedPref.getInt(getString(R.string.pref_operation_master_account_pos), 0);
+        int analyticPos = sharedPref.getInt(getAnalyticPref(type), 0);
 
         spinAccount.setSelection(accountPos);
         spinAnalytic.setSelection(analyticPos);
-        setCheckedOperationType(type);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-
+    private void saveToPrefs(){
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+
+        OperationType type =  getCheckedOperationType();
+
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putInt(getString(R.string.pref_operation_master_account_pos), spinAccount.getSelectedItemPosition());
-        editor.putString(getString(R.string.pref_operation_master_operation_type_pos), getCheckedOperationType().toString());
-        editor.putInt(getString(R.string.pref_operation_master_analytic_pos), spinAnalytic.getSelectedItemPosition());
+        editor.putString(getString(R.string.pref_operation_master_operation_type_pos), type.toString());
+        editor.putInt(getAnalyticPref(type), spinAnalytic.getSelectedItemPosition());
         editor.apply();
+
+    }
+
+    private String getAnalyticPref(OperationType type){
+
+        switch (type){
+            case IN:
+                return getString(R.string.pref_operation_master_analytic_in);
+            case OUT:
+                return getString(R.string.pref_operation_master_analytic_out);
+            case TRANSFER:
+                return getString(R.string.pref_operation_master_analytic_transfer);
+        }
+        return "";
     }
 
     private OperationType getCheckedOperationType(){
@@ -162,7 +165,7 @@ public class OperationMasterActivity extends AppCompatActivity{
             case R.id.btnIn :
                 ArrayList<Category> categories = CashFlowDbManager.getInstance(this).getCategories(OperationType.IN);
 
-                ArrayAdapter<Category> categoryArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
+                ArrayAdapter<Category> categoryArrayAdapter = new CategoryAdapter(this, categories);
                 categoryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinAnalytic.setAdapter(categoryArrayAdapter);
 
@@ -174,7 +177,7 @@ public class OperationMasterActivity extends AppCompatActivity{
 
                 ArrayList<Category> categoriesOut = CashFlowDbManager.getInstance(this).getCategories(OperationType.OUT);
 
-                ArrayAdapter<Category> categoryArrayAdapterOut = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categoriesOut);
+                ArrayAdapter<Category> categoryArrayAdapterOut = new CategoryAdapter(this, categoriesOut);
                 categoryArrayAdapterOut.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinAnalytic.setAdapter(categoryArrayAdapterOut);
 
@@ -202,41 +205,16 @@ public class OperationMasterActivity extends AppCompatActivity{
 
     private void findViews() {
 
-        chart = (HorizontalBarChart)findViewById(R.id.chart);
-
         groupType = (RadioGroup)findViewById(R.id.type_group);
         groupType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 initAnalyticSpinner();
-                setChartData();
             }
         });
 
         spinAccount = (Spinner)findViewById(R.id.spinner_account);
-        spinAccount.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                setChartData();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
         spinAnalytic = (Spinner)findViewById(R.id.spinner_analytic);
-        spinAnalytic.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                setChartData();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
 
         lblSum = (TextView) findViewById(R.id.operation_master_sum);
         lblSum.setText(String.format(Locale.getDefault(),"%,d",sum));
@@ -347,100 +325,16 @@ public class OperationMasterActivity extends AppCompatActivity{
                 Toast t = Toast.makeText(getApplicationContext(), "Operation created!!!", Toast.LENGTH_SHORT);
                 t.show();
 
+                saveToPrefs();
+
                 initAccountSpinner();
                 initAnalyticSpinner();
 
-                setChartData();
-
                 sum = 0;
                 lblSum.setText(String.format(Locale.getDefault(),"%,d",sum));
+
             }
         });
-
-    }
-
-    private void setChartData(){
-
-        if((spinAccount.getCount() == 0)||(spinAnalytic.getCount() == 0)){
-            return;
-        }
-
-        GregorianCalendar c = new GregorianCalendar();
-        Date end = new Date(c.getTimeInMillis());
-
-        c.set(GregorianCalendar.DAY_OF_MONTH, c.getActualMinimum(GregorianCalendar.DAY_OF_MONTH));
-        c.set(GregorianCalendar.HOUR_OF_DAY, 0);
-        c.set(GregorianCalendar.MINUTE, 0);
-        c.set(GregorianCalendar.SECOND, 0);
-        c.set(GregorianCalendar.MILLISECOND, 0);
-        Date start = new Date(c.getTimeInMillis());
-
-        Category cat;
-        int sum = 0, budget = 0;
-        switch (groupType.getCheckedRadioButtonId()) {
-            case R.id.btnIn:
-                cat = (Category) spinAnalytic.getSelectedItem();
-                sum = CashFlowDbManager.getInstance(this).getCategorySum(cat, start, end);
-                budget = CashFlowDbManager.getInstance(this).getCategoryBudget(cat);
-                break;
-            case R.id.btnOut:
-                cat = (Category) spinAnalytic.getSelectedItem();
-                sum = CashFlowDbManager.getInstance(this).getCategorySum(cat, start, end);
-                budget = CashFlowDbManager.getInstance(this).getCategoryBudget(cat);
-                break;
-            case R.id.btnTransfer:
-                Account accountFrom = (Account) spinAccount.getSelectedItem();
-                Account accountTo = (Account) spinAnalytic.getSelectedItem();
-                sum = accountFrom.getBalance();
-                budget = accountTo.getBalance();
-                break;
-        }
-
-        List<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(0f, budget));
-        BarDataSet set = new BarDataSet(entries, getString(R.string.budget));
-        set.setColor(ContextCompat.getColor(this, R.color.budget));
-        set.setValueTextSize(10);
-
-        List<BarEntry> entries1 = new ArrayList<>();
-        entries1.add(new BarEntry(1f, sum));
-        BarDataSet set1 = new BarDataSet(entries1, getString(R.string.fact));
-        set1.setColor(ContextCompat.getColor(this, R.color.fact));
-        set1.setValueTextSize(10);
-
-        BarData data = new BarData();
-        data.addDataSet(set);
-        data.addDataSet(set1);
-
-        final String[] labels = {getString(R.string.budget), getString(R.string.fact)};
-
-        XAxis xAxis = chart.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setDrawGridLines(false);
-        xAxis.setGranularity(1f);
-        xAxis.setGranularityEnabled(true);
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(labels));
-        xAxis.setTextSize(10);
-
-        YAxis left = chart.getAxisLeft();
-        left.setAxisMinimum(0f);
-        left.setEnabled(false);
-
-        YAxis right = chart.getAxisRight();
-        right.setAxisMinimum(0f);
-        right.setEnabled(false);
-
-        chart.getLegend().setEnabled(false);
-
-        Description desc = new Description();
-        desc.setText("");
-        chart.setDescription(desc);
-
-        data.setBarWidth(0.9f); // set custom bar width
-        chart.setData(data);
-        chart.setFitBars(true); // make the x-axis fit exactly all bars
-        chart.animateY(1000, Easing.EasingOption.EaseInOutCubic);
-        chart.invalidate(); // refresh
 
     }
 
@@ -448,7 +342,7 @@ public class OperationMasterActivity extends AppCompatActivity{
 
         private final ArrayList<Account> accounts;
 
-        public AccountAdapter(Context context, ArrayList<Account> accounts) {
+        AccountAdapter(Context context, ArrayList<Account> accounts) {
             super(context, R.layout.account_spinner_adapter, accounts);
             this.accounts = accounts;
         }
@@ -485,4 +379,45 @@ public class OperationMasterActivity extends AppCompatActivity{
         }
     }
 
+    private class CategoryAdapter extends ArrayAdapter<Category> {
+
+        private final ArrayList<Category> categories;
+
+        CategoryAdapter(Context context, ArrayList<Category> categories) {
+            super(context, R.layout.category_spinner_adapter, categories);
+            this.categories = categories;
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+             Category category = categories.get(position);
+
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext())
+                        .inflate(R.layout.category_spinner_adapter, parent, false);
+            }
+
+            GregorianCalendar c = new GregorianCalendar();
+            Date end = new Date(c.getTimeInMillis());
+
+            c.set(GregorianCalendar.DAY_OF_MONTH, c.getActualMinimum(GregorianCalendar.DAY_OF_MONTH));
+            c.set(GregorianCalendar.HOUR_OF_DAY, 0);
+            c.set(GregorianCalendar.MINUTE, 0);
+            c.set(GregorianCalendar.SECOND, 0);
+            c.set(GregorianCalendar.MILLISECOND, 0);
+            Date start = new Date(c.getTimeInMillis());
+
+            int fact = CashFlowDbManager.getInstance(getContext()).getCategorySum(category, start, end);
+
+            ((TextView) convertView.findViewById(R.id.name)).setText(category.getName());
+            ((TextView) convertView.findViewById(R.id.budget))
+                    .setText(String.format(Locale.getDefault(),"%,d",category.getBudget()));
+            ((TextView) convertView.findViewById(R.id.fact))
+                    .setText(String.format(Locale.getDefault(),"%,d",fact));
+
+            return convertView;
+        }
+
+    }
 }

@@ -21,184 +21,197 @@
         app:popupTheme="@style/AppTheme.PopupOverlay" />
     </android.support.design.widget.AppBarLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_below="@+id/appbar"
-        android:layout_above="@+id/buttonBar">
-    <RadioGroup
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:orientation="horizontal"
-        android:layout_below="@+id/appbar"
-        android:layout_alignParentStart="true"
-        android:id="@+id/type_group"
-        android:checkedButton="@+id/btnIn"
-        tools:ignore="NotSibling">
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical"
+        android:visibility="visible"
+        android:layout_above="@+id/keyboard">
 
-        <RadioButton
-            android:text="@string/in"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/btnIn"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:button="@android:color/transparent"
-            android:background="@drawable/master_radiobutton"
-            android:layout_margin="8dp" />
-
-        <RadioButton
-            android:text="@string/out"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/btnOut"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:button="@android:color/transparent"
-            android:background="@drawable/master_radiobutton"
-            android:layout_margin="8dp" />
-
-        <RadioButton
-            android:text="@string/transfer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/btnTransfer"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:button="@android:color/transparent"
-            android:background="@drawable/master_radiobutton"
-            android:layout_margin="8dp" />
-    </RadioGroup>
-
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/spinner_account"
-        android:layout_below="@+id/type_group"
-        android:layout_alignParentStart="true"
-        android:spinnerMode="dialog"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"/>
-
-        <Spinner
+        <RadioGroup
+            android:id="@+id/type_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/spinner_analytic"
-            android:layout_below="@+id/spinner_account"
             android:layout_alignParentStart="true"
-            android:spinnerMode="dialog"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"/>
+            android:layout_below="@+id/appbar"
+            android:checkedButton="@+id/btnIn"
+            android:orientation="horizontal"
+            tools:ignore="NotSibling">
 
-        <com.github.mikephil.charting.charts.HorizontalBarChart
-            android:id="@+id/chart"
+            <RadioButton
+                android:id="@+id/btnIn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/master_radiobutton"
+                android:button="@android:color/transparent"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@string/in" />
+
+            <RadioButton
+                android:id="@+id/btnOut"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/master_radiobutton"
+                android:button="@android:color/transparent"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@string/out" />
+
+            <RadioButton
+                android:id="@+id/btnTransfer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/master_radiobutton"
+                android:button="@android:color/transparent"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@string/transfer" />
+        </RadioGroup>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/operation_master_sum"
-            android:layout_below="@+id/spinner_analytic" />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:padding="8dp">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:id="@+id/operation_master_sum"
-        android:gravity="center"
-        android:textSize="30sp"
-        android:layout_above="@+id/keyboard"
-        android:layout_alignParentStart="true" />
+            <Spinner
+                android:id="@+id/spinner_account"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/type_group"
+                android:layout_weight="3"
+                android:background="@drawable/a" />
 
-        <GridLayout
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/arrow_forward" />
+
+            <Spinner
+                android:id="@+id/spinner_analytic"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/spinner_account"
+                android:layout_weight="3"
+                android:background="@drawable/a" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/operation_master_sum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/keyboard"
+            android:layout_alignParentStart="true"
+            android:ems="10"
+            android:gravity="center"
+            android:textSize="30sp" />
+
+    </LinearLayout>
+
+    <GridLayout
+        android:id="@+id/keyboard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/buttonBar"
+        android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-            android:id="@+id/keyboard"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="16dp">
+        android:layout_margin="16dp">
 
         <Button
-            android:text="@string/digit_1"
             android:id="@+id/digit_1"
-            android:layout_row="0"
+            style="@style/Widget.AppCompat.Button.Borderless.Digit"
             android:layout_column="0"
-            style="@style/Widget.AppCompat.Button.Borderless.Digit" />
+            android:layout_row="0"
+            android:text="@string/digit_1" />
 
         <Button
-            android:text="@string/digit_2"
             android:id="@+id/digit_2"
+            style="@style/Widget.AppCompat.Button.Borderless.Digit"
             android:layout_column="1"
             android:layout_row="0"
-            style="@style/Widget.AppCompat.Button.Borderless.Digit" />
+            android:text="@string/digit_2" />
 
         <Button
-            android:text="@string/digit_3"
             android:id="@+id/digit_3"
+            style="@style/Widget.AppCompat.Button.Borderless.Digit"
             android:layout_column="2"
             android:layout_row="0"
-            style="@style/Widget.AppCompat.Button.Borderless.Digit"/>
+            android:text="@string/digit_3" />
 
         <Button
-            android:text="@string/digit_4"
             android:id="@+id/digit_4"
-            android:layout_row="1"
+            style="@style/Widget.AppCompat.Button.Borderless.Digit"
             android:layout_column="0"
-            style="@style/Widget.AppCompat.Button.Borderless.Digit"/>
+            android:layout_row="1"
+            android:text="@string/digit_4" />
 
         <Button
-            android:text="@string/digit_5"
             android:id="@+id/digit_5"
+            style="@style/Widget.AppCompat.Button.Borderless.Digit"
             android:layout_column="1"
             android:layout_row="1"
-            style="@style/Widget.AppCompat.Button.Borderless.Digit"/>
+            android:text="@string/digit_5" />
 
         <Button
-            android:text="@string/digit_6"
             android:id="@+id/digit_6"
+            style="@style/Widget.AppCompat.Button.Borderless.Digit"
+            android:layout_column="2"
             android:layout_row="1"
-            android:layout_column="2"
-            style="@style/Widget.AppCompat.Button.Borderless.Digit"/>
+            android:text="@string/digit_6" />
 
         <Button
-            android:text="@string/digit_9"
             android:id="@+id/digit_9"
-            android:layout_row="2"
+            style="@style/Widget.AppCompat.Button.Borderless.Digit"
             android:layout_column="2"
-            style="@style/Widget.AppCompat.Button.Borderless.Digit"/>
+            android:layout_row="2"
+            android:text="@string/digit_9" />
 
         <Button
-            android:text="@string/digit_0"
             android:id="@+id/digit_0"
+            style="@style/Widget.AppCompat.Button.Borderless.Digit"
             android:layout_column="1"
             android:layout_row="3"
-            style="@style/Widget.AppCompat.Button.Borderless.Digit"/>
+            android:text="@string/digit_0" />
 
         <ImageButton
             android:id="@+id/digit_back"
+            style="@style/Widget.AppCompat.Button.Borderless.Digit"
             android:layout_column="2"
             android:layout_row="3"
-            style="@style/Widget.AppCompat.Button.Borderless.Digit"
             android:src="@drawable/ic_backspace"
             tools:ignore="ContentDescription" />
 
         <Button
-            android:text="@string/digit_7"
             android:id="@+id/digit_7"
-            android:layout_row="2"
+            style="@style/Widget.AppCompat.Button.Borderless.Digit"
             android:layout_column="0"
-            style="@style/Widget.AppCompat.Button.Borderless.Digit"/>
+            android:layout_row="2"
+            android:text="@string/digit_7" />
 
         <Button
-            android:text="@string/digit_8"
             android:id="@+id/digit_8"
+            style="@style/Widget.AppCompat.Button.Borderless.Digit"
             android:layout_column="1"
             android:layout_row="2"
-            style="@style/Widget.AppCompat.Button.Borderless.Digit"/>
+            android:text="@string/digit_8" />
     </GridLayout>
 
-    </RelativeLayout>
     <LinearLayout
         android:id="@+id/buttonBar"
         android:orientation="horizontal"
