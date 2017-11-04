@@ -57,7 +57,7 @@
     <string name="pref_operation_master_account_pos" translatable="false">pref_operation_master_account_pos</string>
     <string name="pref_operation_master_analytic_in" translatable="false">pref_operation_master_analytic_pos</string>
     <string name="pref_operation_master_operation_type_pos" translatable="false">pref_operation_master_operation_type_pos</string>
-    <string name="pref_operation_master_analytic_out">pref_operation_master_analytic_out</string>
-    <string name="pref_operation_master_analytic_transfer">pref_operation_master_analytic_transfer</string>
+    <string name="pref_operation_master_analytic_out" translatable="false">pref_operation_master_analytic_out</string>
+    <string name="pref_operation_master_analytic_transfer" translatable="false">pref_operation_master_analytic_transfer</string>
 
 </resources>

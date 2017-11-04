@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.epipasha.cashflow.db.CashFlowContract.AccountBalanceEntry;
 import com.epipasha.cashflow.db.CashFlowContract.AccountEntry;
@@ -16,12 +17,25 @@ import com.epipasha.cashflow.objects.Category;
 import com.epipasha.cashflow.objects.Operation;
 import com.epipasha.cashflow.objects.OperationType;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 
 public class CashFlowDbManager {
+
+    private static final String[] BACKUP_TABLES = new String[]{
+            AccountEntry.TABLE_NAME,
+            CategoryEntry.TABLE_NAME,
+            OperationEntry.TABLE_NAME,
+            AccountBalanceEntry.TABLE_NAME,
+            CategoryCostEntry.TABLE_NAME
+    };
 
     private static CashFlowDbManager manager;
 
@@ -522,5 +536,93 @@ public class CashFlowDbManager {
         String where = String.format("%s=%d",CategoryCostEntry.COLUMN_OPERATION_ID, operation.getID());
 
         db.delete(CategoryCostEntry.TABLE_NAME, where, null);
+    }
+
+
+    public String exportDb() throws JSONException {
+
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        JSONObject backup = new JSONObject();
+        for (String table : BACKUP_TABLES) {
+            backup.put(table, exportDbTable(db, table));
+        }
+
+        return backup.toString();
+    }
+
+    private JSONArray exportDbTable(SQLiteDatabase db, String table){
+
+        String searchQuery = "SELECT  * FROM " + table;
+        Cursor cursor = db.rawQuery(searchQuery, null);
+
+        JSONArray resultSet = new JSONArray();
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+
+            int totalColumn = cursor.getColumnCount();
+            JSONObject rowObject = new JSONObject();
+
+            for (int i = 0; i < totalColumn; i++) {
+                if (cursor.getColumnName(i) != null) {
+                    try {
+                        if (cursor.getString(i) != null) {
+                            Log.d("TAG_NAME", cursor.getString(i));
+                            rowObject.put(cursor.getColumnName(i), cursor.getString(i));
+                        } else {
+                            rowObject.put(cursor.getColumnName(i), "");
+                        }
+                    } catch (Exception e) {
+                        Log.d("TAG_NAME", e.getMessage());
+                    }
+                }
+            }
+            resultSet.put(rowObject);
+            cursor.moveToNext();
+        }
+        cursor.close();
+
+        return resultSet;
+    }
+
+    public void importDb(String data) throws JSONException {
+
+        JSONObject obj = null;
+        obj = new JSONObject(data);
+
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        for (String table : BACKUP_TABLES) {
+            try {
+                db.beginTransaction();
+
+                db.delete(table,null, null);
+
+                JSONArray rows = obj.getJSONArray(table);
+                for (int i = 0; i < rows.length(); i++) {
+                    JSONObject row = rows.getJSONObject(i);
+
+                    ContentValues values = new ContentValues();
+
+                    Iterator<String> iterator = row.keys();
+                    while (iterator.hasNext()) {
+                        String key = iterator.next();
+                        try {
+                            values.put(key, Integer.parseInt((String) row.get(key)));
+                        } catch (Exception e) {
+                            values.put(key, (String) row.get(key));
+                        }
+                    }
+
+                    db.insert(table, null, values);
+                }
+
+                db.setTransactionSuccessful();
+            } catch (Exception e) {
+                db.endTransaction();
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -1,15 +1,22 @@
 package com.epipasha.cashflow;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.content.ContentValues;
+import android.content.Intent;
+import android.content.IntentSender;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.epipasha.cashflow.db.CashFlowContract.AccountBalanceEntry;
 import com.epipasha.cashflow.db.CashFlowContract.AccountEntry;
@@ -17,24 +24,45 @@ import com.epipasha.cashflow.db.CashFlowContract.CategoryCostEntry;
 import com.epipasha.cashflow.db.CashFlowContract.CategoryEntry;
 import com.epipasha.cashflow.db.CashFlowContract.OperationEntry;
 import com.epipasha.cashflow.db.CashFlowDbHelper;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.util.Iterator;
+import com.epipasha.cashflow.db.CashFlowDbManager;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.drive.Drive;
+import com.google.android.gms.drive.DriveApi;
+import com.google.android.gms.drive.DriveApi.DriveContentsResult;
+import com.google.android.gms.drive.DriveContents;
+import com.google.android.gms.drive.DriveFile;
+import com.google.android.gms.drive.DriveId;
+import com.google.android.gms.drive.MetadataChangeSet;
+import com.google.android.gms.drive.OpenFileActivityBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class BackupFragment extends Fragment {
-    private static final String[] TABLES = new String[]{
-            AccountEntry.TABLE_NAME,
-            CategoryEntry.TABLE_NAME,
-            OperationEntry.TABLE_NAME,
-            AccountBalanceEntry.TABLE_NAME,
-            CategoryCostEntry.TABLE_NAME
-    };
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.util.Iterator;
+
+public class BackupFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks,
+        OnConnectionFailedListener{
+
+    private static final String TAG = "drive-quickstart";
+    private static final int REQUEST_CODE_CAPTURE_IMAGE = 1;
+    private static final int REQUEST_CODE_CREATOR = 2;
+    private static final int REQUEST_CODE_RESOLUTION = 3;
+    private static final int REQUEST_CODE_OPENER = 4;
+
+    private GoogleApiClient mGoogleApiClient;
 
     public BackupFragment() {
     }
@@ -49,19 +77,12 @@ public class BackupFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 try {
-                    JSONObject db = new JSONObject();
-                    for (String table : TABLES) {
-                        try {
-                            db.put(table, exportDb(table));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    String data = CashFlowDbManager.getInstance(getActivity()).exportDb();
 
                     File root = android.os.Environment.getExternalStorageDirectory();
                     File file = new File(root.getAbsolutePath(), "myData.txt");
                     FileOutputStream outputStream = new FileOutputStream(file);
-                    outputStream.write(db.toString().getBytes());
+                    outputStream.write(data.getBytes());
                     outputStream.close();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -83,85 +104,230 @@ public class BackupFragment extends Fragment {
 
                     is.close();
 
-                    JSONObject obj = new JSONObject(new String(buffer, "UTF-8"));
-                    importDb(obj);
+                    CashFlowDbManager.getInstance(getActivity()).importDb(new String(buffer, "UTF-8"));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
 
+        Button driveShare = (Button)v.findViewById(R.id.drive_share);
+        driveShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveFileToDrive();
+            }
+        });
+
+        Button driveRestore = (Button)v.findViewById(R.id.drive_restore);
+        driveRestore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                downloadFileFromDrive();
+            }
+        });
+
         return v;
     }
 
-    private JSONArray exportDb(String myTable) {
-
-        CashFlowDbHelper helper = new CashFlowDbHelper(getActivity());
-        SQLiteDatabase db = helper.getReadableDatabase();
-
-        String searchQuery = "SELECT  * FROM " + myTable;
-        Cursor cursor = db.rawQuery(searchQuery, null);
-
-        JSONArray resultSet = new JSONArray();
-
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-
-            int totalColumn = cursor.getColumnCount();
-            JSONObject rowObject = new JSONObject();
-
-            for (int i = 0; i < totalColumn; i++) {
-                if (cursor.getColumnName(i) != null) {
-                    try {
-                        if (cursor.getString(i) != null) {
-                            Log.d("TAG_NAME", cursor.getString(i));
-                            rowObject.put(cursor.getColumnName(i), cursor.getString(i));
-                        } else {
-                            rowObject.put(cursor.getColumnName(i), "");
-                        }
-                    } catch (Exception e) {
-                        Log.d("TAG_NAME", e.getMessage());
-                    }
-                }
-            }
-            resultSet.put(rowObject);
-            cursor.moveToNext();
+    private void connect(){
+        if (mGoogleApiClient == null) {
+            // Create the API client and bind it to an instance variable.
+            // We use this instance as the callback for connection and connection
+            // failures.
+            // Since no account name is passed, the user is prompted to choose.
+            mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                    .addApi(Drive.API)
+                    .addScope(Drive.SCOPE_FILE)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build();
         }
-        cursor.close();
-        Log.d("TAG_NAME", resultSet.toString());
-        return resultSet;
-
+        // Connect the client. Once connected, the camera is launched.
+        mGoogleApiClient.connect();
     }
 
-    private void importDb(JSONObject obj) {
+    @Override
+    public void onResume() {
+        super.onResume();
+        connect();
+    }
 
-        CashFlowDbHelper helper = new CashFlowDbHelper(getActivity());
-        SQLiteDatabase db = helper.getWritableDatabase();
+    @Override
+    public void onPause() {
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.disconnect();
+        }
+        super.onPause();
+    }
 
-        for (String table : TABLES) {
-            try {
-                JSONArray rows = obj.getJSONArray(table);
-                for (int i = 0; i < rows.length(); i++) {
-                    JSONObject row = rows.getJSONObject(i);
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        // Called whenever the API client fails to connect.
+        Log.i(TAG, "GoogleApiClient connection failed: " + result.toString());
+        if (!result.hasResolution()) {
+            // show the localized error dialog.
+            GoogleApiAvailability.getInstance().getErrorDialog(getActivity(), result.getErrorCode(), 0).show();
+            return;
+        }
+        // The failure has a resolution. Resolve it.
+        // Called typically when the app is not yet authorized, and an
+        // authorization
+        // dialog is displayed to the user.
+        try {
+            result.startResolutionForResult(getActivity(), REQUEST_CODE_RESOLUTION);
+        } catch (IntentSender.SendIntentException e) {
+            Log.e(TAG, "Exception while starting resolution activity", e);
+        }
+    }
 
-                    ContentValues values = new ContentValues();
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        Log.i(TAG, "API client connected.");
 
-                    Iterator<String> iterator = row.keys();
-                    while (iterator.hasNext()) {
-                        String key = iterator.next();
+        Toast.makeText(getActivity(), "Connected to Google drive", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        Log.i(TAG, "GoogleApiClient connection suspended");
+    }
+
+    private void saveFileToDrive() {
+        // Start by creating a new contents, and setting a callback.
+        Log.i(TAG, "Creating new contents.");
+        Drive.DriveApi.newDriveContents(mGoogleApiClient)
+                .setResultCallback(new ResultCallback<DriveContentsResult>() {
+
+                    @Override
+                    public void onResult(DriveContentsResult result) {
+                        // If the operation was not successful, we cannot do anything
+                        // and must
+                        // fail.
+                        if (!result.getStatus().isSuccess()) {
+                            Log.i(TAG, "Failed to create new contents.");
+                            return;
+                        }
+                        // Otherwise, we can write our data to the new contents.
+                        Log.i(TAG, "New contents created.");
+                        // Get an output stream for the contents.
+                        OutputStream outputStream = result.getDriveContents().getOutputStream();
+                        // Write the bitmap data from it.
+                        String str = null;
                         try {
-                            values.put(key, Integer.parseInt((String) row.get(key)));
-                        } catch (Exception e) {
-                            values.put(key, (String) row.get(key));
+                            str = CashFlowDbManager.getInstance(getActivity()).exportDb();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            return;
+                        }
+
+                        try {
+                            outputStream.write(str.getBytes());
+                        } catch (IOException e1) {
+                            Log.i(TAG, "Unable to write file contents.");
+                        }
+                        // Create the initial metadata - MIME type and title.
+                        // Note that the user will be able to change the title later.
+                        MetadataChangeSet metadataChangeSet = new MetadataChangeSet.Builder()
+                                .setMimeType("application/json").setTitle("Cashflow backup.txt").build();
+                        // Create an intent for the file chooser, and start it.
+                        IntentSender intentSender = Drive.DriveApi
+                                .newCreateFileActivityBuilder()
+                                .setInitialMetadata(metadataChangeSet)
+                                .setInitialDriveContents(result.getDriveContents())
+                                .build(mGoogleApiClient);
+                        try {
+                            startIntentSenderForResult(
+                                    intentSender, REQUEST_CODE_CREATOR, null, 0, 0, 0, null);
+                        } catch (IntentSender.SendIntentException e) {
+                            Log.i(TAG, "Failed to launch file chooser.");
                         }
                     }
-
-                    db.insert(table, null, values);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+                });
     }
 
+    private void downloadFileFromDrive(){
+
+        Drive.DriveApi.newDriveContents(mGoogleApiClient)
+                .setResultCallback(new ResultCallback<DriveContentsResult>() {
+
+                    @Override
+                    public void onResult(DriveContentsResult result) {
+
+                        IntentSender intentSender = Drive.DriveApi
+                                .newOpenFileActivityBuilder()
+                                .setMimeType(new String[]{"application/json"})
+                                .build(mGoogleApiClient);
+                        try {
+                            startIntentSenderForResult(
+                                    intentSender, REQUEST_CODE_OPENER, null, 0, 0, 0, null);
+                        } catch (IntentSender.SendIntentException e) {
+                            Log.i(TAG, "Failed to launch file chooser.");
+                        }
+
+                    }
+                });
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+
+            case REQUEST_CODE_OPENER:
+
+                if (resultCode == RESULT_OK) {
+
+                    DriveId mFileId = (DriveId) data.getParcelableExtra(
+                            OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
+
+                    DriveFile file = mFileId.asDriveFile();
+                    file.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY, null)
+                            .setResultCallback(new ResultCallback<DriveContentsResult>() {
+                                @Override
+                                public void onResult(@NonNull DriveContentsResult result) {
+                                    if (!result.getStatus().isSuccess()) {
+                                        // display an error saying file can't be opened
+                                        return;
+                                    }
+                                    // DriveContents object contains pointers
+                                    // to the actual byte stream
+                                    DriveContents contents = result.getDriveContents();
+
+                                    BufferedReader reader = new BufferedReader(new InputStreamReader(contents.getInputStream()));
+                                    StringBuilder builder = new StringBuilder();
+                                    String line;
+                                    try {
+                                        while ((line = reader.readLine()) != null) {
+                                            builder.append(line);
+                                        }
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                    String contentsAsString = builder.toString();
+
+                                    try {
+                                        CashFlowDbManager.getInstance(getActivity()).importDb(contentsAsString);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                }
+
+                break;
+
+            case REQUEST_CODE_CREATOR: {
+
+                if (resultCode == RESULT_OK) {
+                    Toast.makeText(getActivity(), "Backup saved", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
+
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
+        }
+    }
 }

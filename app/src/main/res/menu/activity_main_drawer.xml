@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item android:id="@+id/nav_summary" android:icon="@android:drawable/ic_menu_camera"
+        <item android:id="@+id/nav_summary" android:icon="@drawable/ic_dashboard"
             android:title="@string/summary" />
         <item android:id="@+id/nav_accounts" android:icon="@android:drawable/ic_menu_camera"
             android:title="@string/Accounts" />
@@ -10,9 +10,9 @@
             android:title="@string/Categories" />
         <item android:id="@+id/nav_operations" android:icon="@android:drawable/ic_menu_gallery"
             android:title="@string/Operations" />
-        <item android:id="@+id/nav_analytics" android:icon="@android:drawable/ic_menu_gallery"
+        <item android:id="@+id/nav_analytics" android:icon="@drawable/ic_assessment"
             android:title="@string/analytics" />
-        <item android:id="@+id/nav_backup" android:icon="@android:drawable/ic_menu_gallery"
+        <item android:id="@+id/nav_backup" android:icon="@drawable/ic_backup"
             android:title="@string/backup" />
     </group>
 
