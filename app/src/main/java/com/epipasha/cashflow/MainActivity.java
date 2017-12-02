@@ -139,6 +139,7 @@ public class MainActivity extends AppCompatActivity
 
         } else if (menuItemId == R.id.nav_backup){
              setContentFragment(new BackupFragment());
+             setActionBarTitle(item.getTitle());
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

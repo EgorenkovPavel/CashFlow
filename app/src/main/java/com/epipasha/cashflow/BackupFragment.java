@@ -256,7 +256,7 @@ public class BackupFragment extends Fragment implements GoogleApiClient.Connecti
 
                         IntentSender intentSender = Drive.DriveApi
                                 .newOpenFileActivityBuilder()
-                                .setMimeType(new String[]{"application/json"})
+                                //.setMimeType(new String[]{"application/json"})
                                 .build(mGoogleApiClient);
                         try {
                             startIntentSenderForResult(

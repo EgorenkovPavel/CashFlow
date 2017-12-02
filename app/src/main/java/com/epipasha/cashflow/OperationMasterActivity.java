@@ -62,13 +62,16 @@ public class OperationMasterActivity extends AppCompatActivity{
 
         String operationTypePos = sharedPref.getString(getString(R.string.pref_operation_master_operation_type_pos), "");
         OperationType type = OperationType.toEnum(operationTypePos);
-        setCheckedOperationType(type);
 
-        int accountPos = sharedPref.getInt(getString(R.string.pref_operation_master_account_pos), 0);
-        int analyticPos = sharedPref.getInt(getAnalyticPref(type), 0);
+        if (type != null) {
+            setCheckedOperationType(type);
 
-        spinAccount.setSelection(accountPos);
-        spinAnalytic.setSelection(analyticPos);
+            int accountPos = sharedPref.getInt(getString(R.string.pref_operation_master_account_pos), 0);
+            int analyticPos = sharedPref.getInt(getAnalyticPref(type), 0);
+
+            spinAccount.setSelection(accountPos);
+            spinAnalytic.setSelection(analyticPos);
+        }
     }
 
     private void saveToPrefs(){

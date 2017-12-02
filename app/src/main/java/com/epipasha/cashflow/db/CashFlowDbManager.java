@@ -57,6 +57,10 @@ public class CashFlowDbManager {
         db = dbHelper.getWritableDatabase();
     }
 
+    private void openToRead(){
+        db = dbHelper.getReadableDatabase();
+    }
+
     private void close(){
         db.close();
     }
@@ -65,7 +69,7 @@ public class CashFlowDbManager {
 
     public ArrayList<Account> getAccounts(){
 
-        openToWrite();
+        openToRead();
         String sqlQuery =
                 "SELECT " +
                 AccountEntry.TABLE_NAME + "." + AccountEntry._ID + ", " +
@@ -148,7 +152,7 @@ public class CashFlowDbManager {
 
 
     public ArrayList<Category> getCategories(){
-        openToWrite();
+        openToRead();
         Cursor cursor = db.query(CategoryEntry.TABLE_NAME, null, null, null, null, null, CategoryEntry.COLUMN_TITLE);
         ArrayList<Category> list = new ArrayList<>();
         if(cursor != null && cursor.getCount() > 0){
@@ -170,7 +174,7 @@ public class CashFlowDbManager {
     }
 
     public ArrayList<Category> getCategories(OperationType type){
-        openToWrite();
+        openToRead();
         String where = String.format("%s=\"%s\"",CategoryEntry.COLUMN_TYPE, type.toString());
         Cursor cursor = db.query(CategoryEntry.TABLE_NAME, null, where, null, null, null, CategoryEntry.COLUMN_TITLE);
         ArrayList<Category> list = new ArrayList<>();
@@ -351,7 +355,7 @@ public class CashFlowDbManager {
             mapCategory.put(category.getID(), category);
         }
 
-        openToWrite();
+        openToRead();
         Cursor cursor = db.query(OperationEntry.TABLE_NAME, null, null, null, null, null, OperationEntry.COLUMN_DATE + " DESC");
         ArrayList<Operation> list = new ArrayList<>();
         if(cursor != null && cursor.getCount() > 0){
@@ -588,16 +592,16 @@ public class CashFlowDbManager {
 
     public void importDb(String data) throws JSONException {
 
-        JSONObject obj = null;
-        obj = new JSONObject(data);
+        JSONObject obj = new JSONObject(data);
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
 
-        for (String table : BACKUP_TABLES) {
-            try {
-                db.beginTransaction();
 
-                db.delete(table,null, null);
+            for (String table : BACKUP_TABLES) {
+
+                db.delete(table, null, null);
 
                 JSONArray rows = obj.getJSONArray(table);
                 for (int i = 0; i < rows.length(); i++) {
@@ -617,12 +621,16 @@ public class CashFlowDbManager {
 
                     db.insert(table, null, values);
                 }
-
-                db.setTransactionSuccessful();
-            } catch (Exception e) {
-                db.endTransaction();
-                e.printStackTrace();
             }
+
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
+            db.close();
         }
+
     }
 }

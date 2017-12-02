@@ -18,7 +18,7 @@ public class CashFlowContract {
 
         public static final String COLUMN_TITLE = "category_title";
         public static final String COLUMN_TYPE = "category_type";
-        public static final String COLUMN_BUDGET = "category_budjet";
+        public static final String COLUMN_BUDGET = "category_budget";
 
     }
 
