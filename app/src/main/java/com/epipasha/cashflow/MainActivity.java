@@ -3,7 +3,6 @@ package com.epipasha.cashflow;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -20,9 +19,11 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.epipasha.cashflow.fragments.AnalyticFragment;
-import com.epipasha.cashflow.fragments.ListFragment;
 import com.epipasha.cashflow.fragments.account.AccountFragment;
+import com.epipasha.cashflow.fragments.account.DetailAccountActivity;
 import com.epipasha.cashflow.fragments.category.CategoryFragment;
+import com.epipasha.cashflow.fragments.category.DetailCategoryActivity;
+import com.epipasha.cashflow.fragments.operation.DetailOperationActivity;
 import com.epipasha.cashflow.fragments.operation.OperationFragment;
 import com.epipasha.cashflow.fragments.summary.SummaryFragment;
 
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity
     private static final String FRAGMENT_TAG = "fragment_tag";
     private static final String SAVED_STATE_KEY_ITEM_ID = "item_id";
 
-    private int menuItemId;
+    private int menuItemId = R.id.nav_summary;
     private NavigationView navigationView;
 
     @Override
@@ -48,13 +49,28 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment frag = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
-                if (frag instanceof ListFragment) {
-                    ((ListFragment) frag).addInstance();
-                } else if (frag instanceof SummaryFragment) {
-                    Intent i = new Intent();
-                    i.setClass(view.getContext(), OperationMasterActivity.class);
-                    startActivityForResult(i, OPEN_OPERATION_MASTER);
+
+                switch (menuItemId){
+                    case R.id.nav_accounts: {
+                        Intent i = new Intent(MainActivity.this, DetailAccountActivity.class);
+                        startActivity(i);
+                        break;
+                    }
+                    case R.id.nav_categories:{
+                        Intent i = new Intent(MainActivity.this, DetailCategoryActivity.class);
+                        startActivity(i);
+                        break;
+                    }
+                    case R.id.nav_operations:{
+                        Intent i = new Intent(MainActivity.this, DetailOperationActivity.class);
+                        startActivity(i);
+                        break;
+                    }
+                    case R.id.nav_summary:{
+                        Intent i = new Intent(MainActivity.this, DetailOperationActivity.class);
+                        startActivity(i);
+                        break;
+                    }
                 }
             }
         });
@@ -70,8 +86,8 @@ public class MainActivity extends AppCompatActivity
 
         if (savedInstanceState == null) {
 
-            navigationView.setCheckedItem(R.id.nav_summary);
-            onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_summary));
+            navigationView.setCheckedItem(menuItemId);
+            onNavigationItemSelected(navigationView.getMenu().findItem(menuItemId));
 
             if (Prefs.isShowOperationMasterOnStart(this)) {
                 Intent i = new Intent(this, OperationMasterActivity.class);
@@ -87,10 +103,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
 
         outState.putInt(SAVED_STATE_KEY_ITEM_ID, menuItemId);
-
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -114,7 +129,6 @@ public class MainActivity extends AppCompatActivity
 
         } else if (menuItemId == R.id.nav_accounts) {
             setContentFragment(new AccountFragment());
-            //setContentFragment(new AccountListFragment());
             setActionBarTitle(item.getTitle());
 
         } else if (menuItemId == R.id.nav_categories) {
@@ -172,7 +186,5 @@ public class MainActivity extends AppCompatActivity
             tr.replace(R.id.container, newFrag, FRAGMENT_TAG);
             tr.commit();
         }
-
     }
-
 }

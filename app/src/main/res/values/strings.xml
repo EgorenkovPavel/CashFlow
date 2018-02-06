@@ -60,4 +60,7 @@
     <string name="pref_operation_master_analytic_out" translatable="false">pref_operation_master_analytic_out</string>
     <string name="pref_operation_master_analytic_transfer" translatable="false">pref_operation_master_analytic_transfer</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

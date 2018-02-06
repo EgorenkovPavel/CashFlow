@@ -2,13 +2,9 @@ package com.epipasha.cashflow;
 
 import static android.app.Activity.RESULT_OK;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -18,21 +14,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.epipasha.cashflow.db.CashFlowContract.AccountBalanceEntry;
-import com.epipasha.cashflow.db.CashFlowContract.AccountEntry;
-import com.epipasha.cashflow.db.CashFlowContract.CategoryCostEntry;
-import com.epipasha.cashflow.db.CashFlowContract.CategoryEntry;
-import com.epipasha.cashflow.db.CashFlowContract.OperationEntry;
-import com.epipasha.cashflow.db.CashFlowDbHelper;
-import com.epipasha.cashflow.db.CashFlowDbManager;
+import com.epipasha.cashflow.data.CashFlowDbManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.drive.Drive;
-import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.DriveApi.DriveContentsResult;
 import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFile;
@@ -40,9 +28,7 @@ import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.MetadataChangeSet;
 import com.google.android.gms.drive.OpenFileActivityBuilder;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -51,7 +37,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.util.Iterator;
 
 public class BackupFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks,
         OnConnectionFailedListener{

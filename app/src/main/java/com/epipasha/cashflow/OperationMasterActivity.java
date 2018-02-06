@@ -18,7 +18,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.epipasha.cashflow.db.CashFlowDbManager;
+import com.epipasha.cashflow.data.CashFlowDbManager;
 import com.epipasha.cashflow.objects.Account;
 import com.epipasha.cashflow.objects.Category;
 import com.epipasha.cashflow.objects.Operation;
@@ -60,7 +60,7 @@ public class OperationMasterActivity extends AppCompatActivity{
     private void restoreFromPrefs(){
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
 
-        String operationTypePos = sharedPref.getString(getString(R.string.pref_operation_master_operation_type_pos), "");
+        int operationTypePos = sharedPref.getInt(getString(R.string.pref_operation_master_operation_type_pos), 0);
         OperationType type = OperationType.toEnum(operationTypePos);
 
         if (type != null) {

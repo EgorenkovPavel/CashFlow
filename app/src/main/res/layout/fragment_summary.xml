@@ -10,17 +10,17 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <fragment
-            android:id="@+id/fragment"
-            android:name="com.epipasha.cashflow.fragments.summary.CardAccountFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+        <!--<fragment-->
+            <!--android:id="@+id/fragment"-->
+            <!--android:name="com.epipasha.cashflow.fragments.summary.CardAccountFragment"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content" />-->
 
-        <fragment
-            android:id="@+id/fragment2"
-            android:name="com.epipasha.cashflow.fragments.summary.CardSummaryFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+        <!--<fragment-->
+            <!--android:id="@+id/fragment2"-->
+            <!--android:name="com.epipasha.cashflow.fragments.summary.CardSummaryFragment"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content" />-->
 
     </LinearLayout>
 

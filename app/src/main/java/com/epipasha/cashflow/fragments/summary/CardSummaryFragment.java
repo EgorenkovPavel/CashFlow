@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.db.CashFlowDbManager;
+import com.epipasha.cashflow.data.CashFlowDbManager;
 import com.epipasha.cashflow.objects.OperationType;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.Description;

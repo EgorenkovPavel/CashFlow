@@ -1,4 +1,4 @@
-package com.epipasha.cashflow.db;
+package com.epipasha.cashflow.data;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
@@ -7,11 +7,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.epipasha.cashflow.db.CashFlowContract.AccountBalanceEntry;
-import com.epipasha.cashflow.db.CashFlowContract.AccountEntry;
-import com.epipasha.cashflow.db.CashFlowContract.CategoryCostEntry;
-import com.epipasha.cashflow.db.CashFlowContract.CategoryEntry;
-import com.epipasha.cashflow.db.CashFlowContract.OperationEntry;
+import com.epipasha.cashflow.data.CashFlowContract.AccountBalanceEntry;
+import com.epipasha.cashflow.data.CashFlowContract.AccountEntry;
+import com.epipasha.cashflow.data.CashFlowContract.CategoryCostEntry;
+import com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
+import com.epipasha.cashflow.data.CashFlowContract.OperationEntry;
 import com.epipasha.cashflow.objects.Account;
 import com.epipasha.cashflow.objects.Category;
 import com.epipasha.cashflow.objects.Operation;
@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
 public class CashFlowDbManager {
 
@@ -74,7 +75,7 @@ public class CashFlowDbManager {
                 "SELECT " +
                 AccountEntry.TABLE_NAME + "." + AccountEntry._ID + ", " +
                 AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_TITLE + ", " +
-                AccountBalanceEntry.TABLE_NAME + ".sum " +
+                AccountBalanceEntry.TABLE_NAME + "." + AccountEntry.SERVICE_COLUMN_SUM + " " +
                 "FROM " + AccountEntry.TABLE_NAME + " " +
                 "LEFT OUTER JOIN " +
                 "(SELECT " +
@@ -121,7 +122,7 @@ public class CashFlowDbManager {
     public void updateAccount(int id, ContentValues values){
         openToWrite();
 
-        String where = String.format("%s=%d", AccountEntry._ID, id);
+        String where = String.format(Locale.getDefault(),"%s=%d", AccountEntry._ID, id);
 
         db.update(AccountEntry.TABLE_NAME, values, where, null);
         close();
@@ -161,7 +162,7 @@ public class CashFlowDbManager {
                 Category category = new Category();
                 category.setID(cursor.getInt(0));
                 category.setName(cursor.getString(1));
-                category.setType(OperationType.toEnum(cursor.getString(2)));
+                category.setType(OperationType.toEnum(cursor.getInt(2)));
                 category.setBudget(cursor.getInt(3));
                 list.add(category);
             }
@@ -184,7 +185,7 @@ public class CashFlowDbManager {
                 Category category = new Category();
                 category.setID(cursor.getInt(0));
                 category.setName(cursor.getString(1));
-                category.setType(OperationType.toEnum(cursor.getString(2)));
+                category.setType(OperationType.toEnum(cursor.getInt(2)));
                 category.setBudget(cursor.getInt(3));
                 list.add(category);
             }
@@ -344,13 +345,13 @@ public class CashFlowDbManager {
     public ArrayList<Operation> getOperations(){
 
         ArrayList<Account> accounts = getAccounts();
-        HashMap<Integer, Account> mapAccount = new HashMap<>();
+        Map<Integer, Account> mapAccount = new HashMap<>();
         for (Account account:accounts) {
             mapAccount.put(account.getID(), account);
         }
 
         ArrayList<Category> categories = getCategories();
-        HashMap<Integer, Category> mapCategory = new HashMap<>();
+        Map<Integer, Category> mapCategory = new HashMap<>();
         for (Category category:categories) {
             mapCategory.put(category.getID(), category);
         }
@@ -364,7 +365,7 @@ public class CashFlowDbManager {
                 Operation operation = new Operation();
                 operation.setID(cursor.getInt(0));
                 operation.setDate(new Date(cursor.getLong(1)));
-                operation.setType(OperationType.toEnum(cursor.getString(2)));
+                operation.setType(OperationType.toEnum(cursor.getInt(2)));
                 operation.setAccount(mapAccount.get(cursor.getInt(3)));
                 operation.setCategory(mapCategory.get(cursor.getInt(4)));
                 operation.setRecipientAccount(mapAccount.get(cursor.getInt(5)));

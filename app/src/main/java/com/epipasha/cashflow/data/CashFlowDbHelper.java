@@ -1,14 +1,14 @@
-package com.epipasha.cashflow.db;
+package com.epipasha.cashflow.data;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.epipasha.cashflow.db.CashFlowContract.AccountBalanceEntry;
-import com.epipasha.cashflow.db.CashFlowContract.AccountEntry;
-import com.epipasha.cashflow.db.CashFlowContract.CategoryCostEntry;
-import com.epipasha.cashflow.db.CashFlowContract.CategoryEntry;
-import com.epipasha.cashflow.db.CashFlowContract.OperationEntry;
+import com.epipasha.cashflow.data.CashFlowContract.AccountBalanceEntry;
+import com.epipasha.cashflow.data.CashFlowContract.AccountEntry;
+import com.epipasha.cashflow.data.CashFlowContract.CategoryCostEntry;
+import com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
+import com.epipasha.cashflow.data.CashFlowContract.OperationEntry;
 
 public class CashFlowDbHelper extends SQLiteOpenHelper{
 

@@ -99,7 +99,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/arrow_forward" />
+                app:srcCompat="@drawable/arrow_forward"
+                android:contentDescription="TO" />
 
             <Spinner
                 android:id="@+id/spinner_analytic"
