@@ -41,7 +41,7 @@ public class CashFlowContract {
         public static final String COLUMN_TYPE = "category_type";
         public static final String COLUMN_BUDGET = "category_budget";
 
-        public static Uri buildAccountUriWithId(long id) {
+        public static Uri buildCategoryUriWithId(long id) {
             return CONTENT_URI.buildUpon()
                     .appendPath(Long.toString(id))
                     .build();
@@ -66,7 +66,7 @@ public class CashFlowContract {
         public static final String SERVICE_COLUMN_CATEGORY_TITLE = "operation_category_title";
         public static final String SERVICE_COLUMN_RECIPIENT_ACCOUNT_TITLE = "operation_recipient_account_title";
 
-        public static Uri buildAccountUriWithId(long id) {
+        public static Uri buildOperationUriWithId(long id) {
             return CONTENT_URI.buildUpon()
                     .appendPath(Long.toString(id))
                     .build();

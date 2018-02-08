@@ -1,7 +1,5 @@
 package com.epipasha.cashflow.data;
 
-import static com.epipasha.cashflow.data.CashFlowContract.AccountEntry.TABLE_NAME;
-
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
@@ -15,15 +13,10 @@ import android.support.annotation.Nullable;
 
 import com.epipasha.cashflow.data.CashFlowContract.AccountBalanceEntry;
 import com.epipasha.cashflow.data.CashFlowContract.AccountEntry;
+import com.epipasha.cashflow.data.CashFlowContract.CategoryCostEntry;
 import com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
 import com.epipasha.cashflow.data.CashFlowContract.OperationEntry;
-
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * Created by Pavel on 13.01.2018.
- */
+import com.epipasha.cashflow.objects.OperationType;
 
 public class CashFlowProvider extends ContentProvider {
 
@@ -227,6 +220,11 @@ public class CashFlowProvider extends ContentProvider {
                         AccountEntry.TABLE_NAME,
                         null,
                         contentValues);
+
+                if (id != -1) {
+                    resUri = AccountEntry.buildAccountUriWithId(id);
+                }
+
                 break;
             }
 
@@ -235,14 +233,35 @@ public class CashFlowProvider extends ContentProvider {
                         CategoryEntry.TABLE_NAME,
                         null,
                         contentValues);
+
+                if (id != -1) {
+                    resUri = CategoryEntry.buildCategoryUriWithId(id);
+                }
                 break;
             }
 
             case OPERATIONS: {
-                id = mCashFlowDbHelper.getWritableDatabase().insert(
-                        OperationEntry.TABLE_NAME,
-                        null,
-                        contentValues);
+                SQLiteDatabase db = mCashFlowDbHelper.getWritableDatabase();
+
+                db.beginTransaction();
+                try {
+                    id = db.insert(
+                            OperationEntry.TABLE_NAME,
+                            null,
+                            contentValues);
+
+                    insertOperationAnalytics(db, contentValues, id);
+
+
+
+                    if (id != -1) {
+                        resUri = OperationEntry.buildOperationUriWithId(id);
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+
                 break;
             }
 
@@ -252,7 +271,6 @@ public class CashFlowProvider extends ContentProvider {
 
         /* If we actually deleted any rows, notify that a change has occurred to this URI */
         if (id != -1) {
-            resUri = AccountEntry.buildAccountUriWithId(id);
             getContext().getContentResolver().notifyChange(uri, null);
         }
 
@@ -260,8 +278,43 @@ public class CashFlowProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+
+        int numRowsDeleted;
+
+        switch (sUriMatcher.match(uri)){
+            case OPERATION_WITH_ID:{
+                String id = uri.getLastPathSegment();
+
+                SQLiteDatabase db = mCashFlowDbHelper.getWritableDatabase();
+
+                db.beginTransaction();
+                try {
+                    numRowsDeleted = db.delete(
+                            OperationEntry.TABLE_NAME,
+                            OperationEntry._ID + " = ?",
+                            new String[]{id});
+
+                    deleteOperationAnalytics(db, id);
+
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+
+                break;
+            }
+
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+
+        /* If we actually deleted any rows, notify that a change has occurred to this URI */
+        if (numRowsDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return numRowsDeleted;
     }
 
     @Override
@@ -293,11 +346,25 @@ public class CashFlowProvider extends ContentProvider {
 
             case OPERATION_WITH_ID: {
                 String id = uri.getLastPathSegment();
-                numRowsUpdated = mCashFlowDbHelper.getWritableDatabase().update(
+
+                SQLiteDatabase db = mCashFlowDbHelper.getWritableDatabase();
+
+                db.beginTransaction();
+                try {
+                    numRowsUpdated = db.update(
                         OperationEntry.TABLE_NAME,
                         contentValues,
                         OperationEntry._ID + " = ?",
                         new String[]{id});
+
+                    deleteOperationAnalytics(db, id);
+                    insertOperationAnalytics(db, contentValues, Long.valueOf(id));
+
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+
                 break;
             }
 
@@ -311,5 +378,66 @@ public class CashFlowProvider extends ContentProvider {
         }
 
         return numRowsUpdated;
+    }
+
+    private void insertOperationAnalytics(SQLiteDatabase db, ContentValues operationValues, long id){
+        OperationType type = OperationType.toEnum(operationValues.getAsInteger(OperationEntry.COLUMN_TYPE));
+        switch (type){
+            case IN:{
+                ContentValues balanceValues = new ContentValues();
+                balanceValues.put(AccountBalanceEntry.COLUMN_DATE, operationValues.getAsInteger(OperationEntry.COLUMN_DATE));
+                balanceValues.put(AccountBalanceEntry.COLUMN_ACCOUNT_ID, operationValues.getAsInteger(OperationEntry.COLUMN_ACCOUNT_ID));
+                balanceValues.put(AccountBalanceEntry.COLUMN_OPERATION_ID, id);
+                balanceValues.put(AccountBalanceEntry.COLUMN_SUM, operationValues.getAsInteger(OperationEntry.COLUMN_SUM));
+
+                db.insert(AccountBalanceEntry.TABLE_NAME, null, balanceValues);
+                break;
+            }
+            case OUT:{
+                ContentValues balanceValues = new ContentValues();
+                balanceValues.put(AccountBalanceEntry.COLUMN_DATE, operationValues.getAsInteger(OperationEntry.COLUMN_DATE));
+                balanceValues.put(AccountBalanceEntry.COLUMN_ACCOUNT_ID, operationValues.getAsInteger(OperationEntry.COLUMN_ACCOUNT_ID));
+                balanceValues.put(AccountBalanceEntry.COLUMN_OPERATION_ID, id);
+                balanceValues.put(AccountBalanceEntry.COLUMN_SUM, -1* operationValues.getAsInteger(OperationEntry.COLUMN_SUM));
+
+                db.insert(AccountBalanceEntry.TABLE_NAME, null, balanceValues);
+                break;
+            }
+            case TRANSFER:{
+                ContentValues balanceValuesIn = new ContentValues();
+                balanceValuesIn.put(AccountBalanceEntry.COLUMN_DATE, operationValues.getAsInteger(OperationEntry.COLUMN_DATE));
+                balanceValuesIn.put(AccountBalanceEntry.COLUMN_ACCOUNT_ID, operationValues.getAsInteger(OperationEntry.COLUMN_ACCOUNT_ID));
+                balanceValuesIn.put(AccountBalanceEntry.COLUMN_OPERATION_ID, id);
+                balanceValuesIn.put(AccountBalanceEntry.COLUMN_SUM, -1 * operationValues.getAsInteger(OperationEntry.COLUMN_SUM));
+
+                db.insert(AccountBalanceEntry.TABLE_NAME, null, balanceValuesIn);
+
+                ContentValues balanceValuesOut = new ContentValues();
+                balanceValuesOut.put(AccountBalanceEntry.COLUMN_DATE, operationValues.getAsInteger(OperationEntry.COLUMN_DATE));
+                balanceValuesOut.put(AccountBalanceEntry.COLUMN_ACCOUNT_ID, operationValues.getAsInteger(OperationEntry.COLUMN_RECIPIENT_ACCOUNT_ID));
+                balanceValuesOut.put(AccountBalanceEntry.COLUMN_OPERATION_ID, id);
+                balanceValuesOut.put(AccountBalanceEntry.COLUMN_SUM, operationValues.getAsInteger(OperationEntry.COLUMN_SUM));
+
+                db.insertOrThrow(AccountBalanceEntry.TABLE_NAME, null, balanceValuesOut);
+                break;
+            }
+        }
+
+        if (type.equals(OperationType.IN) || type.equals(OperationType.OUT)){
+            ContentValues values = new ContentValues();
+            values.put(CategoryCostEntry.COLUMN_DATE, operationValues.getAsInteger(OperationEntry.COLUMN_DATE));
+            values.put(CategoryCostEntry.COLUMN_OPERATION_ID, id);
+            values.put(CategoryCostEntry.COLUMN_ACCOUNT_ID, operationValues.getAsInteger(OperationEntry.COLUMN_ACCOUNT_ID));
+            values.put(CategoryCostEntry.COLUMN_CATEGORY_ID, operationValues.getAsInteger(OperationEntry.COLUMN_CATEGORY_ID));
+            values.put(CategoryCostEntry.COLUMN_SUM, operationValues.getAsInteger(OperationEntry.COLUMN_SUM));
+
+            db.insertOrThrow(CategoryCostEntry.TABLE_NAME, null, values);
+        }
+
+    }
+
+    private void deleteOperationAnalytics(SQLiteDatabase db, String id){
+        db.delete(AccountBalanceEntry.TABLE_NAME, AccountBalanceEntry.COLUMN_OPERATION_ID + " = " + id, null);
+        db.delete(CategoryCostEntry.TABLE_NAME, CategoryCostEntry.COLUMN_OPERATION_ID + " = " + id, null);
     }
 }

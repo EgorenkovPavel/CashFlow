@@ -23,7 +23,6 @@ import android.widget.Toast;
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.CashFlowContract;
 import com.epipasha.cashflow.data.CashFlowContract.OperationEntry;
-import com.epipasha.cashflow.fragments.account.DetailAccountActivity;
 import com.epipasha.cashflow.objects.OperationType;
 
 import java.text.SimpleDateFormat;
@@ -57,22 +56,17 @@ public class OperationFragment extends Fragment implements LoaderManager.LoaderC
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
 
-                //TODO Сделать возможность удаления с проверкой целостности базы
-                Toast.makeText(getContext(), "Don't work", Toast.LENGTH_LONG).show();
-
-                /*
                 // Retrieve the id of the task to delete
                 int id = (int) viewHolder.itemView.getTag();
 
                 // Build appropriate uri with String row id appended
                 String stringId = Integer.toString(id);
-                Uri uri = AccountEntry.CONTENT_URI;
+                Uri uri = OperationEntry.CONTENT_URI;
                 uri = uri.buildUpon().appendPath(stringId).build();
 
                 // COMPLETED (2) Delete a single row of data using a ContentResolver
                 getContext().getContentResolver().delete(uri, null, null);
 
-*/
                 // COMPLETED (3) Restart the loader to re-query for all tasks after a deletion
                 getLoaderManager().restartLoader(TASK_LOADER_ID, null, OperationFragment.this);
 
@@ -235,7 +229,7 @@ public class OperationFragment extends Fragment implements LoaderManager.LoaderC
 
                 Intent i = new Intent(mContext, DetailOperationActivity.class);
 
-                Uri uri = CashFlowContract.OperationEntry.buildAccountUriWithId(id);
+                Uri uri = CashFlowContract.OperationEntry.buildOperationUriWithId(id);
                 i.setData(uri);
                 startActivity(i);
             }

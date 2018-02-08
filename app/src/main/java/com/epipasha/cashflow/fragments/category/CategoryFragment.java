@@ -21,11 +21,7 @@ import android.widget.Toast;
 
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.CashFlowContract;
-import com.epipasha.cashflow.fragments.account.AccountFragment;
-import com.epipasha.cashflow.fragments.account.DetailAccountActivity;
 import com.epipasha.cashflow.objects.OperationType;
-
-import java.util.Locale;
 
 public class CategoryFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -195,7 +191,7 @@ public class CategoryFragment extends Fragment implements LoaderManager.LoaderCa
 
                 Intent i = new Intent(mContext, DetailCategoryActivity.class);
 
-                Uri uri = CashFlowContract.CategoryEntry.buildAccountUriWithId(id);
+                Uri uri = CashFlowContract.CategoryEntry.buildCategoryUriWithId(id);
                 i.setData(uri);
                 startActivity(i);
             }
