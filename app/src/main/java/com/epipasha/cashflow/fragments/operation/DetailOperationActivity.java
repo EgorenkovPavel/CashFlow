@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
-import android.renderscript.Sampler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -17,11 +16,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CursorAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -29,11 +25,10 @@ import android.widget.TimePicker;
 
 import com.epipasha.cashflow.NumberTextWatcherForThousand;
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.data.CashFlowContract;
+import com.epipasha.cashflow.Utils;
 import com.epipasha.cashflow.data.CashFlowContract.AccountEntry;
 import com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
 import com.epipasha.cashflow.data.CashFlowContract.OperationEntry;
-import com.epipasha.cashflow.objects.Account;
 import com.epipasha.cashflow.objects.OperationType;
 
 import java.text.SimpleDateFormat;
@@ -141,21 +136,17 @@ public class DetailOperationActivity extends AppCompatActivity implements Loader
         ContentValues values = new ContentValues();
         values.put(OperationEntry.COLUMN_DATE, operationDate.getTime());
         values.put(OperationEntry.COLUMN_SUM, sum);
-        values.put(OperationEntry.COLUMN_ACCOUNT_ID, getSelectedId(accountSpinner));
+        values.put(OperationEntry.COLUMN_ACCOUNT_ID, Utils.getSelectedId(accountSpinner));
 
         OperationType type = getSelectedType();
         values.put(OperationEntry.COLUMN_TYPE, getSelectedType().toDbValue());
         switch (type){
-            case IN: {
-                values.put(OperationEntry.COLUMN_CATEGORY_ID, getSelectedId(categorySpinner));
-                break;
-            }
-            case OUT:{
-                values.put(OperationEntry.COLUMN_CATEGORY_ID, getSelectedId(categorySpinner));
+            case IN: case OUT:{
+                values.put(OperationEntry.COLUMN_CATEGORY_ID, Utils.getSelectedId(categorySpinner));
                 break;
             }
             case TRANSFER:{
-                values.put(OperationEntry.COLUMN_RECIPIENT_ACCOUNT_ID, getSelectedId(recipientAccountSpinner));
+                values.put(OperationEntry.COLUMN_RECIPIENT_ACCOUNT_ID, Utils.getSelectedId(recipientAccountSpinner));
                 break;
             }
         }
@@ -201,7 +192,7 @@ public class DetailOperationActivity extends AppCompatActivity implements Loader
                         AccountEntry.CONTENT_URI,
                         null,
                         AccountEntry._ID + " <> ?",
-                        new String[]{String.valueOf(getSelectedId(accountSpinner))},
+                        new String[]{String.valueOf(Utils.getSelectedId(accountSpinner))},
                         null);
 
             default:
@@ -244,7 +235,7 @@ public class DetailOperationActivity extends AppCompatActivity implements Loader
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 accountSpinner.setAdapter(adapter);
 
-                setPositionById(accountSpinner, accountId);
+                Utils.setPositionById(accountSpinner, accountId);
                 break;
             }
             case ID_CATEGORY_LOADER:{
@@ -259,7 +250,7 @@ public class DetailOperationActivity extends AppCompatActivity implements Loader
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 categorySpinner.setAdapter(adapter);
 
-                setPositionById(categorySpinner, categoryId);
+                Utils.setPositionById(categorySpinner, categoryId);
                 break;
             }
 
@@ -275,7 +266,7 @@ public class DetailOperationActivity extends AppCompatActivity implements Loader
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 recipientAccountSpinner.setAdapter(adapter);
 
-                setPositionById(recipientAccountSpinner, recAccountId);
+                Utils.setPositionById(recipientAccountSpinner, recAccountId);
                 break;
             }
         }
@@ -331,22 +322,6 @@ public class DetailOperationActivity extends AppCompatActivity implements Loader
             case R.id.operation_detail_btnTransfer: return OperationType.TRANSFER;
             default: return null;
         }
-    }
-
-    private void setPositionById(Spinner spinner, int rowid){
-        for (int i = 0; i < spinner.getCount(); i++) {
-            Cursor value = (Cursor) spinner.getItemAtPosition(i);
-            long id = value.getLong(value.getColumnIndex("_id"));
-            if (id == rowid) {
-                spinner.setSelection(i);
-                break;
-            }
-        }
-    }
-
-    private int getSelectedId(Spinner spinner){
-        Cursor cursor = (Cursor) spinner.getSelectedItem();
-        return cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
     }
 
     private void chooseDate(){

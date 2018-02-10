@@ -11,12 +11,9 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.data.CashFlowContract;
-import com.epipasha.cashflow.data.CashFlowContract.AccountEntry;
 import com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
 import com.epipasha.cashflow.objects.OperationType;
 

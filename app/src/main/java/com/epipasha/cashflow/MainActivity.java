@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity
                         break;
                     }
                     case R.id.nav_summary:{
-                        Intent i = new Intent(MainActivity.this, DetailOperationActivity.class);
+                        Intent i = new Intent(MainActivity.this, OperationMasterActivity.class);
                         startActivity(i);
                         break;
                     }

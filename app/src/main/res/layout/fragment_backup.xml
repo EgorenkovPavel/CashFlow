@@ -16,7 +16,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="File" />
+                    android:text="@string/file_system" />
 
                 <Button
                     android:id="@+id/share"
@@ -44,21 +44,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Google drive" />
+                    android:text="@string/google_drive" />
 
                 <Button
                     android:id="@+id/drive_share"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Backup" />
+                    android:text="@string/backup" />
 
                 <Button
                     android:id="@+id/drive_restore"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Restore" />
+                    android:text="@string/restore" />
         </LinearLayout>
 
 </LinearLayout>

@@ -20,16 +20,16 @@ import com.epipasha.cashflow.objects.OperationType;
 
 public class CashFlowProvider extends ContentProvider {
 
-    public static final int ACCOUNTS = 100;
-    public static final int ACCOUNT_WITH_ID = 101;
-    public static final int CATEGORIES = 200;
-    public static final int CATEGORY_WITH_ID = 201;
-    public static final int OPERATIONS = 300;
-    public static final int OPERATION_WITH_ID = 301;
+    private static final int ACCOUNTS = 100;
+    private static final int ACCOUNT_WITH_ID = 101;
+    private static final int CATEGORIES = 200;
+    private static final int CATEGORY_WITH_ID = 201;
+    private static final int OPERATIONS = 300;
+    private static final int OPERATION_WITH_ID = 301;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
-    public static UriMatcher buildUriMatcher() {
+    private static UriMatcher buildUriMatcher() {
 
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 

@@ -1,38 +1,44 @@
 package com.epipasha.cashflow;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import static com.epipasha.cashflow.data.CashFlowContract.AccountEntry;
+import static com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
+import static com.epipasha.cashflow.data.CashFlowContract.OperationEntry;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.epipasha.cashflow.data.CashFlowDbManager;
-import com.epipasha.cashflow.objects.Account;
-import com.epipasha.cashflow.objects.Category;
-import com.epipasha.cashflow.objects.Operation;
+import com.epipasha.cashflow.Prefs.OperationMasterPrefs;
 import com.epipasha.cashflow.objects.OperationType;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Locale;
 
-public class OperationMasterActivity extends AppCompatActivity{
+public class OperationMasterActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private  static final int ACCOUNT_LOADER_ID = 432;
+    private  static final int CATEGORY_LOADER_ID = 879;
+    private  static final int REP_ACCOUNT_LOADER_ID = 654;
 
     private int sum = 0;
 
+    private CoordinatorLayout parentContainer;
     private RadioGroup groupType;
     private Spinner spinAccount, spinAnalytic;
     private TextView lblSum;
@@ -47,57 +53,11 @@ public class OperationMasterActivity extends AppCompatActivity{
 
         findViews();
 
-        initAccountSpinner();
+        setCheckedOperationType(OperationMasterPrefs.getOperationType(this));
+        setSum(0);
+
+        getSupportLoaderManager().initLoader(ACCOUNT_LOADER_ID, null, this);
         initAnalyticSpinner();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        restoreFromPrefs();
-    }
-
-    private void restoreFromPrefs(){
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-
-        int operationTypePos = sharedPref.getInt(getString(R.string.pref_operation_master_operation_type_pos), 0);
-        OperationType type = OperationType.toEnum(operationTypePos);
-
-        if (type != null) {
-            setCheckedOperationType(type);
-
-            int accountPos = sharedPref.getInt(getString(R.string.pref_operation_master_account_pos), 0);
-            int analyticPos = sharedPref.getInt(getAnalyticPref(type), 0);
-
-            spinAccount.setSelection(accountPos);
-            spinAnalytic.setSelection(analyticPos);
-        }
-    }
-
-    private void saveToPrefs(){
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-
-        OperationType type =  getCheckedOperationType();
-
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt(getString(R.string.pref_operation_master_account_pos), spinAccount.getSelectedItemPosition());
-        editor.putString(getString(R.string.pref_operation_master_operation_type_pos), type.toString());
-        editor.putInt(getAnalyticPref(type), spinAnalytic.getSelectedItemPosition());
-        editor.apply();
-
-    }
-
-    private String getAnalyticPref(OperationType type){
-
-        switch (type){
-            case IN:
-                return getString(R.string.pref_operation_master_analytic_in);
-            case OUT:
-                return getString(R.string.pref_operation_master_analytic_out);
-            case TRANSFER:
-                return getString(R.string.pref_operation_master_analytic_transfer);
-        }
-        return "";
     }
 
     private OperationType getCheckedOperationType(){
@@ -134,79 +94,27 @@ public class OperationMasterActivity extends AppCompatActivity{
         }
     }
 
-    private void initAccountSpinner() {
-
-        Account selectedAccount = (Account) spinAccount.getSelectedItem();
-
-        ArrayList<Account> accountList = CashFlowDbManager.getInstance(this).getAccounts();
-
-        AccountAdapter accountArrayAdapter = new AccountAdapter(this, accountList);
-        accountArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinAccount.setAdapter(accountArrayAdapter);
-        spinAccount.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                initAnalyticSpinner();
+    private void initAnalyticSpinner() {
+        switch (groupType.getCheckedRadioButtonId()){
+            case R.id.btnIn: case R.id.btnOut:{
+                getSupportLoaderManager().restartLoader(CATEGORY_LOADER_ID, null, OperationMasterActivity.this);
+                break;
             }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
+            case R.id.btnTransfer:{
+                getSupportLoaderManager().restartLoader(REP_ACCOUNT_LOADER_ID, null, OperationMasterActivity.this);
+                break;
             }
-        });
-
-        if(selectedAccount!=null){
-            spinAccount.setSelection(accountList.indexOf(selectedAccount));
         }
-
     }
 
-    private void initAnalyticSpinner() {
-        Object o = spinAnalytic.getSelectedItem();
-
-        switch (groupType.getCheckedRadioButtonId()){
-            case R.id.btnIn :
-                ArrayList<Category> categories = CashFlowDbManager.getInstance(this).getCategories(OperationType.IN);
-
-                ArrayAdapter<Category> categoryArrayAdapter = new CategoryAdapter(this, categories);
-                categoryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinAnalytic.setAdapter(categoryArrayAdapter);
-
-                if ((o instanceof Category)&&(((Category) o).getType().equals(OperationType.IN))){
-                    spinAnalytic.setSelection(categories.indexOf(o));
-                }
-                break;
-            case R.id.btnOut:
-
-                ArrayList<Category> categoriesOut = CashFlowDbManager.getInstance(this).getCategories(OperationType.OUT);
-
-                ArrayAdapter<Category> categoryArrayAdapterOut = new CategoryAdapter(this, categoriesOut);
-                categoryArrayAdapterOut.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinAnalytic.setAdapter(categoryArrayAdapterOut);
-
-                if ((o instanceof Category)&&(((Category) o).getType().equals(OperationType.OUT))){
-                    spinAnalytic.setSelection(categoriesOut.indexOf(o));
-                }
-
-                break;
-            case R.id.btnTransfer:
-
-                ArrayList<Account> accountList = CashFlowDbManager.getInstance(this).getAccounts();
-                accountList.remove(spinAccount.getSelectedItem());
-
-                AccountAdapter accountArrayAdapter = new AccountAdapter(this, accountList);
-                accountArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinAnalytic.setAdapter(accountArrayAdapter);
-
-                if ((o instanceof Account)&&(!spinAccount.getSelectedItem().equals(o))){
-                    spinAnalytic.setSelection(accountList.indexOf(o));
-                }
-
-                break;
-        }
+    private void setSum(int s){
+        sum = s;
+        lblSum.setText(String.format(Locale.getDefault(),"%,d",sum));
     }
 
     private void findViews() {
+
+        parentContainer = (CoordinatorLayout) findViewById(R.id.master_container);
 
         groupType = (RadioGroup)findViewById(R.id.type_group);
         groupType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -220,7 +128,6 @@ public class OperationMasterActivity extends AppCompatActivity{
         spinAnalytic = (Spinner)findViewById(R.id.spinner_analytic);
 
         lblSum = (TextView) findViewById(R.id.operation_master_sum);
-        lblSum.setText(String.format(Locale.getDefault(),"%,d",sum));
 
         Button btn0 = (Button) findViewById(R.id.digit_0);
         Button btn1 = (Button) findViewById(R.id.digit_1);
@@ -252,9 +159,7 @@ public class OperationMasterActivity extends AppCompatActivity{
                     case R.id.digit_8: digit = 8; break;
                     case R.id.digit_9: digit = 9; break;
                 }
-
-                sum = sum* 10 + digit;
-                lblSum.setText(String.format(Locale.getDefault(),"%,d",sum));
+                setSum(sum* 10 + digit);
             }
         };
 
@@ -272,8 +177,7 @@ public class OperationMasterActivity extends AppCompatActivity{
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sum = sum/10;
-                lblSum.setText(String.format(Locale.getDefault(),"%,d",sum));
+                setSum(sum/10);
             }
         });
         btnMore.setOnClickListener(new View.OnClickListener() {
@@ -287,60 +191,170 @@ public class OperationMasterActivity extends AppCompatActivity{
             @Override
             public void onClick(View view) {
 
-                Operation operation = new Operation();
-
-                Account account = (Account) spinAccount.getSelectedItem();
-                if(account==null){
-                    Toast.makeText(getApplicationContext(), "No account selected!!!", Toast.LENGTH_SHORT).show();
+                int accountId = Utils.getSelectedId(spinAccount);
+                if(accountId == 0){
+                    Snackbar.make(view, "No account selected!!!", Snackbar.LENGTH_LONG).show();
                     return;
                 }
-                operation.setAccount((Account) spinAccount.getSelectedItem());
 
-                Object analytic = spinAnalytic.getSelectedItem();
-                if (analytic==null) {
-                    Toast.makeText(getApplicationContext(), "No analytic selected!!!", Toast.LENGTH_SHORT).show();
+                int analyticId = Utils.getSelectedId(spinAnalytic);
+                if (analyticId == 0) {
+                    Snackbar.make(view, "No analytic selected!!!", Snackbar.LENGTH_LONG).show();
                     return;
                 }
+
+                if(sum == 0){
+                    Snackbar.make(parentContainer, "Type the sum", Snackbar.LENGTH_LONG).show();
+                    return;
+                }
+
+                ContentValues values = new ContentValues();
+                values.put(OperationEntry.COLUMN_DATE, (new Date()).getTime());
+                values.put(OperationEntry.COLUMN_ACCOUNT_ID, accountId);
+                values.put(OperationEntry.COLUMN_SUM, sum);
 
                 switch (groupType.getCheckedRadioButtonId()){
-                    case R.id.btnIn :
-                        operation.setType(OperationType.IN);
-                        operation.setCategory((Category) analytic);
+                    case R.id.btnIn :{
+                        values.put(OperationEntry.COLUMN_TYPE, OperationType.IN.toDbValue());
+                        values.put(OperationEntry.COLUMN_CATEGORY_ID, analyticId);
                         break;
-                    case R.id.btnOut:
-                        operation.setType(OperationType.OUT);
-                        operation.setCategory((Category) analytic);
+                    }
+                    case R.id.btnOut: {
+                        values.put(OperationEntry.COLUMN_TYPE, OperationType.OUT.toDbValue());
+                        values.put(OperationEntry.COLUMN_CATEGORY_ID, analyticId);
                         break;
-                    case R.id.btnTransfer:
-                        operation.setType(OperationType.TRANSFER);
-                        operation.setRecipientAccount((Account) analytic);
+                    }
+                    case R.id.btnTransfer: {
+                        values.put(OperationEntry.COLUMN_TYPE, OperationType.TRANSFER.toDbValue());
+                        values.put(OperationEntry.COLUMN_RECIPIENT_ACCOUNT_ID, analyticId);
                         break;
+                    }
                 }
 
-                if(sum==0){
-                    Toast.makeText(getApplicationContext(), "Type the sum", Toast.LENGTH_SHORT).show();
-                    return;
+                OperationMasterPrefs.saveOperationType(OperationMasterActivity.this, getCheckedOperationType());
+                OperationMasterPrefs.saveAccountId(OperationMasterActivity.this, accountId);
+                OperationMasterPrefs.saveAnalyticId(OperationMasterActivity.this, analyticId, getCheckedOperationType());
+
+                final Uri uri = getContentResolver().insert(OperationEntry.CONTENT_URI, values);
+                if (uri == null){
+                    Snackbar.make(view, "ERROR", Snackbar.LENGTH_LONG).show();
+                } else {
+                    Snackbar snackbar = Snackbar.make(view, "Operation created!!!", Snackbar.LENGTH_LONG);
+                    snackbar.setAction("UNDO", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            int numRowsDeleted = getContentResolver().delete(uri, null, null);
+                            if (numRowsDeleted > 0){
+                                Snackbar.make(view, "Operation deleted", Snackbar.LENGTH_LONG).show();
+                            } else {
+                                Snackbar.make(parentContainer, "ERROR", Snackbar.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                    snackbar.show();
+                    setSum(0);
                 }
-                operation.setSum(sum);
-
-                CashFlowDbManager.getInstance(view.getContext()).addOperation(operation);
-
-                Toast t = Toast.makeText(getApplicationContext(), "Operation created!!!", Toast.LENGTH_SHORT);
-                t.show();
-
-                saveToPrefs();
-
-                initAccountSpinner();
-                initAnalyticSpinner();
-
-                sum = 0;
-                lblSum.setText(String.format(Locale.getDefault(),"%,d",sum));
-
             }
         });
 
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+        switch (id){
+            case ACCOUNT_LOADER_ID:{
+                return new CursorLoader(
+                        this,
+                        AccountEntry.CONTENT_URI,
+                        null,
+                        null,
+                        null,
+                        null);
+            }
+            case CATEGORY_LOADER_ID:{
+                return new CursorLoader(
+                        this,
+                        CategoryEntry.CONTENT_URI,
+                        null,
+                        CategoryEntry.COLUMN_TYPE + " = " + getCheckedOperationType().toDbValue(),
+                        null,
+                        null);
+            }
+            case REP_ACCOUNT_LOADER_ID:{
+                return new CursorLoader(
+                        this,
+                        AccountEntry.CONTENT_URI,
+                        null,
+                        AccountEntry._ID + " != " + OperationMasterPrefs.getAccountId(this),
+                        null,
+                        null);
+            }
+            default:
+                throw new RuntimeException("Loader Not Implemented: " + id);
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+
+        switch (loader.getId()){
+            case ACCOUNT_LOADER_ID:{
+                SimpleCursorAdapter adapter = new SimpleCursorAdapter(
+                        this,
+                        android.R.layout.simple_spinner_item,
+                        cursor,
+                        new String[]{AccountEntry.COLUMN_TITLE},
+                        new int[]{android.R.id.text1}
+                        ,0);
+
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinAccount.setAdapter(adapter);
+
+                Utils.setPositionById(spinAccount, OperationMasterPrefs.getAccountId(this));
+                break;
+            }
+            case CATEGORY_LOADER_ID:{
+                SimpleCursorAdapter adapter = new SimpleCursorAdapter(
+                        this,
+                        android.R.layout.simple_spinner_item,
+                        cursor,
+                        new String[]{CategoryEntry.COLUMN_TITLE},
+                        new int[]{android.R.id.text1}
+                        ,0);
+
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinAnalytic.setAdapter(adapter);
+
+                Utils.setPositionById(spinAnalytic, OperationMasterPrefs.getAnalyticId(this, getCheckedOperationType()));
+                break;
+            }
+            case REP_ACCOUNT_LOADER_ID:{
+                SimpleCursorAdapter adapter = new SimpleCursorAdapter(
+                        this,
+                        android.R.layout.simple_spinner_item,
+                        cursor,
+                        new String[]{AccountEntry.COLUMN_TITLE},
+                        new int[]{android.R.id.text1}
+                        ,0);
+
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinAnalytic.setAdapter(adapter);
+
+                Utils.setPositionById(spinAnalytic, OperationMasterPrefs.getAnalyticId(this, getCheckedOperationType()));
+                break;
+            }
+        }
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
+
+/*
     private class AccountAdapter extends ArrayAdapter<Account> {
 
         private final ArrayList<Account> accounts;
@@ -423,4 +437,5 @@ public class OperationMasterActivity extends AppCompatActivity{
         }
 
     }
+*/
 }

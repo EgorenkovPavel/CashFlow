@@ -10,7 +10,7 @@ import com.epipasha.cashflow.data.CashFlowContract.CategoryCostEntry;
 import com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
 import com.epipasha.cashflow.data.CashFlowContract.OperationEntry;
 
-public class CashFlowDbHelper extends SQLiteOpenHelper{
+class CashFlowDbHelper extends SQLiteOpenHelper{
 
     private static final int VERSION = 1;
     private static final String DB_CASHFLOW = "cashflow.db";

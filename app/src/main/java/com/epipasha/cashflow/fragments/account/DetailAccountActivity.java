@@ -13,9 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.widget.EditText;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.data.CashFlowContract;
 import com.epipasha.cashflow.data.CashFlowContract.AccountEntry;
-import com.epipasha.cashflow.data.CashFlowProvider;
 
 public class DetailAccountActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 

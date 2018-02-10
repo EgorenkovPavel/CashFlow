@@ -59,5 +59,7 @@
     <string name="pref_operation_master_operation_type_pos" translatable="false">pref_operation_master_operation_type_pos</string>
     <string name="pref_operation_master_analytic_out" translatable="false">pref_operation_master_analytic_out</string>
     <string name="pref_operation_master_analytic_transfer" translatable="false">pref_operation_master_analytic_transfer</string>
+    <string name="file_system">File system</string>
+    <string name="google_drive" translatable="false">Google drive</string>
 
 </resources>
