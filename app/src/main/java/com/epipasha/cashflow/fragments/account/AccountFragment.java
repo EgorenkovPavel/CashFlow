@@ -125,7 +125,6 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
                     .inflate(R.layout.list_item_account, parent, false);
 
             return new AccountHolder(view);
-
         }
 
         @Override

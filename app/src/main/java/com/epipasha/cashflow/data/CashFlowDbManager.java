@@ -599,7 +599,6 @@ public class CashFlowDbManager {
         db.beginTransaction();
         try {
 
-
             for (String table : BACKUP_TABLES) {
 
                 db.delete(table, null, null);

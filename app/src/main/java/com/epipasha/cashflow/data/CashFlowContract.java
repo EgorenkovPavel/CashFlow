@@ -12,6 +12,8 @@ public class CashFlowContract {
     public static final String PATH_ACCOUNTS = "accounts";
     public static final String PATH_CATEGORY = "category";
     public static final String PATH_OPERATION = "operation";
+    public static final String PATH_BUDGET = "budget";
+    public static final String PATH_CATEGORY_COST = "category_cost";
 
     public static final class AccountEntry implements BaseColumns{
 
@@ -86,13 +88,16 @@ public class CashFlowContract {
 
     public static final class CategoryCostEntry{
 
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_CATEGORY_COST).build();
+
         public static final String TABLE_NAME = "category_cost";
 
         public static final String COLUMN_DATE = "category_cost_date";
         public static final String COLUMN_OPERATION_ID = "category_cost_operation_id";
         public static final String COLUMN_ACCOUNT_ID = "category_cost_account_id";
         public static final String COLUMN_CATEGORY_ID = "category_cost_category_id";
-        public static final String COLUMN_SUM = "account_balance_sum";
+        public static final String COLUMN_SUM = "category_cost_balance_sum";
 
     }
 

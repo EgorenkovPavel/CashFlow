@@ -1,12 +1,17 @@
 package com.epipasha.cashflow.fragments.summary;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.epipasha.cashflow.R;
+import com.epipasha.cashflow.data.CashFlowContract;
 import com.epipasha.cashflow.data.CashFlowDbManager;
 import com.epipasha.cashflow.objects.Account;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
@@ -23,7 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class CardAccountFragment extends Fragment {
+public class CardAccountFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final int LOADER_ID = 342;
 
     private HorizontalBarChart chart;
 
@@ -33,20 +40,36 @@ public class CardAccountFragment extends Fragment {
 
         chart = (HorizontalBarChart)v.findViewById(R.id.chart);
 
-        setData();
+        getLoaderManager().initLoader(LOADER_ID, null, this);
 
         return v;
     }
 
-    private void setData() {
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(
+                getActivity(),
+                CashFlowContract.AccountEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null);
+    }
 
-        final ArrayList<Account> accounts = CashFlowDbManager.getInstance(getActivity()).getAccounts();
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+
+        if(cursor==null){
+            return;
+        }
 
         List<BarEntry> entries = new ArrayList<>();
-        String[] labels = new String[accounts.size()];
-        for (int i = 0; i<accounts.size(); i++){
-            entries.add(new BarEntry(i, accounts.get(i).getBalance()));
-            labels[i] = accounts.get(i).getName();
+      String[] labels = new String[cursor.getCount()];
+        int i = 0;
+        while (cursor.moveToNext()){
+            entries.add(new BarEntry(i, cursor.getInt(cursor.getColumnIndex(CashFlowContract.AccountEntry.SERVICE_COLUMN_SUM))));
+            labels[i] = cursor.getString(cursor.getColumnIndex(CashFlowContract.AccountEntry.COLUMN_TITLE));
+            i++;
         }
 
         BarDataSet set = new BarDataSet(entries, "");
@@ -78,7 +101,7 @@ public class CardAccountFragment extends Fragment {
         desc.setText("");
         chart.setDescription(desc);
 
-        chart.setMinimumHeight(accounts.size() * 100);
+        chart.setMinimumHeight(cursor.getCount() * 100);
 
         data.setBarWidth(0.9f); // set custom bar width
         chart.setData(data);
@@ -87,4 +110,8 @@ public class CardAccountFragment extends Fragment {
 
     }
 
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
 }

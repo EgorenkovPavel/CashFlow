@@ -26,6 +26,8 @@ public class CashFlowProvider extends ContentProvider {
     private static final int CATEGORY_WITH_ID = 201;
     private static final int OPERATIONS = 300;
     private static final int OPERATION_WITH_ID = 301;
+    private static final int BUDGET = 400;
+    private static final int CATEGORY_COST = 500;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
@@ -35,10 +37,16 @@ public class CashFlowProvider extends ContentProvider {
 
         uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_ACCOUNTS, ACCOUNTS);
         uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_ACCOUNTS + "/#", ACCOUNT_WITH_ID);
+
         uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_CATEGORY, CATEGORIES);
         uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_CATEGORY + "/#", CATEGORY_WITH_ID);
+
         uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_OPERATION, OPERATIONS);
         uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_OPERATION + "/#", OPERATION_WITH_ID);
+
+        uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_BUDGET, BUDGET);
+
+        uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_CATEGORY_COST, CATEGORY_COST);
 
         return uriMatcher;
     }
@@ -188,6 +196,28 @@ public class CashFlowProvider extends ContentProvider {
                 break;
             }
 
+            case BUDGET:{
+                retCursor = db.query(CategoryEntry.TABLE_NAME,
+                        new String[]{"SUM(CASE "+CategoryEntry.COLUMN_TYPE+" WHEN "+OperationType.IN.toDbValue()+" THEN "+CategoryEntry.COLUMN_BUDGET+" WHEN "+OperationType.OUT.toDbValue()+" THEN -1*"+CategoryEntry.COLUMN_BUDGET +" ELSE 0 END) AS " + CategoryEntry.COLUMN_BUDGET},
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        null);
+                break;
+            }
+
+            case CATEGORY_COST:{
+                retCursor = db.query(CategoryCostEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        null);
+                break;
+            }
+
             // Default exception
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -229,10 +259,15 @@ public class CashFlowProvider extends ContentProvider {
             }
 
             case CATEGORIES: {
-                id = mCashFlowDbHelper.getWritableDatabase().insert(
-                        CategoryEntry.TABLE_NAME,
-                        null,
-                        contentValues);
+                if (contentValues.containsKey(CategoryEntry.COLUMN_TYPE)
+                        && contentValues.getAsInteger(CategoryEntry.COLUMN_TYPE).equals(OperationType.TRANSFER.toDbValue())){
+                    id = -1L;
+                }else {
+                    id = mCashFlowDbHelper.getWritableDatabase().insert(
+                            CategoryEntry.TABLE_NAME,
+                            null,
+                            contentValues);
+                }
 
                 if (id != -1) {
                     resUri = CategoryEntry.buildCategoryUriWithId(id);
@@ -385,7 +420,7 @@ public class CashFlowProvider extends ContentProvider {
         switch (type){
             case IN:{
                 ContentValues balanceValues = new ContentValues();
-                balanceValues.put(AccountBalanceEntry.COLUMN_DATE, operationValues.getAsInteger(OperationEntry.COLUMN_DATE));
+                balanceValues.put(AccountBalanceEntry.COLUMN_DATE, operationValues.getAsLong(OperationEntry.COLUMN_DATE));
                 balanceValues.put(AccountBalanceEntry.COLUMN_ACCOUNT_ID, operationValues.getAsInteger(OperationEntry.COLUMN_ACCOUNT_ID));
                 balanceValues.put(AccountBalanceEntry.COLUMN_OPERATION_ID, id);
                 balanceValues.put(AccountBalanceEntry.COLUMN_SUM, operationValues.getAsInteger(OperationEntry.COLUMN_SUM));
@@ -395,7 +430,7 @@ public class CashFlowProvider extends ContentProvider {
             }
             case OUT:{
                 ContentValues balanceValues = new ContentValues();
-                balanceValues.put(AccountBalanceEntry.COLUMN_DATE, operationValues.getAsInteger(OperationEntry.COLUMN_DATE));
+                balanceValues.put(AccountBalanceEntry.COLUMN_DATE, operationValues.getAsLong(OperationEntry.COLUMN_DATE));
                 balanceValues.put(AccountBalanceEntry.COLUMN_ACCOUNT_ID, operationValues.getAsInteger(OperationEntry.COLUMN_ACCOUNT_ID));
                 balanceValues.put(AccountBalanceEntry.COLUMN_OPERATION_ID, id);
                 balanceValues.put(AccountBalanceEntry.COLUMN_SUM, -1* operationValues.getAsInteger(OperationEntry.COLUMN_SUM));
@@ -405,7 +440,7 @@ public class CashFlowProvider extends ContentProvider {
             }
             case TRANSFER:{
                 ContentValues balanceValuesIn = new ContentValues();
-                balanceValuesIn.put(AccountBalanceEntry.COLUMN_DATE, operationValues.getAsInteger(OperationEntry.COLUMN_DATE));
+                balanceValuesIn.put(AccountBalanceEntry.COLUMN_DATE, operationValues.getAsLong(OperationEntry.COLUMN_DATE));
                 balanceValuesIn.put(AccountBalanceEntry.COLUMN_ACCOUNT_ID, operationValues.getAsInteger(OperationEntry.COLUMN_ACCOUNT_ID));
                 balanceValuesIn.put(AccountBalanceEntry.COLUMN_OPERATION_ID, id);
                 balanceValuesIn.put(AccountBalanceEntry.COLUMN_SUM, -1 * operationValues.getAsInteger(OperationEntry.COLUMN_SUM));
@@ -413,7 +448,7 @@ public class CashFlowProvider extends ContentProvider {
                 db.insert(AccountBalanceEntry.TABLE_NAME, null, balanceValuesIn);
 
                 ContentValues balanceValuesOut = new ContentValues();
-                balanceValuesOut.put(AccountBalanceEntry.COLUMN_DATE, operationValues.getAsInteger(OperationEntry.COLUMN_DATE));
+                balanceValuesOut.put(AccountBalanceEntry.COLUMN_DATE, operationValues.getAsLong(OperationEntry.COLUMN_DATE));
                 balanceValuesOut.put(AccountBalanceEntry.COLUMN_ACCOUNT_ID, operationValues.getAsInteger(OperationEntry.COLUMN_RECIPIENT_ACCOUNT_ID));
                 balanceValuesOut.put(AccountBalanceEntry.COLUMN_OPERATION_ID, id);
                 balanceValuesOut.put(AccountBalanceEntry.COLUMN_SUM, operationValues.getAsInteger(OperationEntry.COLUMN_SUM));
@@ -425,7 +460,7 @@ public class CashFlowProvider extends ContentProvider {
 
         if (type.equals(OperationType.IN) || type.equals(OperationType.OUT)){
             ContentValues values = new ContentValues();
-            values.put(CategoryCostEntry.COLUMN_DATE, operationValues.getAsInteger(OperationEntry.COLUMN_DATE));
+            values.put(CategoryCostEntry.COLUMN_DATE, operationValues.getAsLong(OperationEntry.COLUMN_DATE));
             values.put(CategoryCostEntry.COLUMN_OPERATION_ID, id);
             values.put(CategoryCostEntry.COLUMN_ACCOUNT_ID, operationValues.getAsInteger(OperationEntry.COLUMN_ACCOUNT_ID));
             values.put(CategoryCostEntry.COLUMN_CATEGORY_ID, operationValues.getAsInteger(OperationEntry.COLUMN_CATEGORY_ID));

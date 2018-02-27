@@ -1,5 +1,6 @@
 package com.epipasha.cashflow.data;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -10,7 +11,13 @@ import com.epipasha.cashflow.data.CashFlowContract.CategoryCostEntry;
 import com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
 import com.epipasha.cashflow.data.CashFlowContract.OperationEntry;
 
-class CashFlowDbHelper extends SQLiteOpenHelper{
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Iterator;
+
+public class CashFlowDbHelper extends SQLiteOpenHelper{
 
     private static final int VERSION = 1;
     private static final String DB_CASHFLOW = "cashflow.db";
@@ -93,4 +100,18 @@ class CashFlowDbHelper extends SQLiteOpenHelper{
         db.execSQL(SQL_CREATE_CATEGORY_COST_TABLE);
     }
 
-}
+    public void dropTables(SQLiteDatabase db){
+        String[] tables = new String[]{
+                AccountEntry.TABLE_NAME,
+                CategoryEntry.TABLE_NAME,
+                OperationEntry.TABLE_NAME,
+                AccountBalanceEntry.TABLE_NAME,
+                CategoryCostEntry.TABLE_NAME};
+
+        for (String table : tables) {
+            String dropQuery = "DROP TABLE IF EXISTS " + table;
+            db.execSQL(dropQuery);
+        }
+    }
+
+ }

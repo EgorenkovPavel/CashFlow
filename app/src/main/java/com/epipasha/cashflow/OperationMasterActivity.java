@@ -1,5 +1,6 @@
 package com.epipasha.cashflow;
 
+import static com.epipasha.cashflow.data.CashFlowContract.*;
 import static com.epipasha.cashflow.data.CashFlowContract.AccountEntry;
 import static com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
 import static com.epipasha.cashflow.data.CashFlowContract.OperationEntry;
@@ -16,32 +17,41 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.Prefs.OperationMasterPrefs;
+import com.epipasha.cashflow.data.CashFlowContract;
 import com.epipasha.cashflow.objects.OperationType;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public class OperationMasterActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private  static final int ACCOUNT_LOADER_ID = 432;
-    private  static final int CATEGORY_LOADER_ID = 879;
-    private  static final int REP_ACCOUNT_LOADER_ID = 654;
+    private static final int ACCOUNT_LOADER_ID = 432;
+    private static final int CATEGORY_LOADER_ID = 879;
+    private static final int REP_ACCOUNT_LOADER_ID = 654;
+    private static final int FACT = 587;
 
     private int sum = 0;
 
-    private CoordinatorLayout parentContainer;
+    private ViewGroup parentContainer;
     private RadioGroup groupType;
     private Spinner spinAccount, spinAnalytic;
     private TextView lblSum;
+    private ProgressBar progress;
+    private TextView tvBudgetSum, tvFactSum, tvOver;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -114,7 +124,12 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
 
     private void findViews() {
 
-        parentContainer = (CoordinatorLayout) findViewById(R.id.master_container);
+        progress = (ProgressBar)findViewById(R.id.pbBudget);
+        tvBudgetSum = (TextView)findViewById(R.id.tvBudgetSum);
+        tvFactSum = (TextView)findViewById(R.id.tvFactSum);
+        tvOver = (TextView)findViewById(R.id.tvOver);
+
+        parentContainer = (ViewGroup) findViewById(R.id.master_container);
 
         groupType = (RadioGroup)findViewById(R.id.type_group);
         groupType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -126,6 +141,18 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
 
         spinAccount = (Spinner)findViewById(R.id.spinner_account);
         spinAnalytic = (Spinner)findViewById(R.id.spinner_analytic);
+
+        spinAnalytic.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                onAnalitycChanged();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         lblSum = (TextView) findViewById(R.id.operation_master_sum);
 
@@ -253,6 +280,7 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
                     });
                     snackbar.show();
                     setSum(0);
+                    onAnalitycChanged();
                 }
             }
         });
@@ -287,6 +315,24 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
                         AccountEntry.CONTENT_URI,
                         null,
                         AccountEntry._ID + " != " + OperationMasterPrefs.getAccountId(this),
+                        null,
+                        null);
+            }
+            case FACT:{
+
+                Calendar cal = Calendar.getInstance();
+                cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.DAY_OF_MONTH));
+                Date start = new Date(cal.getTimeInMillis());
+
+                cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+                Date end = new Date(cal.getTimeInMillis());
+
+                return new CursorLoader(
+                        this,
+                        CategoryCostEntry.CONTENT_URI,
+                        new String[]{"SUM(" + CategoryCostEntry.COLUMN_SUM + ") AS " + CategoryCostEntry.COLUMN_SUM},
+                        CategoryCostEntry.COLUMN_CATEGORY_ID + " = " + args.getInt("id") + " " +
+                        " AND " + CategoryCostEntry.COLUMN_DATE + " between "+start.getTime()+" AND " + end.getTime(),
                         null,
                         null);
             }
@@ -327,6 +373,7 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
                 spinAnalytic.setAdapter(adapter);
 
                 Utils.setPositionById(spinAnalytic, OperationMasterPrefs.getAnalyticId(this, getCheckedOperationType()));
+                onAnalitycChanged();
                 break;
             }
             case REP_ACCOUNT_LOADER_ID:{
@@ -342,6 +389,32 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
                 spinAnalytic.setAdapter(adapter);
 
                 Utils.setPositionById(spinAnalytic, OperationMasterPrefs.getAnalyticId(this, getCheckedOperationType()));
+                onAnalitycChanged();
+                break;
+            }
+            case FACT:{
+
+                Cursor catCursor = (Cursor)spinAnalytic.getSelectedItem();
+
+                int budget = catCursor.getInt(catCursor.getColumnIndex(CategoryEntry.COLUMN_BUDGET));
+                tvBudgetSum.setText(String.valueOf(budget));
+
+                progress.setMax(budget);
+
+                int fact = 0;
+                if(cursor != null && cursor.moveToFirst()){
+                    fact = cursor.getInt(cursor.getColumnIndex(CategoryCostEntry.COLUMN_SUM));
+                }
+                tvFactSum.setText(String.valueOf(fact));
+                progress.setProgress(fact);
+
+                if (budget >= fact){
+                    tvOver.setVisibility(View.INVISIBLE);
+                }else{
+                    tvOver.setVisibility(View.VISIBLE);
+                    tvOver.setText(String.valueOf(fact-budget));
+                }
+
                 break;
             }
         }
@@ -353,89 +426,21 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
 
     }
 
+    public void onAnalitycChanged(){
 
-/*
-    private class AccountAdapter extends ArrayAdapter<Account> {
+         switch (getCheckedOperationType()){
+            case IN: case OUT:{
+                Bundle bundle = new Bundle();
+                bundle.putInt("id", Utils.getSelectedId(spinAnalytic));
 
-        private final ArrayList<Account> accounts;
-
-        AccountAdapter(Context context, ArrayList<Account> accounts) {
-            super(context, R.layout.account_spinner_adapter, accounts);
-            this.accounts = accounts;
-        }
-
-        @NonNull
-        @Override
-        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-            Account account = accounts.get(position);
-
-            if (convertView == null) {
-                convertView = LayoutInflater.from(getContext())
-                        .inflate(R.layout.account_spinner_adapter, parent, false);
+                getSupportLoaderManager().restartLoader(FACT,bundle,this);
+                break;
             }
-            ((TextView) convertView.findViewById(R.id.account_spinner_adapter_name))
-                    .setText(account.getName());
-            ((TextView) convertView.findViewById(R.id.account_spinner_adapter_balance))
-                    .setText(String.format(Locale.getDefault(),"%,d",account.getBalance()));
-            return convertView;
-        }
-
-        @Override
-        public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
-            Account account = accounts.get(position);
-
-            if (convertView == null) {
-                convertView = LayoutInflater.from(getContext())
-                        .inflate(R.layout.account_spinner_adapter_dropdown, parent, false);
+            case TRANSFER:{
+                break;
             }
-            ((TextView) convertView.findViewById(R.id.account_spinner_adapter_dropdown_name))
-                    .setText(account.getName());
-            ((TextView) convertView.findViewById(R.id.account_spinner_adapter_dropdown_balance))
-                    .setText(String.format(Locale.getDefault(),"%,d",account.getBalance()));
-            return convertView;
-        }
-    }
-
-    private class CategoryAdapter extends ArrayAdapter<Category> {
-
-        private final ArrayList<Category> categories;
-
-        CategoryAdapter(Context context, ArrayList<Category> categories) {
-            super(context, R.layout.category_spinner_adapter, categories);
-            this.categories = categories;
-        }
-
-        @NonNull
-        @Override
-        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-             Category category = categories.get(position);
-
-            if (convertView == null) {
-                convertView = LayoutInflater.from(getContext())
-                        .inflate(R.layout.category_spinner_adapter, parent, false);
-            }
-
-            GregorianCalendar c = new GregorianCalendar();
-            Date end = new Date(c.getTimeInMillis());
-
-            c.set(GregorianCalendar.DAY_OF_MONTH, c.getActualMinimum(GregorianCalendar.DAY_OF_MONTH));
-            c.set(GregorianCalendar.HOUR_OF_DAY, 0);
-            c.set(GregorianCalendar.MINUTE, 0);
-            c.set(GregorianCalendar.SECOND, 0);
-            c.set(GregorianCalendar.MILLISECOND, 0);
-            Date start = new Date(c.getTimeInMillis());
-
-            int fact = CashFlowDbManager.getInstance(getContext()).getCategorySum(category, start, end);
-
-            ((TextView) convertView.findViewById(R.id.name)).setText(category.getName());
-            ((TextView) convertView.findViewById(R.id.budget))
-                    .setText(String.format(Locale.getDefault(),"%,d",category.getBudget()));
-            ((TextView) convertView.findViewById(R.id.fact))
-                    .setText(String.format(Locale.getDefault(),"%,d",fact));
-
-            return convertView;
         }
 
     }
-*/
+
 }

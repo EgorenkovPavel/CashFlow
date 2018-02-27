@@ -8,8 +8,6 @@
     <string name="Operations">Operations</string>
     <string name="Categories">Categories</string>
     <string name="Settings">Settings</string>
-    <string name="btn_ok" translatable="false">OK</string>
-    <string name="btn_cancel">Cancel</string>
     <string name="account">Account</string>
     <string name="category">Category</string>
     <string name="date">Date</string>
@@ -35,16 +33,10 @@
     <string name="next">next</string>
     <string name="operation_master">Operation master</string>
     <string name="budget">Budget</string>
-    <string name="operation">Operation</string>
     <string name="preferences">Preferences</string>
-    <string name="pref_main_currency" translatable="false">pref_main_currency</string>
-    <string name="RUB" translatable="false">RUB</string>
     <string name="pref_show_operation_master_on_start" translatable="false">pref_show_operation_master_on_start</string>
-    <string name="main_currency">Main currency</string>
     <string name="summary_show_operation_master">Show operation master on start</string>
     <string name="title_show_operation_master">Show operation master on start</string>
-    <string name="pref_password" translatable="false">Password</string>
-    <string name="title_password">Password</string>
     <string name="summary">Summary</string>
     <string name="total">Total</string>
     <string name="fact">Fact</string>
@@ -52,7 +44,6 @@
     <string name="operation_type">Operation type</string>
     <string name="backup">Backup</string>
     <string name="restore">Restore</string>
-    <string name="delete">Delete</string>
 
     <string name="pref_operation_master_account_pos" translatable="false">pref_operation_master_account_pos</string>
     <string name="pref_operation_master_analytic_in" translatable="false">pref_operation_master_analytic_pos</string>
