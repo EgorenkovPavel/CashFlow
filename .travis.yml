@@ -16,4 +16,4 @@ android:
     - extra-android-m2repository
 
 script:
-   - ./gradlew build connectedCheck
+  - cd ${TRAVIS_BUILD_DIR}/${DIR} && ./gradlew connectedCheck
