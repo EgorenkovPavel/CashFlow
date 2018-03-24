@@ -45,5 +45,6 @@
     <string name="file_system">File system</string>
     <string name="google_drive" translatable="false">Google drive</string>
     <string name="pref_selected_tab" translatable="false">selected_tab</string>
+    <string name="empty_list_operations">List is empty</string>
 
 </resources>

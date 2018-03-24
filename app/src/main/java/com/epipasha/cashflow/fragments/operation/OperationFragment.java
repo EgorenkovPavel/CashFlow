@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
@@ -28,7 +29,6 @@ import com.epipasha.cashflow.objects.OperationType;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
 
 
@@ -39,13 +39,19 @@ public class OperationFragment extends Fragment implements LoaderManager.LoaderC
     private static final int OPERATION_LOADER_ID = 3;
 
     private OperationAdapter mAdapter;
+    private RecyclerView recyclerView;
+    private ProgressBar loadingIndicator;
+    private TextView tvEmptyList;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_account_list, container, false);
+        View v = inflater.inflate(R.layout.fragment_list, container, false);
 
-        RecyclerView recyclerView = (RecyclerView)v.findViewById(R.id.recyclerView);
+        recyclerView = (RecyclerView)v.findViewById(R.id.recyclerView);
+        loadingIndicator = (ProgressBar)v.findViewById(R.id.pb_loading_indikator);
+        tvEmptyList = (TextView)v.findViewById(R.id.tv_empty);
+        tvEmptyList.setText(getString(R.string.empty_list_operations));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
@@ -83,10 +89,9 @@ public class OperationFragment extends Fragment implements LoaderManager.LoaderC
 
         recyclerView.setAdapter(mAdapter);
 
-        //getLoaderManager().initLoader(OPERATION_LOADER_ID, null, this);
-        getLoaderManager().restartLoader(ACCOUNT_LOADER_ID, null, this);
-        getLoaderManager().restartLoader(CATEGORY_LOADER_ID, null, this);
-        getLoaderManager().restartLoader(OPERATION_LOADER_ID, null, this);
+        showLoading();
+
+         getLoaderManager().restartLoader(OPERATION_LOADER_ID, null, this);
 
         return v;
     }
@@ -136,33 +141,43 @@ public class OperationFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        switch (loader.getId()){
-            case ACCOUNT_LOADER_ID:{
-                mAdapter.setAccountCursor(cursor);
-                break;
-            }
-            case CATEGORY_LOADER_ID:{
-                mAdapter.setCategoryCursor(cursor);
-                break;
-            }
-            case OPERATION_LOADER_ID:{
-                mAdapter.swapCursor(cursor);
-                break;
-            }
+        mAdapter.swapCursor(cursor);
+        if(cursor.getCount() > 0) {
+            showList();
+        }else{
+            showEmpty();
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mAdapter.swapCursor(null);
+        showEmpty();
+    }
+
+    private void showLoading(){
+        recyclerView.setVisibility(View.INVISIBLE);
+        loadingIndicator.setVisibility(View.VISIBLE);
+        tvEmptyList.setVisibility(View.INVISIBLE);
+    }
+
+    private void showList(){
+        recyclerView.setVisibility(View.VISIBLE);
+        loadingIndicator.setVisibility(View.INVISIBLE);
+        tvEmptyList.setVisibility(View.INVISIBLE);
+    }
+
+    private void showEmpty(){
+        recyclerView.setVisibility(View.INVISIBLE);
+        loadingIndicator.setVisibility(View.INVISIBLE);
+        tvEmptyList.setVisibility(View.VISIBLE);
     }
 
     class OperationAdapter extends RecyclerView.Adapter<OperationAdapter.OperationHolder>{
 
-        private HashMap<Integer, String> accounts;
-        private HashMap<Integer, String> categories;
         private Cursor mCursor;
         private Context mContext;
+        private int maxPosition = 0;
 
         public OperationAdapter(Context mContext) {
             this.mContext = mContext;
@@ -181,12 +196,9 @@ public class OperationFragment extends Fragment implements LoaderManager.LoaderC
 
             int idIndex = mCursor.getColumnIndex(OperationEntry._ID);
             int dateIndex = mCursor.getColumnIndex(OperationEntry.COLUMN_DATE);
-//            int accountIndex = mCursor.getColumnIndex(OperationEntry.SERVICE_COLUMN_ACCOUNT_TITLE);
-//            int categoryIndex = mCursor.getColumnIndex(OperationEntry.SERVICE_COLUMN_CATEGORY_TITLE);
-//            int repAccountIndex = mCursor.getColumnIndex(OperationEntry.SERVICE_COLUMN_RECIPIENT_ACCOUNT_TITLE);
-            int accountIndex = mCursor.getColumnIndex(OperationEntry.COLUMN_ACCOUNT_ID);
-            int categoryIndex = mCursor.getColumnIndex(OperationEntry.COLUMN_CATEGORY_ID);
-            int repAccountIndex = mCursor.getColumnIndex(OperationEntry.COLUMN_RECIPIENT_ACCOUNT_ID);
+            int accountIndex = mCursor.getColumnIndex(OperationEntry.SERVICE_COLUMN_ACCOUNT_TITLE);
+            int categoryIndex = mCursor.getColumnIndex(OperationEntry.SERVICE_COLUMN_CATEGORY_TITLE);
+            int repAccountIndex = mCursor.getColumnIndex(OperationEntry.SERVICE_COLUMN_RECIPIENT_ACCOUNT_TITLE);
             int typeIndex = mCursor.getColumnIndex(OperationEntry.COLUMN_TYPE);
             int sumIndex = mCursor.getColumnIndex(OperationEntry.COLUMN_SUM);
 
@@ -195,12 +207,9 @@ public class OperationFragment extends Fragment implements LoaderManager.LoaderC
             // Determine the values of the wanted data
             final int id = mCursor.getInt(idIndex);
             Date date = new Date(mCursor.getLong(dateIndex));
-//            String account = mCursor.getString(accountIndex);
-//            String category = mCursor.getString(categoryIndex);
-//            String repAccount = mCursor.getString(repAccountIndex);
-            String account = accounts.get(mCursor.getInt(accountIndex));
-            String category = categories.get(mCursor.getInt(categoryIndex));
-            String repAccount = accounts.get(mCursor.getInt(repAccountIndex));
+            String account = mCursor.getString(accountIndex);
+            String category = mCursor.getString(categoryIndex);
+            String repAccount = mCursor.getString(repAccountIndex);
             OperationType type = OperationType.toEnum(mCursor.getInt(typeIndex));
             int sum = mCursor.getInt(sumIndex);
 
@@ -230,6 +239,20 @@ public class OperationFragment extends Fragment implements LoaderManager.LoaderC
                     break;
                 }
             }
+
+            if (position+1 == maxPosition){
+                incMaxPosition();
+            }
+
+        }
+
+        private void incMaxPosition(){
+            int delta = 50;
+            if(mCursor == null){
+                maxPosition = 0;
+            }else{
+                maxPosition = Math.min(maxPosition + delta, mCursor.getCount());
+            }
         }
 
         @Override
@@ -237,7 +260,7 @@ public class OperationFragment extends Fragment implements LoaderManager.LoaderC
             if (mCursor == null) {
                 return 0;
             }
-            return 50;//mCursor.getCount();
+            return maxPosition;//mCursor.getCount();
         }
 
         public Cursor swapCursor(Cursor c) {
@@ -249,49 +272,13 @@ public class OperationFragment extends Fragment implements LoaderManager.LoaderC
             this.mCursor = c; // new cursor value assigned
 
             //check if this is a valid cursor, then update the cursor
-            if (mCursor != null && accounts != null && categories != null) {
+            if (c != null) {
                 this.notifyDataSetChanged();
             }
+
+            incMaxPosition();
+
             return temp;
-        }
-
-        public void setAccountCursor(Cursor c){
-
-            if(c == null){
-                accounts = null;
-                return;
-            }
-
-            accounts = new HashMap<>();
-            c.moveToFirst();
-            while (!c.isAfterLast()){
-                accounts.put(c.getInt(c.getColumnIndex(AccountEntry._ID)),
-                        c.getString(c.getColumnIndex(AccountEntry.COLUMN_TITLE)));
-                c.moveToNext();
-            }
-
-            if (mCursor != null && accounts != null && categories != null) {
-                this.notifyDataSetChanged();
-            }
-        }
-
-        public void setCategoryCursor(Cursor c){
-            if(c == null){
-                categories = null;
-                return;
-            }
-
-            categories = new HashMap<>();
-            c.moveToFirst();
-            while (!c.isAfterLast()){
-                categories.put(c.getInt(c.getColumnIndex(CategoryEntry._ID)),
-                        c.getString(c.getColumnIndex(CategoryEntry.COLUMN_TITLE)));
-                c.moveToNext();
-            }
-
-            if (mCursor != null && accounts != null && categories != null) {
-                this.notifyDataSetChanged();
-            }
         }
 
         class OperationHolder extends RecyclerView.ViewHolder implements View.OnClickListener{

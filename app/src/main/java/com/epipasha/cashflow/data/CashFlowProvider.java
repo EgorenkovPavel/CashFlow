@@ -192,45 +192,39 @@ public class CashFlowProvider extends ContentProvider {
 
             case OPERATIONS:{
 
-//                final String ACCOUNT_TABLE = "operation_account_table";
-//                final String CATEGORY_TABLE = "operation_category_table";
-//                final String RECIPIENT_OPERATION_TABLE = "operation_recipient_account_table";
-//
-//                String sqlQuery2 = "SELECT " +
-//                        OperationEntry.TABLE_NAME + "." + OperationEntry._ID + ", " +
-//                        OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_DATE + ", " +
-//                        OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_TYPE + ", " +
-//                        OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_SUM + ", " +
-//                        ACCOUNT_TABLE + "." + AccountEntry.COLUMN_TITLE + " as " + OperationEntry.SERVICE_COLUMN_ACCOUNT_TITLE + ", " +
-//                        CATEGORY_TABLE + "." + CategoryEntry.COLUMN_TITLE + " as " + OperationEntry.SERVICE_COLUMN_CATEGORY_TITLE + ", " +
-//                        RECIPIENT_OPERATION_TABLE + "." + AccountEntry.COLUMN_TITLE + " as " + OperationEntry.SERVICE_COLUMN_RECIPIENT_ACCOUNT_TITLE + " " +
-//
-//                        "FROM " + OperationEntry.TABLE_NAME + " " +
-//
-//                        "LEFT OUTER JOIN " +
-//                        AccountEntry.TABLE_NAME + " as " + ACCOUNT_TABLE + " " +
-//                        " ON " + OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_ACCOUNT_ID +
-//                        " = " + ACCOUNT_TABLE + "." + AccountEntry._ID + " " +
-//
-//                        "LEFT OUTER JOIN " +
-//                        CategoryEntry.TABLE_NAME + " as " + CATEGORY_TABLE + " " +
-//                        " ON " + OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_CATEGORY_ID +
-//                        " = " + CATEGORY_TABLE + "." + CategoryEntry._ID + " " +
-//
-//                        "LEFT OUTER JOIN " +
-//                        AccountEntry.TABLE_NAME + " as " + RECIPIENT_OPERATION_TABLE + " " +
-//                        " ON " + OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_RECIPIENT_ACCOUNT_ID +
-//                        " = " + RECIPIENT_OPERATION_TABLE + "." + AccountEntry._ID + " " +
-//
-//                        "ORDER BY " + OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_DATE + "  DESC;";
-//                retCursor = db.rawQuery(sqlQuery2, null);
-                retCursor = db.query(OperationEntry.TABLE_NAME,
-                        projection,
-                        selection,
-                        selectionArgs,
-                        null,
-                        null,
-                        OperationEntry.COLUMN_DATE + "  DESC");
+                final String ACCOUNT_TABLE = "operation_account_table";
+                final String CATEGORY_TABLE = "operation_category_table";
+                final String RECIPIENT_OPERATION_TABLE = "operation_recipient_account_table";
+
+                String sqlQuery2 = "SELECT " +
+                        OperationEntry.TABLE_NAME + "." + OperationEntry._ID + ", " +
+                        OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_DATE + ", " +
+                        OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_TYPE + ", " +
+                        OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_SUM + ", " +
+                        ACCOUNT_TABLE + "." + AccountEntry.COLUMN_TITLE + " as " + OperationEntry.SERVICE_COLUMN_ACCOUNT_TITLE + ", " +
+                        CATEGORY_TABLE + "." + CategoryEntry.COLUMN_TITLE + " as " + OperationEntry.SERVICE_COLUMN_CATEGORY_TITLE + ", " +
+                        RECIPIENT_OPERATION_TABLE + "." + AccountEntry.COLUMN_TITLE + " as " + OperationEntry.SERVICE_COLUMN_RECIPIENT_ACCOUNT_TITLE + " " +
+
+                        "FROM " + OperationEntry.TABLE_NAME + " " +
+
+                        "LEFT OUTER JOIN " +
+                        AccountEntry.TABLE_NAME + " as " + ACCOUNT_TABLE + " " +
+                        " ON " + OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_ACCOUNT_ID +
+                        " = " + ACCOUNT_TABLE + "." + AccountEntry._ID + " " +
+
+                        "LEFT OUTER JOIN " +
+                        CategoryEntry.TABLE_NAME + " as " + CATEGORY_TABLE + " " +
+                        " ON " + OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_CATEGORY_ID +
+                        " = " + CATEGORY_TABLE + "." + CategoryEntry._ID + " " +
+
+                        "LEFT OUTER JOIN " +
+                        AccountEntry.TABLE_NAME + " as " + RECIPIENT_OPERATION_TABLE + " " +
+                        " ON " + OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_RECIPIENT_ACCOUNT_ID +
+                        " = " + RECIPIENT_OPERATION_TABLE + "." + AccountEntry._ID + " " +
+
+                        "ORDER BY " + OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_DATE + "  DESC;";
+                retCursor = db.rawQuery(sqlQuery2, null);
+
                 break;
            }
 

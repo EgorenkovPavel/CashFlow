@@ -36,7 +36,7 @@ public class CategoryFragment extends Fragment implements LoaderManager.LoaderCa
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_category_list, container, false);
+        View v = inflater.inflate(R.layout.fragment_list, container, false);
 
         RecyclerView recyclerView = (RecyclerView)v.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
