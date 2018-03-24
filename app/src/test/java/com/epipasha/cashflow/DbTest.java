@@ -11,13 +11,9 @@ import android.provider.BaseColumns;
 
 import static org.junit.Assert.*;
 
-import com.epipasha.cashflow.data.CashFlowContract;
-import com.epipasha.cashflow.data.CashFlowContract.AccountEntry;
-import com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
 import com.epipasha.cashflow.data.CashFlowDbHelper;
 import com.epipasha.cashflow.objects.OperationType;
 
-import org.bouncycastle.jcajce.provider.symmetric.ARC4;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 

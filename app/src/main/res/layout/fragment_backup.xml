@@ -3,13 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:padding="8dp"
     tools:context="com.epipasha.cashflow.BackupFragment">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/file_system" />
+            android:text="@string/file_system"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -19,27 +21,31 @@
 
                 <Button
                     android:id="@+id/file_share"
-                    style="@style/Widget.AppCompat.Button.Borderless"
+                    style="@android:style/Widget.Button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/backup" />
+                    android:text="@string/backup"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Button" />
 
                 <Button
                     android:id="@+id/file_restore"
-                    style="@style/Widget.AppCompat.Button.Borderless"
+                    style="@android:style/Widget.Button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/restore" />
+                    android:text="@string/restore"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Button" />
 
         </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:layout_weight="1"
-            android:text="@string/google_drive" />
+            android:text="@string/google_drive"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -49,19 +55,21 @@
 
                 <Button
                     android:id="@+id/drive_share"
-                    style="@style/Widget.AppCompat.Button.Borderless"
+                    style="@android:style/Widget.Button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/backup" />
+                    android:text="@string/backup"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Button" />
 
                 <Button
                     android:id="@+id/drive_restore"
-                    style="@style/Widget.AppCompat.Button.Borderless"
+                    style="@android:style/Widget.Button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/restore" />
+                    android:text="@string/restore"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Button" />
         </LinearLayout>
 
 </LinearLayout>

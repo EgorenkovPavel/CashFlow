@@ -18,16 +18,22 @@ import com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
 import com.epipasha.cashflow.data.CashFlowContract.OperationEntry;
 import com.epipasha.cashflow.objects.OperationType;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
 public class CashFlowProvider extends ContentProvider {
 
     private static final int ACCOUNTS = 100;
     private static final int ACCOUNT_WITH_ID = 101;
     private static final int CATEGORIES = 200;
     private static final int CATEGORY_WITH_ID = 201;
+    private static final int CATEGORY_COST_MONTH = 202;
     private static final int OPERATIONS = 300;
     private static final int OPERATION_WITH_ID = 301;
     private static final int BUDGET = 400;
     private static final int CATEGORY_COST = 500;
+    private static final int ACCOUNT_BALANCE = 600;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
@@ -40,6 +46,8 @@ public class CashFlowProvider extends ContentProvider {
 
         uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_CATEGORY, CATEGORIES);
         uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_CATEGORY + "/#", CATEGORY_WITH_ID);
+        uriMatcher.addURI(CashFlowContract.AUTHORITY,
+                CashFlowContract.PATH_CATEGORY + "/" + CategoryEntry.PATH_COST + "/#/#", CATEGORY_COST_MONTH);
 
         uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_OPERATION, OPERATIONS);
         uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_OPERATION + "/#", OPERATION_WITH_ID);
@@ -47,6 +55,8 @@ public class CashFlowProvider extends ContentProvider {
         uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_BUDGET, BUDGET);
 
         uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_CATEGORY_COST, CATEGORY_COST);
+
+        uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_ACCOUNT_BALANCE, ACCOUNT_BALANCE);
 
         return uriMatcher;
     }
@@ -146,41 +156,81 @@ public class CashFlowProvider extends ContentProvider {
                 break;
             }
 
+            case CATEGORY_COST_MONTH:{
+
+                List<String> segments = uri.getPathSegments();
+                int year = Integer.valueOf(segments.get(segments.size() - 2));
+                int month = Integer.valueOf(segments.get(segments.size() - 1));
+
+                Calendar cal = Calendar.getInstance();
+                cal.set(year, month, 1);
+                Date start = cal.getTime();
+
+                cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+                Date end = cal.getTime();
+
+                retCursor = db.query(
+                        CategoryEntry.TABLE_NAME + " " +
+                        "LEFT OUTER JOIN " +
+                            "(SELECT " +
+                            CategoryCostEntry.TABLE_NAME + "." + CategoryCostEntry.COLUMN_CATEGORY_ID + ", " +
+                            "SUM(" + CategoryCostEntry.TABLE_NAME + "." + CategoryCostEntry.COLUMN_SUM + ") AS " + CategoryCostEntry.COLUMN_SUM + " " +
+                            "FROM " + CategoryCostEntry.TABLE_NAME + " " +
+                                "WHERE " + CategoryCostEntry.COLUMN_DATE + " between " + start.getTime() + " AND " + end.getTime() + " " +
+                            "GROUP BY " + CategoryCostEntry.TABLE_NAME + "." + CategoryCostEntry.COLUMN_CATEGORY_ID + ") " +
+                                "AS " + CategoryCostEntry.TABLE_NAME + " " +
+                        "ON " + CategoryEntry.TABLE_NAME + "." + CategoryEntry._ID + " = " +
+                                CategoryCostEntry.TABLE_NAME + "." + CategoryCostEntry.COLUMN_CATEGORY_ID,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        CategoryEntry.COLUMN_TITLE);
+                break;
+            }
+
             case OPERATIONS:{
 
-                final String ACCOUNT_TABLE = "operation_account_table";
-                final String CATEGORY_TABLE = "operation_category_table";
-                final String RECIPIENT_OPERATION_TABLE = "operation_recipient_account_table";
-
-                String sqlQuery2 = "SELECT " +
-                        OperationEntry.TABLE_NAME + "." + OperationEntry._ID + ", " +
-                        OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_DATE + ", " +
-                        OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_TYPE + ", " +
-                        OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_SUM + ", " +
-                        ACCOUNT_TABLE + "." + AccountEntry.COLUMN_TITLE + " as " + OperationEntry.SERVICE_COLUMN_ACCOUNT_TITLE + ", " +
-                        CATEGORY_TABLE + "." + CategoryEntry.COLUMN_TITLE + " as " + OperationEntry.SERVICE_COLUMN_CATEGORY_TITLE + ", " +
-                        RECIPIENT_OPERATION_TABLE + "." + AccountEntry.COLUMN_TITLE + " as " + OperationEntry.SERVICE_COLUMN_RECIPIENT_ACCOUNT_TITLE + " " +
-
-                        "FROM " + OperationEntry.TABLE_NAME + " " +
-
-                        "LEFT OUTER JOIN " +
-                        AccountEntry.TABLE_NAME + " as " + ACCOUNT_TABLE + " " +
-                        " ON " + OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_ACCOUNT_ID +
-                        " = " + ACCOUNT_TABLE + "." + AccountEntry._ID + " " +
-
-                        "LEFT OUTER JOIN " +
-                        CategoryEntry.TABLE_NAME + " as " + CATEGORY_TABLE + " " +
-                        " ON " + OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_CATEGORY_ID +
-                        " = " + CATEGORY_TABLE + "." + CategoryEntry._ID + " " +
-
-                        "LEFT OUTER JOIN " +
-                        AccountEntry.TABLE_NAME + " as " + RECIPIENT_OPERATION_TABLE + " " +
-                        " ON " + OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_RECIPIENT_ACCOUNT_ID +
-                        " = " + RECIPIENT_OPERATION_TABLE + "." + AccountEntry._ID + " " +
-
-                        "ORDER BY " + OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_DATE + "  DESC;";
-                retCursor = db.rawQuery(sqlQuery2, null);
-
+//                final String ACCOUNT_TABLE = "operation_account_table";
+//                final String CATEGORY_TABLE = "operation_category_table";
+//                final String RECIPIENT_OPERATION_TABLE = "operation_recipient_account_table";
+//
+//                String sqlQuery2 = "SELECT " +
+//                        OperationEntry.TABLE_NAME + "." + OperationEntry._ID + ", " +
+//                        OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_DATE + ", " +
+//                        OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_TYPE + ", " +
+//                        OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_SUM + ", " +
+//                        ACCOUNT_TABLE + "." + AccountEntry.COLUMN_TITLE + " as " + OperationEntry.SERVICE_COLUMN_ACCOUNT_TITLE + ", " +
+//                        CATEGORY_TABLE + "." + CategoryEntry.COLUMN_TITLE + " as " + OperationEntry.SERVICE_COLUMN_CATEGORY_TITLE + ", " +
+//                        RECIPIENT_OPERATION_TABLE + "." + AccountEntry.COLUMN_TITLE + " as " + OperationEntry.SERVICE_COLUMN_RECIPIENT_ACCOUNT_TITLE + " " +
+//
+//                        "FROM " + OperationEntry.TABLE_NAME + " " +
+//
+//                        "LEFT OUTER JOIN " +
+//                        AccountEntry.TABLE_NAME + " as " + ACCOUNT_TABLE + " " +
+//                        " ON " + OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_ACCOUNT_ID +
+//                        " = " + ACCOUNT_TABLE + "." + AccountEntry._ID + " " +
+//
+//                        "LEFT OUTER JOIN " +
+//                        CategoryEntry.TABLE_NAME + " as " + CATEGORY_TABLE + " " +
+//                        " ON " + OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_CATEGORY_ID +
+//                        " = " + CATEGORY_TABLE + "." + CategoryEntry._ID + " " +
+//
+//                        "LEFT OUTER JOIN " +
+//                        AccountEntry.TABLE_NAME + " as " + RECIPIENT_OPERATION_TABLE + " " +
+//                        " ON " + OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_RECIPIENT_ACCOUNT_ID +
+//                        " = " + RECIPIENT_OPERATION_TABLE + "." + AccountEntry._ID + " " +
+//
+//                        "ORDER BY " + OperationEntry.TABLE_NAME + "." + OperationEntry.COLUMN_DATE + "  DESC;";
+//                retCursor = db.rawQuery(sqlQuery2, null);
+                retCursor = db.query(OperationEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        OperationEntry.COLUMN_DATE + "  DESC");
                 break;
            }
 
@@ -226,8 +276,83 @@ public class CashFlowProvider extends ContentProvider {
         // Set a notification URI on the Cursor and return that Cursor
         retCursor.setNotificationUri(getContext().getContentResolver(), uri);
 
+        switch (match){
+            case CATEGORY_COST_MONTH:
+                retCursor.setNotificationUri(getContext().getContentResolver(), CategoryEntry.CONTENT_URI);
+                retCursor.setNotificationUri(getContext().getContentResolver(), CategoryCostEntry.CONTENT_URI);
+                break;
+        }
+
         // Return the desired Cursor
         return retCursor;
+    }
+
+    @Override
+    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
+        final SQLiteDatabase db = mCashFlowDbHelper.getWritableDatabase();
+
+        int returnCount = 0;
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case ACCOUNTS:
+                db.beginTransaction();
+
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insert(CashFlowContract.AccountEntry.TABLE_NAME, null, value);
+                        if (_id != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                break;
+
+            case CATEGORIES:
+                db.beginTransaction();
+
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insert(CashFlowContract.CategoryEntry.TABLE_NAME, null, value);
+                        if (_id != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                break;
+
+            case OPERATIONS:
+                db.beginTransaction();
+
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insert(CashFlowContract.OperationEntry.TABLE_NAME, null, value);
+
+                        insertOperationAnalytics(db, value, _id);
+                        if (_id != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                break;
+
+            default:
+                returnCount = super.bulkInsert(uri, values);
+                break;
+        }
+
+        return returnCount;
     }
 
     @Nullable
@@ -287,8 +412,6 @@ public class CashFlowProvider extends ContentProvider {
 
                     insertOperationAnalytics(db, contentValues, id);
 
-
-
                     if (id != -1) {
                         resUri = OperationEntry.buildOperationUriWithId(id);
                     }
@@ -317,11 +440,32 @@ public class CashFlowProvider extends ContentProvider {
 
         int numRowsDeleted;
 
+        SQLiteDatabase db = mCashFlowDbHelper.getWritableDatabase();
+
         switch (sUriMatcher.match(uri)){
+            case ACCOUNTS:{
+                numRowsDeleted = db.delete(
+                        AccountEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+                break;
+            }
+            case CATEGORIES:{
+                numRowsDeleted = db.delete(
+                        CategoryEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+                break;
+            }
+            case OPERATIONS:{
+                numRowsDeleted = db.delete(
+                        OperationEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+                break;
+            }
             case OPERATION_WITH_ID:{
                 String id = uri.getLastPathSegment();
-
-                SQLiteDatabase db = mCashFlowDbHelper.getWritableDatabase();
 
                 db.beginTransaction();
                 try {
@@ -330,13 +474,34 @@ public class CashFlowProvider extends ContentProvider {
                             OperationEntry._ID + " = ?",
                             new String[]{id});
 
-                    deleteOperationAnalytics(db, id);
+                    delete(
+                            CategoryCostEntry.CONTENT_URI,
+                            CategoryCostEntry.COLUMN_OPERATION_ID + " = " + id,
+                            null);
+
+                    delete(
+                            AccountBalanceEntry.CONTENT_URI,
+                            AccountBalanceEntry.COLUMN_OPERATION_ID + " = " + id,
+                            null);
 
                     db.setTransactionSuccessful();
                 } finally {
                     db.endTransaction();
                 }
-
+                break;
+            }
+            case CATEGORY_COST:{
+                numRowsDeleted = db.delete(
+                        CategoryCostEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+                break;
+            }
+            case ACCOUNT_BALANCE:{
+                numRowsDeleted = db.delete(
+                        AccountBalanceEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
                 break;
             }
 
@@ -392,7 +557,16 @@ public class CashFlowProvider extends ContentProvider {
                         OperationEntry._ID + " = ?",
                         new String[]{id});
 
-                    deleteOperationAnalytics(db, id);
+                    delete(
+                            CategoryCostEntry.CONTENT_URI,
+                            CategoryCostEntry.COLUMN_OPERATION_ID + " = " + id,
+                            null);
+
+                    delete(
+                            AccountBalanceEntry.CONTENT_URI,
+                            AccountBalanceEntry.COLUMN_OPERATION_ID + " = " + id,
+                            null);
+
                     insertOperationAnalytics(db, contentValues, Long.valueOf(id));
 
                     db.setTransactionSuccessful();
@@ -469,10 +643,9 @@ public class CashFlowProvider extends ContentProvider {
             db.insertOrThrow(CategoryCostEntry.TABLE_NAME, null, values);
         }
 
+        getContext().getContentResolver().notifyChange(CategoryCostEntry.CONTENT_URI, null);
+        getContext().getContentResolver().notifyChange(AccountBalanceEntry.CONTENT_URI, null);
+
     }
 
-    private void deleteOperationAnalytics(SQLiteDatabase db, String id){
-        db.delete(AccountBalanceEntry.TABLE_NAME, AccountBalanceEntry.COLUMN_OPERATION_ID + " = " + id, null);
-        db.delete(CategoryCostEntry.TABLE_NAME, CategoryCostEntry.COLUMN_OPERATION_ID + " = " + id, null);
-    }
 }

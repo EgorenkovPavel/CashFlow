@@ -3,39 +3,29 @@ package com.epipasha.cashflow;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.epipasha.cashflow.fragments.AnalyticFragment;
 import com.epipasha.cashflow.fragments.account.AccountFragment;
 import com.epipasha.cashflow.fragments.account.DetailAccountActivity;
 import com.epipasha.cashflow.fragments.category.CategoryFragment;
 import com.epipasha.cashflow.fragments.category.DetailCategoryActivity;
-import com.epipasha.cashflow.fragments.operation.DetailOperationActivity;
 import com.epipasha.cashflow.fragments.operation.OperationFragment;
-import com.epipasha.cashflow.fragments.summary.SummaryFragment;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity{
 
-    private static final int OPEN_OPERATION_MASTER = 1;
     private static final String FRAGMENT_TAG = "fragment_tag";
-    private static final String SAVED_STATE_KEY_ITEM_ID = "item_id";
 
-    private int menuItemId = R.id.nav_summary;
-    private NavigationView navigationView;
+    private TabLayout tabs;
     private FloatingActionButton fab;
 
     @Override
@@ -46,28 +36,41 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        tabs = (TabLayout)findViewById(R.id.tabs);
+        tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                MainActivity.this.onTabSelected();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                switch (menuItemId){
-                    case R.id.nav_accounts: {
+                switch (tabs.getSelectedTabPosition()){
+                    case 0: {
                         Intent i = new Intent(MainActivity.this, DetailAccountActivity.class);
                         startActivity(i);
                         break;
                     }
-                    case R.id.nav_categories:{
+                    case 1:{
                         Intent i = new Intent(MainActivity.this, DetailCategoryActivity.class);
                         startActivity(i);
                         break;
                     }
-                    case R.id.nav_operations:{
-                        Intent i = new Intent(MainActivity.this, DetailOperationActivity.class);
-                        startActivity(i);
-                        break;
-                    }
-                    case R.id.nav_summary:{
+                    case 2:{
                         Intent i = new Intent(MainActivity.this, OperationMasterActivity.class);
                         startActivity(i);
                         break;
@@ -76,105 +79,26 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        TabLayout.Tab tab = tabs.getTabAt(Prefs.getSelectedTab(this));
+        tab.select();
+        onTabSelected();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+    }
 
-        if (savedInstanceState == null) {
-
-            navigationView.setCheckedItem(menuItemId);
-            onNavigationItemSelected(navigationView.getMenu().findItem(menuItemId));
-
-            if (Prefs.isShowOperationMasterOnStart(this)) {
-                Intent i = new Intent(this, OperationMasterActivity.class);
-                startActivity(i);
+    private void onTabSelected() {
+        switch (tabs.getSelectedTabPosition()){
+            case 0:{
+                setContentFragment(new AccountFragment());
+                break;
             }
-        }else{
-
-            menuItemId = savedInstanceState.getInt(SAVED_STATE_KEY_ITEM_ID);
-            setActionBarTitle(navigationView.getMenu().findItem(menuItemId).getTitle());
-
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-
-        outState.putInt(SAVED_STATE_KEY_ITEM_ID, menuItemId);
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-        menuItemId = item.getItemId();
-        fab.show();
-
-         if (menuItemId == R.id.nav_summary) {
-            setContentFragment(new SummaryFragment());
-            setActionBarTitle(item.getTitle());
-
-        } else if (menuItemId == R.id.nav_accounts) {
-            setContentFragment(new AccountFragment());
-            setActionBarTitle(item.getTitle());
-
-        } else if (menuItemId == R.id.nav_categories) {
-            setContentFragment(new CategoryFragment());
-            setActionBarTitle(item.getTitle());
-
-        } else if (menuItemId == R.id.nav_operations) {
-            setContentFragment(new OperationFragment());
-            setActionBarTitle(item.getTitle());
-
-        } else if (menuItemId == R.id.nav_analytics){
-            setContentFragment(new AnalyticFragment());
-            setActionBarTitle(item.getTitle());
-
-        } else if (menuItemId == R.id.nav_settings){
-            Intent i = new Intent(this, PreferencesActivity.class);
-            startActivity(i);
-
-        } else if (menuItemId == R.id.nav_backup){
-             setContentFragment(new BackupFragment());
-             setActionBarTitle(item.getTitle());
-             fab.hide();
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == OPEN_OPERATION_MASTER)
-            //if (resultCode == RESULT_OK)
-        {
-            navigationView.setCheckedItem(R.id.nav_summary);
-            onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_summary));
-        }
-    }
-
-    private void setActionBarTitle(CharSequence title){
-        ActionBar ab = getSupportActionBar();
-        if (ab != null){
-            ab.setTitle(title);
+            case 1:{
+                setContentFragment(new CategoryFragment());
+                break;
+            }
+            case 2:{
+                setContentFragment(new OperationFragment());
+                break;
+            }
         }
     }
 
@@ -184,6 +108,35 @@ public class MainActivity extends AppCompatActivity
             FragmentTransaction tr = fm.beginTransaction();
             tr.replace(R.id.container, newFrag, FRAGMENT_TAG);
             tr.commit();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Prefs.setSelectedTab(this, tabs.getSelectedTabPosition());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.setting, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.settings:
+                Intent prefIntent = new Intent(MainActivity.this, PreferencesActivity.class);
+                startActivity(prefIntent);
+                return true;
+            case R.id.backup:
+                Intent backupIntent = new Intent(MainActivity.this, BackupActivity.class);
+                startActivity(backupIntent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }

@@ -10,18 +10,22 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.CashFlowContract;
 import com.epipasha.cashflow.objects.OperationType;
+
+import java.util.Calendar;
+import java.util.Locale;
 
 public class CategoryFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -35,7 +39,7 @@ public class CategoryFragment extends Fragment implements LoaderManager.LoaderCa
         View v = inflater.inflate(R.layout.fragment_category_list, container, false);
 
         RecyclerView recyclerView = (RecyclerView)v.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
 
         recyclerView.setHasFixedSize(true);
 
@@ -90,13 +94,18 @@ public class CategoryFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+
         return new CursorLoader(
                 getActivity(),
-                CashFlowContract.CategoryEntry.CONTENT_URI,
+                CashFlowContract.CategoryEntry.buildCategoryCostUri(year, month),
                 null,
                 null,
                 null,
                 null);
+
     }
 
     @Override
@@ -121,7 +130,7 @@ public class CategoryFragment extends Fragment implements LoaderManager.LoaderCa
         @Override
         public CategoryAdapter.CategoryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(mContext)
-                    .inflate(R.layout.list_item_category, parent, false);
+                    .inflate(R.layout.fragment_budget, parent, false);
 
             return new CategoryAdapter.CategoryHolder(view);
         }
@@ -132,6 +141,8 @@ public class CategoryFragment extends Fragment implements LoaderManager.LoaderCa
             int idIndex = mCursor.getColumnIndex(CashFlowContract.CategoryEntry._ID);
             int titleIndex = mCursor.getColumnIndex(CashFlowContract.CategoryEntry.COLUMN_TITLE);
             int typeIndex = mCursor.getColumnIndex(CashFlowContract.CategoryEntry.COLUMN_TYPE);
+            int budgetIndex = mCursor.getColumnIndex(CashFlowContract.CategoryEntry.COLUMN_BUDGET);
+            int factIndex = mCursor.getColumnIndex(CashFlowContract.CategoryCostEntry.COLUMN_SUM);
 
             mCursor.moveToPosition(position); // get to the right location in the cursor
 
@@ -139,11 +150,39 @@ public class CategoryFragment extends Fragment implements LoaderManager.LoaderCa
             final int id = mCursor.getInt(idIndex);
             String title = mCursor.getString(titleIndex);
             OperationType type = OperationType.toEnum(mCursor.getInt(typeIndex));
+            int budget = mCursor.getInt(budgetIndex);
+            int fact = mCursor.getInt(factIndex);
+
+            int delta = 0;
+            if(type.equals(OperationType.IN)) {
+                delta = fact - budget;
+            }else if (type.equals(OperationType.OUT)) {
+                delta = budget - fact;
+            }
 
             //Set values
             holder.itemView.setTag(id);
             holder.categoryTitleView.setText(title);
-            holder.categoryTypeView.setText(type.toString());
+            holder.categoryBudgetView.setText(String.format(Locale.getDefault(),"%,d",budget));
+            holder.categoryFactView.setText(String.format(Locale.getDefault(),"%,d",fact));
+            holder.categoryDeltaView.setText(String.format(Locale.getDefault(),"%,d",delta));
+
+            holder.progressView.setMax(budget);
+            holder.progressView.setProgress(fact);
+            holder.progressView.setIndeterminate(false);
+
+            int titleColor = R.color.primaryTextColor;
+            int deltaColor = R.color.primaryTextColor;
+            if(type.equals(OperationType.IN)){
+                titleColor = R.color.colorPrimaryDark;
+                deltaColor = delta >=0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
+            }else if (type.equals(OperationType.OUT)){
+                titleColor = R.color.colorAccentDark;
+                deltaColor = delta >=0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
+            }
+
+            //holder.categoryTitleView.setTextColor(getResources().getColor(titleColor));
+            holder.categoryDeltaView.setTextColor(getResources().getColor(deltaColor));
         }
 
         @Override
@@ -171,12 +210,18 @@ public class CategoryFragment extends Fragment implements LoaderManager.LoaderCa
 
         class CategoryHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
             TextView categoryTitleView;
-            TextView categoryTypeView;
+            TextView categoryBudgetView;
+            TextView categoryFactView;
+            TextView categoryDeltaView;
+            ProgressBar progressView;
 
             public CategoryHolder(View itemView) {
                 super(itemView);
-                categoryTitleView = (TextView) itemView.findViewById(R.id.category_list_item_name);
-                categoryTypeView = (TextView) itemView.findViewById(R.id.category_list_item_type);
+                categoryTitleView = (TextView) itemView.findViewById(R.id.tvCategory);
+                categoryBudgetView = (TextView) itemView.findViewById(R.id.tvBudget);
+                categoryFactView = (TextView) itemView.findViewById(R.id.tvFact);
+                categoryDeltaView = (TextView) itemView.findViewById(R.id.tvDelta);
+                progressView = (ProgressBar) itemView.findViewById(R.id.progress);
 
                 itemView.setOnClickListener(this);
             }

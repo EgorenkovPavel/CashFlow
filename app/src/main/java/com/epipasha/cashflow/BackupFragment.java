@@ -2,9 +2,13 @@ package com.epipasha.cashflow;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -15,25 +19,24 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.epipasha.cashflow.data.CashFlowDbManager;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.drive.Drive;
+import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.DriveApi.DriveContentsResult;
-import com.google.android.gms.drive.DriveClient;
 import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFile;
 import com.google.android.gms.drive.DriveId;
-import com.google.android.gms.drive.DriveResourceClient;
 import com.google.android.gms.drive.MetadataChangeSet;
 import com.google.android.gms.drive.OpenFileActivityBuilder;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -42,6 +45,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.Iterator;
 
 public class BackupFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks,
         OnConnectionFailedListener{
@@ -54,10 +58,6 @@ public class BackupFragment extends Fragment implements GoogleApiClient.Connecti
 
     private GoogleApiClient mGoogleApiClient;
 
-    private GoogleSignInClient mGoogleSignInClient;
-    private DriveClient mDriveClient;
-    private DriveResourceClient mDriveResourceClient;
-
     public BackupFragment() {
     }
 
@@ -66,12 +66,12 @@ public class BackupFragment extends Fragment implements GoogleApiClient.Connecti
             Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_backup, container, false);
 
-        Button btnFileShare = (Button) v.findViewById(R.id.file_share);
-        btnFileShare.setOnClickListener(new View.OnClickListener() {
+        Button share = (Button) v.findViewById(R.id.file_share);
+        share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    String data = CashFlowDbManager.getInstance(getActivity()).exportDb();
+                    String data = CashFlowDbManager.getInstance(getActivity()).backupDb(getActivity());
 
                     File root = android.os.Environment.getExternalStorageDirectory();
                     File file = new File(root.getAbsolutePath(), "myData.txt");
@@ -84,8 +84,8 @@ public class BackupFragment extends Fragment implements GoogleApiClient.Connecti
             }
         });
 
-        Button btnFileRestore = (Button) v.findViewById(R.id.file_restore);
-        btnFileRestore.setOnClickListener(new View.OnClickListener() {
+        Button restore = (Button) v.findViewById(R.id.file_restore);
+        restore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
@@ -98,27 +98,25 @@ public class BackupFragment extends Fragment implements GoogleApiClient.Connecti
 
                     is.close();
 
-                    CashFlowDbManager.getInstance(getActivity()).importDb(new String(buffer, "UTF-8"));
+                    CashFlowDbManager.getInstance(getActivity()).restoreDb(getActivity(), new String(buffer, "UTF-8"));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
 
-        Button btnDriveShare = (Button)v.findViewById(R.id.drive_share);
-        btnDriveShare.setOnClickListener(new View.OnClickListener() {
+        Button driveShare = (Button)v.findViewById(R.id.drive_share);
+        driveShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                connect();
                 saveFileToDrive();
             }
         });
 
-        Button btnDriveRestore = (Button)v.findViewById(R.id.drive_restore);
-        btnDriveRestore.setOnClickListener(new View.OnClickListener() {
+        Button driveRestore = (Button)v.findViewById(R.id.drive_restore);
+        driveRestore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                connect();
                 downloadFileFromDrive();
             }
         });
@@ -132,20 +130,11 @@ public class BackupFragment extends Fragment implements GoogleApiClient.Connecti
             // We use this instance as the callback for connection and connection
             // failures.
             // Since no account name is passed, the user is prompted to choose.
-//            mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-//                    .addApi(Drive.API)
-//                    .addScope(Drive.SCOPE_FILE)
-//                    .addConnectionCallbacks(this)
-//                    .addOnConnectionFailedListener(this)
-//                    .build();
-            GoogleSignInOptions signInOptions =
-                    new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestScopes(Drive.SCOPE_FILE)
-                            .build();
             mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                    .enableAutoManage(getActivity(), this)
-                    .addApi(Auth.GOOGLE_SIGN_IN_API, signInOptions)
+                    .addApi(Drive.API)
+                    .addScope(Drive.SCOPE_FILE)
                     .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
                     .build();
         }
         // Connect the client. Once connected, the camera is launched.
@@ -155,7 +144,7 @@ public class BackupFragment extends Fragment implements GoogleApiClient.Connecti
     @Override
     public void onResume() {
         super.onResume();
-//        connect();
+        connect();
     }
 
     @Override
@@ -201,8 +190,7 @@ public class BackupFragment extends Fragment implements GoogleApiClient.Connecti
     private void saveFileToDrive() {
         // Start by creating a new contents, and setting a callback.
         Log.i(TAG, "Creating new contents.");
-
-         Drive.DriveApi.newDriveContents(mGoogleApiClient)
+        Drive.DriveApi.newDriveContents(mGoogleApiClient)
                 .setResultCallback(new ResultCallback<DriveContentsResult>() {
 
                     @Override
@@ -221,7 +209,7 @@ public class BackupFragment extends Fragment implements GoogleApiClient.Connecti
                         // Write the bitmap data from it.
                         String str = null;
                         try {
-                            str = CashFlowDbManager.getInstance(getActivity()).exportDb();
+                            str = CashFlowDbManager.getInstance(getActivity()).backupDb(getActivity());
                         } catch (JSONException e) {
                             e.printStackTrace();
                             return;
@@ -284,7 +272,7 @@ public class BackupFragment extends Fragment implements GoogleApiClient.Connecti
 
                 if (resultCode == RESULT_OK) {
 
-                    DriveId mFileId = data.getParcelableExtra(
+                    DriveId mFileId = (DriveId) data.getParcelableExtra(
                             OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
 
                     DriveFile file = mFileId.asDriveFile();
@@ -313,7 +301,7 @@ public class BackupFragment extends Fragment implements GoogleApiClient.Connecti
                                     String contentsAsString = builder.toString();
 
                                     try {
-                                        CashFlowDbManager.getInstance(getActivity()).importDb(contentsAsString);
+                                        CashFlowDbManager.getInstance(getActivity()).restoreDb(getActivity(), contentsAsString);
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }

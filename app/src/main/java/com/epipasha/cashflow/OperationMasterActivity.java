@@ -1,15 +1,11 @@
 package com.epipasha.cashflow;
 
 import static com.epipasha.cashflow.data.CashFlowContract.*;
-import static com.epipasha.cashflow.data.CashFlowContract.AccountEntry;
-import static com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
-import static com.epipasha.cashflow.data.CashFlowContract.OperationEntry;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -17,7 +13,6 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -29,12 +24,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.Prefs.OperationMasterPrefs;
-import com.epipasha.cashflow.data.CashFlowContract;
 import com.epipasha.cashflow.objects.OperationType;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public class OperationMasterActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -145,7 +138,7 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
         spinAnalytic.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                onAnalitycChanged();
+                onAnaliticChanged();
             }
 
             @Override
@@ -280,7 +273,7 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
                     });
                     snackbar.show();
                     setSum(0);
-                    onAnalitycChanged();
+                    onAnaliticChanged();
                 }
             }
         });
@@ -373,7 +366,7 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
                 spinAnalytic.setAdapter(adapter);
 
                 Utils.setPositionById(spinAnalytic, OperationMasterPrefs.getAnalyticId(this, getCheckedOperationType()));
-                onAnalitycChanged();
+                onAnaliticChanged();
                 break;
             }
             case REP_ACCOUNT_LOADER_ID:{
@@ -389,7 +382,7 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
                 spinAnalytic.setAdapter(adapter);
 
                 Utils.setPositionById(spinAnalytic, OperationMasterPrefs.getAnalyticId(this, getCheckedOperationType()));
-                onAnalitycChanged();
+                onAnaliticChanged();
                 break;
             }
             case FACT:{
@@ -426,7 +419,7 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
 
     }
 
-    public void onAnalitycChanged(){
+    public void onAnaliticChanged(){
 
          switch (getCheckedOperationType()){
             case IN: case OUT:{

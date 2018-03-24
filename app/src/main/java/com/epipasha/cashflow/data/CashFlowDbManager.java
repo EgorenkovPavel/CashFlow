@@ -1,11 +1,14 @@
 package com.epipasha.cashflow.data;
 
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.epipasha.cashflow.data.CashFlowContract.AccountBalanceEntry;
 import com.epipasha.cashflow.data.CashFlowContract.AccountEntry;
@@ -544,22 +547,24 @@ public class CashFlowDbManager {
     }
 
 
-    public String exportDb() throws JSONException {
-
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
+    public String backupDb(Context context) throws JSONException {
 
         JSONObject backup = new JSONObject();
-        for (String table : BACKUP_TABLES) {
-            backup.put(table, exportDbTable(db, table));
-        }
+
+        backup.put(AccountEntry.TABLE_NAME, backupTable(context, AccountEntry.CONTENT_URI));
+        backup.put(CategoryEntry.TABLE_NAME, backupTable(context, CategoryEntry.CONTENT_URI));
+        backup.put(OperationEntry.TABLE_NAME, backupTable(context, OperationEntry.CONTENT_URI));
 
         return backup.toString();
     }
 
-    private JSONArray exportDbTable(SQLiteDatabase db, String table){
-
-        String searchQuery = "SELECT  * FROM " + table;
-        Cursor cursor = db.rawQuery(searchQuery, null);
+    private JSONArray backupTable(Context context, Uri uri){
+        Cursor cursor = context.getContentResolver().query(
+                uri,
+                null,
+                null,
+                null,
+                null);
 
         JSONArray resultSet = new JSONArray();
 
@@ -591,46 +596,62 @@ public class CashFlowDbManager {
         return resultSet;
     }
 
-    public void importDb(String data) throws JSONException {
+    public void restoreDb(Context context, String data) throws JSONException {
 
         JSONObject obj = new JSONObject(data);
 
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.beginTransaction();
-        try {
+        Iterator<String> keys = obj.keys();
+        while(keys.hasNext()){
+            String key = keys.next();
 
-            for (String table : BACKUP_TABLES) {
+            switch (key){
+                case AccountEntry.TABLE_NAME:{
+                    restoreTable(context, obj.getJSONArray(key), AccountEntry.CONTENT_URI);
+                    break;
+                }
+                case CategoryEntry.TABLE_NAME:{
+                    restoreTable(context, obj.getJSONArray(key), CategoryEntry.CONTENT_URI);
+                    break;
+                }
+                case OperationEntry.TABLE_NAME:{
+                    restoreTable(context, obj.getJSONArray(key), OperationEntry.CONTENT_URI);
+                    break;
+                }
+            }
+        }
+    }
 
-                db.delete(table, null, null);
+    private void restoreTable(Context context, JSONArray rows, Uri uri) throws JSONException {
 
-                JSONArray rows = obj.getJSONArray(table);
-                for (int i = 0; i < rows.length(); i++) {
-                    JSONObject row = rows.getJSONObject(i);
+        ContentResolver resolver = context.getContentResolver();
 
-                    ContentValues values = new ContentValues();
+        resolver.delete(uri, null, null);
 
-                    Iterator<String> iterator = row.keys();
-                    while (iterator.hasNext()) {
-                        String key = iterator.next();
-                        try {
-                            values.put(key, Integer.parseInt((String) row.get(key)));
-                        } catch (Exception e) {
-                            values.put(key, (String) row.get(key));
-                        }
-                    }
+        ContentValues[] values = new ContentValues[rows.length()];
 
-                    db.insert(table, null, values);
+        for (int i = 0; i < rows.length(); i++) {
+            JSONObject row = rows.getJSONObject(i);
+
+            ContentValues value = new ContentValues();
+
+            Iterator<String> iterator = row.keys();
+            while (iterator.hasNext()) {
+                String key = iterator.next();
+                try {
+                    value.put(key, Integer.parseInt((String) row.get(key)));
+                } catch (Exception e) {
+                    value.put(key, (String) row.get(key));
                 }
             }
 
-            db.setTransactionSuccessful();
-        } catch (Exception e) {
+            values[i] = value;
 
-            e.printStackTrace();
-        } finally {
-            db.endTransaction();
-            db.close();
         }
 
+        int insertedRows = resolver.bulkInsert(uri, values);
+        if(insertedRows != rows.length()){
+            //TODO
+        }
     }
+
 }

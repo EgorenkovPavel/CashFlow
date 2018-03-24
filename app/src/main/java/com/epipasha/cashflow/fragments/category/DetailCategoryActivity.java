@@ -54,6 +54,7 @@ public class DetailCategoryActivity extends AppCompatActivity implements LoaderM
 
         String title = etTitle.getText().toString();
         int budget = Integer.valueOf(etBudget.getText().toString());
+        //TODO Ошибка опредения бюжетаесли поле не заполнено, возможно нужно применить NumberTextWatcherForThousand
         OperationType type = getSelectedType();
 
         if(isNew && title.isEmpty()){

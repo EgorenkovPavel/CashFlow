@@ -13,6 +13,18 @@ public final class Prefs {
         return (prefs.getBoolean(context.getString(R.string.pref_show_operation_master_on_start), false));
     }
 
+    public static int getSelectedTab(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return (prefs.getInt(context.getString(R.string.pref_selected_tab), 0));
+    }
+
+    public static void setSelectedTab(Context context, int selectedTab){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(context.getString(R.string.pref_selected_tab), selectedTab);
+        editor.apply();
+    }
+
     public static class OperationMasterPrefs {
 
         public static OperationType getOperationType(Context context){

@@ -1,33 +1,33 @@
 package com.epipasha.cashflow;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-public class PreferencesActivity extends AppCompatActivity {
+public class BackupActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pref);
+        setContentView(R.layout.activity_backup);
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
         // Get a support ActionBar corresponding to this toolbar
         ActionBar ab = getSupportActionBar();
         if(ab != null){
-            ab.setTitle(getResources().getString(R.string.preferences));
+            ab.setTitle(getResources().getString(R.string.backup));
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction tr = fm.beginTransaction();
-        tr.add(R.id.container, new PrefFragment());
+        tr.add(R.id.container, new BackupFragment());
         tr.commit();
 
     }
@@ -37,13 +37,4 @@ public class PreferencesActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static class PrefFragment extends PreferenceFragment{
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.preferences);
-        }
-    }
 }

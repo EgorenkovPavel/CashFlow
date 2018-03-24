@@ -18,17 +18,10 @@
     <string name="budget">Бюджет</string>
     <string name="more">еще</string>
     <string name="next">Далее</string>
-    <string name="operation_master">Мастер ввода операций</string>
     <string name="preferences">Настройки</string>
-    <string name="summary">Основное</string>
     <string name="title_show_operation_master">Показывать мастер ввода операций при запуске</string>
-    <string name="total">Итого</string>
     <string name="fact">Факт</string>
-    <string name="analytics">Аналитика</string>
-    <string name="navigation_drawer_open">Открыть панель навигации</string>
-    <string name="navigation_drawer_close">Закрыть панель навигации</string>
     <string name="operation_type">Тип операции</string>
-    <string name="summary_show_operation_master">Паказать мастер ввода операция при старте</string>
     <string name="backup">Сохранить</string>
     <string name="restore">Восстановить</string>
     <string name="file_system">Файловая система</string>

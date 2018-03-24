@@ -34,6 +34,8 @@ public class AnalyticFragment extends Fragment {
 
     private void loadChart(){
 
+
+
         List<BarEntry> entries = new ArrayList<>();
         entries.add(new BarEntry(0f, 30f));
         entries.add(new BarEntry(1f, 80f));

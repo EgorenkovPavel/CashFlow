@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="@string/operation_type"
-        android:textAppearance="@android:style/TextAppearance.Material.Caption"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appbar" />
 
@@ -68,7 +68,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="@string/account"
-        android:textAppearance="@android:style/TextAppearance.Material.Caption"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/type_group" />
 
@@ -82,7 +82,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_weight="1"
-        android:background="@drawable/a"
+        android:background="@drawable/b"
         app:layout_constraintBottom_toTopOf="@+id/spinner_analytic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -90,12 +90,11 @@
         app:layout_constraintTop_toBottomOf="@+id/tvAccount" />
 
     <TextView
-        android:id="@+id/tvAnalytic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="@string/category"
-        android:textAppearance="@android:style/TextAppearance.Material.Caption"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
         app:layout_constraintBottom_toTopOf="@+id/spinner_analytic"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -109,15 +108,15 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_weight="3"
-        android:background="@drawable/a"
-        app:layout_constraintBottom_toTopOf="@+id/porgress"
+        android:background="@drawable/b"
+        app:layout_constraintBottom_toTopOf="@+id/progress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinner_account" />
 
     <include
-        android:id="@+id/porgress"
+        android:id="@+id/progress"
         layout="@layout/progress_category"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -135,7 +134,7 @@
         android:layout_alignParentStart="true"
         android:ems="10"
         android:gravity="center"
-        android:textAppearance="@android:style/TextAppearance.Material.Display1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         app:layout_constraintBottom_toTopOf="@+id/keyboard"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -149,7 +148,8 @@
         android:text="@string/next"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline50" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/operation_master_more" />
 
     <Button
         android:id="@+id/operation_master_more"
@@ -158,7 +158,8 @@
         android:layout_height="wrap_content"
         android:text="@string/more"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline50"
+        app:layout_constraintEnd_toStartOf="@+id/operation_master_next"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
     <include
@@ -169,13 +170,5 @@
         app:layout_constraintBottom_toTopOf="@+id/operation_master_next"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <android.support.constraint.Guideline
-        android:id="@+id/guideline50"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintGuide_percent="0.5" />
 
 </android.support.constraint.ConstraintLayout>

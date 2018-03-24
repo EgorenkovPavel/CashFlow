@@ -3,14 +3,10 @@
     <!--<color name="colorPrimary">#3F51B5</color>-->
     <!--<color name="colorPrimaryDark">#303f9f</color>-->
     <!--<color name="colorAccent">#FF4081</color>-->
-    <color name="budget">#40ff96</color>
-    <color name="fact">#40bcff</color>
 
     <color name="colorPrimary">#aed581</color>
-    <color name="colorPrimaryLight">#e1ffb1</color>
     <color name="colorPrimaryDark">#7da453</color>
     <color name="colorAccent">#ff6d00</color>
-    <color name="colorAccentLight">#ff9e40</color>
     <color name="colorAccentDark">#c43c00</color>
     <color name="primaryTextColor">#000000</color>
     <color name="secondaryTextColor">#000000</color>
