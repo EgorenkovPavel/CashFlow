@@ -49,7 +49,7 @@ public class OperationFragment extends Fragment implements LoaderManager.LoaderC
         View v = inflater.inflate(R.layout.fragment_list, container, false);
 
         recyclerView = (RecyclerView)v.findViewById(R.id.recyclerView);
-        loadingIndicator = (ProgressBar)v.findViewById(R.id.pb_loading_indikator);
+        loadingIndicator = (ProgressBar)v.findViewById(R.id.pb_loading_indicator);
         tvEmptyList = (TextView)v.findViewById(R.id.tv_empty);
         tvEmptyList.setText(getString(R.string.empty_list_operations));
 

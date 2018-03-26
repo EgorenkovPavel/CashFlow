@@ -138,7 +138,7 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
         spinAnalytic.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                onAnaliticChanged();
+                onAnalyticChanged();
             }
 
             @Override
@@ -273,7 +273,7 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
                     });
                     snackbar.show();
                     setSum(0);
-                    onAnaliticChanged();
+                    onAnalyticChanged();
                 }
             }
         });
@@ -366,7 +366,7 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
                 spinAnalytic.setAdapter(adapter);
 
                 Utils.setPositionById(spinAnalytic, OperationMasterPrefs.getAnalyticId(this, getCheckedOperationType()));
-                onAnaliticChanged();
+                onAnalyticChanged();
                 break;
             }
             case REP_ACCOUNT_LOADER_ID:{
@@ -382,7 +382,7 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
                 spinAnalytic.setAdapter(adapter);
 
                 Utils.setPositionById(spinAnalytic, OperationMasterPrefs.getAnalyticId(this, getCheckedOperationType()));
-                onAnaliticChanged();
+                onAnalyticChanged();
                 break;
             }
             case FACT:{
@@ -419,7 +419,7 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
 
     }
 
-    public void onAnaliticChanged(){
+    public void onAnalyticChanged(){
 
          switch (getCheckedOperationType()){
             case IN: case OUT:{
