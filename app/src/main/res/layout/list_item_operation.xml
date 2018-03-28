@@ -1,63 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/two_line_list_item"
-    android:orientation="horizontal">
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="60dp">
 
     <ImageView
         android:id="@+id/operation_list_item_type"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginRight="16dp"
-        android:background="@color/cardview_light_background"
-        android:contentDescription="@string/operation_type" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/operation_list_item_account"
-                style="@style/two_line_list_primary_text"
-                android:layout_width="0dp"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/operation_list_item_date"
-                style="@style/two_line_list_secondary_text"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:gravity="end" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/operation_list_item_category"
-                style="@style/two_line_list_secondary_text"
-                android:layout_width="0dp"
-                android:layout_weight="2" />
-
-            <TextView
-                android:id="@+id/operation_list_item_sum"
-                style="@style/two_line_list_primary_text"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:gravity="end" />
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/operation_type"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@drawable/plus" />
 
 
-        </LinearLayout>
+    <TextView
+        android:id="@+id/operation_list_item_account"
+        style="@style/two_line_list_primary_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toEndOf="@+id/operation_list_item_type"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Pocket" />
 
-    </LinearLayout>
+    <TextView
+        android:id="@+id/operation_list_item_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:gravity="end"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="23.03.2018 20:34:23" />
 
-</LinearLayout>
+
+    <TextView
+        android:id="@+id/operation_list_item_category"
+        style="@style/two_line_list_secondary_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/operation_list_item_account"
+        app:layout_constraintTop_toBottomOf="@+id/operation_list_item_account"
+        tools:text="Salary" />
+
+    <TextView
+        android:id="@+id/operation_list_item_sum"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="end"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="3000" />
+
+
+</android.support.constraint.ConstraintLayout>

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
@@ -225,17 +226,17 @@ public class OperationFragment extends Fragment implements LoaderManager.LoaderC
             switch (type){
                 case IN:{
                     holder.operationCategoryView.setText(category);
-                    holder.operationTypeImageView.setImageResource(R.mipmap.operation_type_in);
+                    holder.operationTypeImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.plus));
                     break;
                 }
                 case OUT:{
                     holder.operationCategoryView.setText(category);
-                    holder.operationTypeImageView.setImageResource(R.mipmap.operation_type_out);
+                    holder.operationTypeImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.minus));//setImageResource(R.mipmap.operation_type_out);
                     break;
                 }
                 case TRANSFER:{
                     holder.operationCategoryView.setText(repAccount);
-                    holder.operationTypeImageView.setImageResource(R.mipmap.operation_type_transfer);
+                    holder.operationTypeImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.redo));
                     break;
                 }
             }

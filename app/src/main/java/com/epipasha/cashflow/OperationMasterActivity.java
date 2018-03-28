@@ -43,8 +43,9 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
     private RadioGroup groupType;
     private Spinner spinAccount, spinAnalytic;
     private TextView lblSum;
-    private ProgressBar progress;
+    private ProgressBar pbBudget;
     private TextView tvBudgetSum, tvFactSum, tvOver;
+    private View budgetBlock;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -117,7 +118,8 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
 
     private void findViews() {
 
-        progress = (ProgressBar)findViewById(R.id.pbBudget);
+        budgetBlock = findViewById(R.id.progress);
+        pbBudget = (ProgressBar)findViewById(R.id.pbBudget);
         tvBudgetSum = (TextView)findViewById(R.id.tvBudgetSum);
         tvFactSum = (TextView)findViewById(R.id.tvFactSum);
         tvOver = (TextView)findViewById(R.id.tvOver);
@@ -133,8 +135,19 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
         });
 
         spinAccount = (Spinner)findViewById(R.id.spinner_account);
-        spinAnalytic = (Spinner)findViewById(R.id.spinner_analytic);
+        spinAccount.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                initAnalyticSpinner();
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        spinAnalytic = (Spinner)findViewById(R.id.spinner_analytic);
         spinAnalytic.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -307,7 +320,7 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
                         this,
                         AccountEntry.CONTENT_URI,
                         null,
-                        AccountEntry._ID + " != " + OperationMasterPrefs.getAccountId(this),
+                        AccountEntry._ID + " != " + Utils.getSelectedId(spinAccount),
                         null,
                         null);
             }
@@ -341,13 +354,13 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
             case ACCOUNT_LOADER_ID:{
                 SimpleCursorAdapter adapter = new SimpleCursorAdapter(
                         this,
-                        android.R.layout.simple_spinner_item,
+                        R.layout.item_operation_master_account,
                         cursor,
-                        new String[]{AccountEntry.COLUMN_TITLE},
-                        new int[]{android.R.id.text1}
+                        new String[]{AccountEntry.COLUMN_TITLE, AccountEntry.SERVICE_COLUMN_SUM},
+                        new int[]{R.id.tvTitle, R.id.tvSum}
                         ,0);
 
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                adapter.setDropDownViewResource(R.layout.item_operation_master_account);
                 spinAccount.setAdapter(adapter);
 
                 Utils.setPositionById(spinAccount, OperationMasterPrefs.getAccountId(this));
@@ -372,13 +385,13 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
             case REP_ACCOUNT_LOADER_ID:{
                 SimpleCursorAdapter adapter = new SimpleCursorAdapter(
                         this,
-                        android.R.layout.simple_spinner_item,
+                        R.layout.item_operation_master_account,
                         cursor,
-                        new String[]{AccountEntry.COLUMN_TITLE},
-                        new int[]{android.R.id.text1}
+                        new String[]{AccountEntry.COLUMN_TITLE, AccountEntry.SERVICE_COLUMN_SUM},
+                        new int[]{R.id.tvTitle, R.id.tvSum}
                         ,0);
 
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                adapter.setDropDownViewResource(R.layout.item_operation_master_account);
                 spinAnalytic.setAdapter(adapter);
 
                 Utils.setPositionById(spinAnalytic, OperationMasterPrefs.getAnalyticId(this, getCheckedOperationType()));
@@ -392,14 +405,14 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
                 int budget = catCursor.getInt(catCursor.getColumnIndex(CategoryEntry.COLUMN_BUDGET));
                 tvBudgetSum.setText(String.valueOf(budget));
 
-                progress.setMax(budget);
+                pbBudget.setMax(budget);
 
                 int fact = 0;
                 if(cursor != null && cursor.moveToFirst()){
                     fact = cursor.getInt(cursor.getColumnIndex(CategoryCostEntry.COLUMN_SUM));
                 }
                 tvFactSum.setText(String.valueOf(fact));
-                progress.setProgress(fact);
+                pbBudget.setProgress(fact);
 
                 if (budget >= fact){
                     tvOver.setVisibility(View.INVISIBLE);
@@ -411,7 +424,6 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
                 break;
             }
         }
-
     }
 
     @Override
@@ -423,6 +435,8 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
 
          switch (getCheckedOperationType()){
             case IN: case OUT:{
+                budgetBlock.setVisibility(View.VISIBLE);
+
                 Bundle bundle = new Bundle();
                 bundle.putInt("id", Utils.getSelectedId(spinAnalytic));
 
@@ -430,6 +444,7 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
                 break;
             }
             case TRANSFER:{
+                budgetBlock.setVisibility(View.INVISIBLE);
                 break;
             }
         }

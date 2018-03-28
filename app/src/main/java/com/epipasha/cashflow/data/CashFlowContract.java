@@ -14,7 +14,7 @@ public class CashFlowContract {
     public static final String PATH_OPERATION = "operation";
     public static final String PATH_BUDGET = "budget";
     public static final String PATH_CATEGORY_COST = "category_cost";
-    public static final String PATH_ACCOUNT_BALANCE = "category_cost";
+    public static final String PATH_ACCOUNT_BALANCE = "account_balance";
 
     public static final class AccountEntry implements BaseColumns{
 

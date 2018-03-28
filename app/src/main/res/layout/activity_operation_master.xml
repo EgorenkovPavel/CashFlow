@@ -117,7 +117,7 @@
 
     <include
         android:id="@+id/progress"
-        layout="@layout/progress_category"
+        layout="@layout/include_progress_category"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -164,7 +164,7 @@
 
     <include
         android:id="@+id/keyboard"
-        layout="@layout/keyboard"
+        layout="@layout/include_keyboard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@+id/operation_master_next"

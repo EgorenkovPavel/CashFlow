@@ -130,7 +130,7 @@ public class CategoryFragment extends Fragment implements LoaderManager.LoaderCa
         @Override
         public CategoryAdapter.CategoryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(mContext)
-                    .inflate(R.layout.fragment_budget, parent, false);
+                    .inflate(R.layout.list_item_category, parent, false);
 
             return new CategoryAdapter.CategoryHolder(view);
         }
