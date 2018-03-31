@@ -206,75 +206,76 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                createOperation();
+            }
+        });
 
-                int accountId = Utils.getSelectedId(spinAccount);
-                if(accountId == 0){
-                    Snackbar.make(view, "No account selected!!!", Snackbar.LENGTH_LONG).show();
-                    return;
-                }
+    }
 
-                int analyticId = Utils.getSelectedId(spinAnalytic);
-                if (analyticId == 0) {
-                    Snackbar.make(view, "No analytic selected!!!", Snackbar.LENGTH_LONG).show();
-                    return;
-                }
+    private void createOperation(){
+        int accountId = Utils.getSelectedId(spinAccount);
+        if(accountId == 0){
+            Snackbar.make(parentContainer, "No account selected!!!", Snackbar.LENGTH_LONG).show();
+            return;
+        }
 
-                if(sum == 0){
-                    Snackbar.make(parentContainer, "Type the sum", Snackbar.LENGTH_LONG).show();
-                    return;
-                }
+        int analyticId = Utils.getSelectedId(spinAnalytic);
+        if (analyticId == 0) {
+            Snackbar.make(parentContainer, "No analytic selected!!!", Snackbar.LENGTH_LONG).show();
+            return;
+        }
 
-                ContentValues values = new ContentValues();
-                values.put(OperationEntry.COLUMN_DATE, (new Date()).getTime());
-                values.put(OperationEntry.COLUMN_ACCOUNT_ID, accountId);
-                values.put(OperationEntry.COLUMN_SUM, sum);
+        if(sum == 0){
+            Snackbar.make(parentContainer, "Type the sum", Snackbar.LENGTH_LONG).show();
+            return;
+        }
 
-                switch (groupType.getCheckedRadioButtonId()){
-                    case R.id.btnIn :{
-                        values.put(OperationEntry.COLUMN_TYPE, OperationType.IN.toDbValue());
-                        values.put(OperationEntry.COLUMN_CATEGORY_ID, analyticId);
-                        break;
-                    }
-                    case R.id.btnOut: {
-                        values.put(OperationEntry.COLUMN_TYPE, OperationType.OUT.toDbValue());
-                        values.put(OperationEntry.COLUMN_CATEGORY_ID, analyticId);
-                        break;
-                    }
-                    case R.id.btnTransfer: {
-                        values.put(OperationEntry.COLUMN_TYPE, OperationType.TRANSFER.toDbValue());
-                        values.put(OperationEntry.COLUMN_RECIPIENT_ACCOUNT_ID, analyticId);
-                        break;
-                    }
-                }
+        ContentValues values = new ContentValues();
+        values.put(OperationEntry.COLUMN_DATE, (new Date()).getTime());
+        values.put(OperationEntry.COLUMN_ACCOUNT_ID, accountId);
+        values.put(OperationEntry.COLUMN_SUM, sum);
 
-                OperationMasterPrefs.saveOperationType(OperationMasterActivity.this, getCheckedOperationType());
-                OperationMasterPrefs.saveAccountId(OperationMasterActivity.this, accountId);
-                OperationMasterPrefs.saveAnalyticId(OperationMasterActivity.this, analyticId, getCheckedOperationType());
-
-                final Uri uri = getContentResolver().insert(OperationEntry.CONTENT_URI, values);
-                if (uri == null){
-                    Snackbar.make(view, "ERROR", Snackbar.LENGTH_LONG).show();
-                } else {
-                    Snackbar snackbar = Snackbar.make(view, "Operation created!!!", Snackbar.LENGTH_LONG);
-                    snackbar.setAction("UNDO", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            int numRowsDeleted = getContentResolver().delete(uri, null, null);
-                            if (numRowsDeleted > 0){
-                                Snackbar.make(view, "Operation deleted", Snackbar.LENGTH_LONG).show();
-                            } else {
-                                Snackbar.make(parentContainer, "ERROR", Snackbar.LENGTH_LONG).show();
-                            }
-                        }
-                    });
-                    snackbar.show();
-                    setSum(0);
-
-                }
+        switch (groupType.getCheckedRadioButtonId()){
+            case R.id.btnIn :{
+                values.put(OperationEntry.COLUMN_TYPE, OperationType.IN.toDbValue());
+                values.put(OperationEntry.COLUMN_CATEGORY_ID, analyticId);
+                break;
+            }
+            case R.id.btnOut: {
+                values.put(OperationEntry.COLUMN_TYPE, OperationType.OUT.toDbValue());
+                values.put(OperationEntry.COLUMN_CATEGORY_ID, analyticId);
+                break;
+            }
+            case R.id.btnTransfer: {
+                values.put(OperationEntry.COLUMN_TYPE, OperationType.TRANSFER.toDbValue());
+                values.put(OperationEntry.COLUMN_RECIPIENT_ACCOUNT_ID, analyticId);
+                break;
             }
         }
-        );
 
+        OperationMasterPrefs.saveOperationType(OperationMasterActivity.this, getCheckedOperationType());
+        OperationMasterPrefs.saveAccountId(OperationMasterActivity.this, accountId);
+        OperationMasterPrefs.saveAnalyticId(OperationMasterActivity.this, analyticId, getCheckedOperationType());
+
+        final Uri uri = getContentResolver().insert(OperationEntry.CONTENT_URI, values);
+        if (uri == null){
+            Snackbar.make(parentContainer, "ERROR", Snackbar.LENGTH_LONG).show();
+        } else {
+            Snackbar snackbar = Snackbar.make(parentContainer, "Operation created!!!", Snackbar.LENGTH_LONG);
+            snackbar.setAction("UNDO", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int numRowsDeleted = getContentResolver().delete(uri, null, null);
+                    if (numRowsDeleted > 0){
+                        Snackbar.make(view, "Operation deleted", Snackbar.LENGTH_LONG).show();
+                    } else {
+                        Snackbar.make(parentContainer, "ERROR", Snackbar.LENGTH_LONG).show();
+                    }
+                }
+            });
+            snackbar.show();
+            setSum(0);
+        }
     }
 
     @Override
