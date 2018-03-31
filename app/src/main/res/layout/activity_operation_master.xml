@@ -65,10 +65,11 @@
     <TextView
         android:id="@+id/tvAccount"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="16dp"
         android:layout_marginStart="8dp"
         android:text="@string/account"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        app:layout_constraintBottom_toTopOf="@+id/spinner_account"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/type_group" />
 
@@ -78,25 +79,26 @@
         android:layout_height="0dp"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/type_group"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_weight="1"
         android:background="@drawable/b"
-        app:layout_constraintBottom_toTopOf="@+id/spinner_analytic"
+        app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvAccount" />
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="16dp"
         android:layout_marginStart="8dp"
         android:text="@string/category"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
         app:layout_constraintBottom_toTopOf="@+id/spinner_analytic"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinner_account" />
 
     <Spinner
         android:id="@+id/spinner_analytic"
@@ -106,25 +108,13 @@
         android:layout_below="@+id/spinner_account"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_weight="3"
         android:background="@drawable/b"
-        app:layout_constraintBottom_toTopOf="@+id/progress"
+        app:layout_constraintBottom_toTopOf="@+id/operation_master_sum"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_account" />
-
-    <include
-        android:id="@+id/progress"
-        layout="@layout/include_progress_category"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/operation_master_sum"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <TextView
         android:id="@+id/operation_master_sum"

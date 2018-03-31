@@ -10,6 +10,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -39,7 +41,13 @@ public class CategoryFragment extends Fragment implements LoaderManager.LoaderCa
         View v = inflater.inflate(R.layout.fragment_list, container, false);
 
         RecyclerView recyclerView = (RecyclerView)v.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+
+        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                layoutManager.getOrientation());
+        recyclerView.addItemDecoration(mDividerItemDecoration);
 
         recyclerView.setHasFixedSize(true);
 
@@ -167,17 +175,13 @@ public class CategoryFragment extends Fragment implements LoaderManager.LoaderCa
             holder.categoryFactView.setText(String.format(Locale.getDefault(),"%,d",fact));
             holder.categoryDeltaView.setText(String.format(Locale.getDefault(),"%,d",delta));
 
-            int titleColor = R.color.primaryTextColor;
             int deltaColor = R.color.primaryTextColor;
             if(type.equals(OperationType.IN)){
-                titleColor = R.color.colorPrimaryDark;
                 deltaColor = delta >=0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
             }else if (type.equals(OperationType.OUT)){
-                titleColor = R.color.colorAccentDark;
                 deltaColor = delta >=0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
             }
 
-            //holder.categoryTitleView.setTextColor(getResources().getColor(titleColor));
             holder.categoryDeltaView.setTextColor(getResources().getColor(deltaColor));
         }
 
