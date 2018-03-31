@@ -167,10 +167,6 @@ public class CategoryFragment extends Fragment implements LoaderManager.LoaderCa
             holder.categoryFactView.setText(String.format(Locale.getDefault(),"%,d",fact));
             holder.categoryDeltaView.setText(String.format(Locale.getDefault(),"%,d",delta));
 
-            holder.progressView.setMax(budget);
-            holder.progressView.setProgress(fact);
-            holder.progressView.setIndeterminate(false);
-
             int titleColor = R.color.primaryTextColor;
             int deltaColor = R.color.primaryTextColor;
             if(type.equals(OperationType.IN)){
@@ -213,7 +209,6 @@ public class CategoryFragment extends Fragment implements LoaderManager.LoaderCa
             TextView categoryBudgetView;
             TextView categoryFactView;
             TextView categoryDeltaView;
-            ProgressBar progressView;
 
             public CategoryHolder(View itemView) {
                 super(itemView);
@@ -221,7 +216,6 @@ public class CategoryFragment extends Fragment implements LoaderManager.LoaderCa
                 categoryBudgetView = (TextView) itemView.findViewById(R.id.tvBudget);
                 categoryFactView = (TextView) itemView.findViewById(R.id.tvFact);
                 categoryDeltaView = (TextView) itemView.findViewById(R.id.tvDelta);
-                progressView = (ProgressBar) itemView.findViewById(R.id.progress);
 
                 itemView.setOnClickListener(this);
             }

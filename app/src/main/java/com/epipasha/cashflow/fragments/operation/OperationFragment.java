@@ -3,6 +3,7 @@ package com.epipasha.cashflow.fragments.operation;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -183,10 +184,13 @@ public class OperationFragment extends Fragment implements LoaderManager.LoaderC
 
         private Cursor mCursor;
         private Context mContext;
-        private int maxPosition = 0;
+        private final Drawable plus, minus, redo;
 
         public OperationAdapter(Context mContext) {
             this.mContext = mContext;
+            this.plus = ContextCompat.getDrawable(mContext, R.drawable.plus);
+            this.minus = ContextCompat.getDrawable(mContext, R.drawable.minus);
+            this.redo = ContextCompat.getDrawable(mContext, R.drawable.redo);
         }
 
         @Override
@@ -231,33 +235,19 @@ public class OperationFragment extends Fragment implements LoaderManager.LoaderC
             switch (type){
                 case IN:{
                     holder.operationCategoryView.setText(category);
-                    holder.operationTypeImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.plus));
+                    holder.operationTypeImageView.setImageDrawable(plus);
                     break;
                 }
                 case OUT:{
                     holder.operationCategoryView.setText(category);
-                    holder.operationTypeImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.minus));//setImageResource(R.mipmap.operation_type_out);
+                    holder.operationTypeImageView.setImageDrawable(minus);
                     break;
                 }
                 case TRANSFER:{
                     holder.operationCategoryView.setText(repAccount);
-                    holder.operationTypeImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.redo));
+                    holder.operationTypeImageView.setImageDrawable(redo);
                     break;
                 }
-            }
-
-            if (position+1 == maxPosition){
-                incMaxPosition();
-            }
-
-        }
-
-        private void incMaxPosition(){
-            int delta = 50;
-            if(mCursor == null){
-                maxPosition = 0;
-            }else{
-                maxPosition = Math.min(maxPosition + delta, mCursor.getCount());
             }
         }
 
@@ -266,7 +256,7 @@ public class OperationFragment extends Fragment implements LoaderManager.LoaderC
             if (mCursor == null) {
                 return 0;
             }
-            return maxPosition;//mCursor.getCount();
+            return mCursor.getCount();
         }
 
         public Cursor swapCursor(Cursor c) {
@@ -282,12 +272,10 @@ public class OperationFragment extends Fragment implements LoaderManager.LoaderC
                 this.notifyDataSetChanged();
             }
 
-            incMaxPosition();
-
             return temp;
         }
 
-        class OperationHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        class OperationHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
             TextView operationDateView;
             TextView operationAccountView;
             TextView operationCategoryView;
