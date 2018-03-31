@@ -19,6 +19,10 @@ public class Utils {
 
     public static int getSelectedId(Spinner spinner){
         Cursor cursor = (Cursor) spinner.getSelectedItem();
-        return cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
+        if (cursor == null){
+            return -1;
+        } else {
+            return cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
+        }
     }
 }

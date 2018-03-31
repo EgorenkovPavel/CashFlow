@@ -40,6 +40,13 @@
         </android.support.design.widget.TabLayout>
     </android.support.design.widget.AppBarLayout>
 
+    <FrameLayout
+        android:id="@+id/headerContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </FrameLayout>
+
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/container"
         android:layout_width="match_parent"
@@ -57,4 +64,5 @@
         android:clickable="true"
         android:src="@android:drawable/ic_input_add"
         android:focusable="true" />
+
 </android.support.design.widget.CoordinatorLayout>

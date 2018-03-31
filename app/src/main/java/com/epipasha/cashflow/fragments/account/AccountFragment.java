@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -39,6 +40,13 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         recyclerView.setHasFixedSize(true);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+
+        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                layoutManager.getOrientation());
+        recyclerView.addItemDecoration(mDividerItemDecoration);
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -110,7 +118,10 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
         mAdapter.swapCursor(null);
     }
 
-    class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountHolder>{
+    class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+
+        private static final int HEADER_ITEM = 234;
+        private static final int LIST_ITEM = 897;
 
         private Cursor mCursor;
         private Context mContext;
@@ -120,31 +131,73 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
         }
 
         @Override
-        public AccountAdapter.AccountHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(mContext)
-                    .inflate(R.layout.list_item_account, parent, false);
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-            return new AccountHolder(view);
+            switch (viewType) {
+
+                case HEADER_ITEM: {
+                    View view = LayoutInflater.from(mContext)
+                            .inflate(R.layout.list_item_account_header, parent, false);
+
+                    return new HeaderHolder(view);
+                }
+
+                case LIST_ITEM: {
+                    View view = LayoutInflater.from(mContext)
+                            .inflate(R.layout.list_item_account, parent, false);
+
+                    return new AccountHolder(view);
+                }
+
+                default:
+                    throw new IllegalArgumentException("Invalid view type, value of " + viewType);
+            }
         }
 
         @Override
-        public void onBindViewHolder(AccountAdapter.AccountHolder holder, int position) {
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
-            int idIndex = mCursor.getColumnIndex(AccountEntry._ID);
-            int titleIndex = mCursor.getColumnIndex(AccountEntry.COLUMN_TITLE);
-            int sumIndex = mCursor.getColumnIndex(AccountEntry.SERVICE_COLUMN_SUM);
+            if (holder instanceof HeaderHolder) {
 
-            mCursor.moveToPosition(position); // get to the right location in the cursor
+                int sumIndex = mCursor.getColumnIndex(AccountEntry.SERVICE_COLUMN_SUM);
 
-            // Determine the values of the wanted data
-            final int id = mCursor.getInt(idIndex);
-            String title = mCursor.getString(titleIndex);
-            int sum = mCursor.getInt(sumIndex);
+                mCursor.moveToFirst();
+                int sum = 0;
+                while (!mCursor.isAfterLast()){
+                    sum += mCursor.getInt(sumIndex);
+                    mCursor.moveToNext();
+                }
 
-            //Set values
-            holder.itemView.setTag(id);
-            holder.accountTitleView.setText(title);
-            holder.accountSumView.setText(String.format(Locale.getDefault(),"%,d",sum));
+                ((HeaderHolder)holder).accountTitleView.setText(getString(R.string.sum));
+                ((HeaderHolder)holder).accountSumView.setText(String.format(Locale.getDefault(), "%,d", sum));
+
+            } else if (holder instanceof AccountHolder) {
+
+                int idIndex = mCursor.getColumnIndex(AccountEntry._ID);
+                int titleIndex = mCursor.getColumnIndex(AccountEntry.COLUMN_TITLE);
+                int sumIndex = mCursor.getColumnIndex(AccountEntry.SERVICE_COLUMN_SUM);
+
+                mCursor.moveToPosition(position -1); // get to the right location in the cursor
+
+                // Determine the values of the wanted data
+                final int id = mCursor.getInt(idIndex);
+                String title = mCursor.getString(titleIndex);
+                int sum = mCursor.getInt(sumIndex);
+
+                //Set values
+                holder.itemView.setTag(id);
+                ((AccountHolder)holder).accountTitleView.setText(title);
+                ((AccountHolder)holder).accountSumView.setText(String.format(Locale.getDefault(), "%,d", sum));
+            }
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (position == 0){
+                return HEADER_ITEM;
+            } else {
+                return LIST_ITEM;
+            }
         }
 
         @Override
@@ -152,7 +205,7 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
             if (mCursor == null) {
                 return 0;
             }
-            return mCursor.getCount();
+            return mCursor.getCount() + 1;
         }
 
         public Cursor swapCursor(Cursor c) {
@@ -196,6 +249,18 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
                 i.setData(uri);
                 startActivity(i);
             }
+        }
+
+        class HeaderHolder extends RecyclerView.ViewHolder{
+            TextView accountTitleView;
+            TextView accountSumView;
+
+            public HeaderHolder(View itemView) {
+                super(itemView);
+                accountTitleView = (TextView) itemView.findViewById(R.id.account_list_item_name);
+                accountSumView = (TextView) itemView.findViewById(R.id.account_list_item_sum);
+            }
+
         }
     }
 }
