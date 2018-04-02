@@ -21,7 +21,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -403,10 +402,10 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
                 delta = budget - fact;
             }
 
-            ((TextView)view.findViewById(R.id.tvCategory)).setText(title);
-            ((TextView)view.findViewById(R.id.tvBudget)).setText(String.format(Locale.getDefault(),"%,d",budget));
+            ((TextView)view.findViewById(R.id.lblIn)).setText(title);
+            ((TextView)view.findViewById(R.id.tvInBudget)).setText(String.format(Locale.getDefault(),"%,d",budget));
             ((TextView)view.findViewById(R.id.tvFact)).setText(String.format(Locale.getDefault(),"%,d",fact));
-            ((TextView)view.findViewById(R.id.tvDelta)).setText(String.format(Locale.getDefault(),"%,d",delta));
+            ((TextView)view.findViewById(R.id.tvInDelta)).setText(String.format(Locale.getDefault(),"%,d",delta));
 
             int deltaColor = R.color.primaryTextColor;
             if(type.equals(OperationType.IN)){
@@ -415,7 +414,7 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
                 deltaColor = delta >=0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
             }
 
-            ((TextView)view.findViewById(R.id.tvDelta)).setTextColor(getResources().getColor(deltaColor));
+            ((TextView)view.findViewById(R.id.tvInDelta)).setTextColor(getResources().getColor(deltaColor));
 
         }
     }

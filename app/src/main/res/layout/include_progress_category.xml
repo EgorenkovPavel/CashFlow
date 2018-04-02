@@ -12,12 +12,12 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvBudget"
+        app:layout_constraintTop_toBottomOf="@+id/tvInBudget"
         tools:max="1000"
         tools:progress="500"/>
 
     <TextView
-        android:id="@+id/tvBudget"
+        android:id="@+id/tvInBudget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/budget"

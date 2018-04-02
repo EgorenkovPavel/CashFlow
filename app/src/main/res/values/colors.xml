@@ -6,8 +6,10 @@
 
     <color name="colorPrimary">#aed581</color>
     <color name="colorPrimaryDark">#7da453</color>
+    <color name="colorPrimaryLight">#e1ffb1</color>
     <color name="colorAccent">#ff6d00</color>
     <color name="colorAccentDark">#c43c00</color>
+    <color name="colorAccentLight">#ff9e40</color>
     <color name="primaryTextColor">#000000</color>
     <color name="secondaryTextColor">#000000</color>
 </resources>

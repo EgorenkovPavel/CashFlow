@@ -13,12 +13,10 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -126,8 +124,10 @@ public class CategoryFragment extends Fragment implements LoaderManager.LoaderCa
         mAdapter.swapCursor(null);
     }
 
-    class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryHolder>{
+    class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
+        private static final int HEADER_ITEM = 234;
+        private static final int LIST_ITEM = 897;
         private Cursor mCursor;
         private Context mContext;
 
@@ -136,15 +136,31 @@ public class CategoryFragment extends Fragment implements LoaderManager.LoaderCa
         }
 
         @Override
-        public CategoryAdapter.CategoryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(mContext)
-                    .inflate(R.layout.list_item_category, parent, false);
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-            return new CategoryAdapter.CategoryHolder(view);
+            switch (viewType) {
+
+                case HEADER_ITEM: {
+                    View view = LayoutInflater.from(mContext)
+                            .inflate(R.layout.list_item_category_header, parent, false);
+
+                    return new HeaderHolder(view);
+                }
+
+                case LIST_ITEM: {
+                    View view = LayoutInflater.from(mContext)
+                            .inflate(R.layout.list_item_category, parent, false);
+
+                    return new CategoryHolder(view);
+                }
+
+                default:
+                    throw new IllegalArgumentException("Invalid view type, value of " + viewType);
+            }
         }
 
         @Override
-        public void onBindViewHolder(CategoryAdapter.CategoryHolder holder, int position) {
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
             int idIndex = mCursor.getColumnIndex(CashFlowContract.CategoryEntry._ID);
             int titleIndex = mCursor.getColumnIndex(CashFlowContract.CategoryEntry.COLUMN_TITLE);
@@ -152,37 +168,89 @@ public class CategoryFragment extends Fragment implements LoaderManager.LoaderCa
             int budgetIndex = mCursor.getColumnIndex(CashFlowContract.CategoryEntry.COLUMN_BUDGET);
             int factIndex = mCursor.getColumnIndex(CashFlowContract.CategoryCostEntry.COLUMN_SUM);
 
-            mCursor.moveToPosition(position); // get to the right location in the cursor
+            if (holder instanceof HeaderHolder){
 
-            // Determine the values of the wanted data
-            final int id = mCursor.getInt(idIndex);
-            String title = mCursor.getString(titleIndex);
-            OperationType type = OperationType.toEnum(mCursor.getInt(typeIndex));
-            int budget = mCursor.getInt(budgetIndex);
-            int fact = mCursor.getInt(factIndex);
+                int inBudget = 0;
+                int inFact = 0;
+                int inDelta = 0;
+                int outBudget = 0;
+                int outFact = 0;
+                int outDelta = 0;
 
-            int delta = 0;
-            if(type.equals(OperationType.IN)) {
-                delta = fact - budget;
-            }else if (type.equals(OperationType.OUT)) {
-                delta = budget - fact;
+                mCursor.moveToFirst();
+                while (!mCursor.isAfterLast()){
+                    OperationType type = OperationType.toEnum(mCursor.getInt(typeIndex));
+                    switch (type){
+                        case IN:{
+                            inBudget += mCursor.getInt(budgetIndex);
+                            inFact += mCursor.getInt(factIndex);
+                            break;
+                        }
+                        case OUT:{
+                            outBudget += mCursor.getInt(budgetIndex);
+                            outFact += mCursor.getInt(factIndex);
+                            break;
+                        }
+                    }
+                    mCursor.moveToNext();
+                }
+
+                inDelta = inFact - inBudget;
+                outDelta = outBudget - outFact;
+
+                ((HeaderHolder)holder).tvInBudget.setText(String.format(Locale.getDefault(), "%,d", inBudget));
+                ((HeaderHolder)holder).tvInFact.setText(String.format(Locale.getDefault(), "%,d", inFact));
+                ((HeaderHolder)holder).tvInDelta.setText(String.format(Locale.getDefault(), "%,d", inDelta));
+
+                ((HeaderHolder)holder).tvOutBudget.setText(String.format(Locale.getDefault(), "%,d", outBudget));
+                ((HeaderHolder)holder).tvOutFact.setText(String.format(Locale.getDefault(), "%,d", outFact));
+                ((HeaderHolder)holder).tvOutDelta.setText(String.format(Locale.getDefault(), "%,d", outDelta));
+
+                ((HeaderHolder)holder).tvCashflow.setText(String.format(Locale.getDefault(), "%,d", inFact - outFact));
+
+            }else if (holder instanceof CategoryHolder) {
+
+                mCursor.moveToPosition(position-1); // get to the right location in the cursor
+
+                // Determine the values of the wanted data
+                final int id = mCursor.getInt(idIndex);
+                String title = mCursor.getString(titleIndex);
+                OperationType type = OperationType.toEnum(mCursor.getInt(typeIndex));
+                int budget = mCursor.getInt(budgetIndex);
+                int fact = mCursor.getInt(factIndex);
+
+                int delta = 0;
+                if (type.equals(OperationType.IN)) {
+                    delta = fact - budget;
+                } else if (type.equals(OperationType.OUT)) {
+                    delta = budget - fact;
+                }
+
+                //Set values
+                holder.itemView.setTag(id);
+                ((CategoryHolder)holder).categoryTitleView.setText(title);
+                ((CategoryHolder)holder).categoryBudgetView.setText(String.format(Locale.getDefault(), "%,d", budget));
+                ((CategoryHolder)holder).categoryFactView.setText(String.format(Locale.getDefault(), "%,d", fact));
+                ((CategoryHolder)holder).categoryDeltaView.setText(String.format(Locale.getDefault(), "%,d", delta));
+
+                int deltaColor = R.color.primaryTextColor;
+                if (type.equals(OperationType.IN)) {
+                    deltaColor = delta >= 0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
+                } else if (type.equals(OperationType.OUT)) {
+                    deltaColor = delta >= 0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
+                }
+
+                ((CategoryHolder)holder).categoryDeltaView.setTextColor(getResources().getColor(deltaColor));
             }
+        }
 
-            //Set values
-            holder.itemView.setTag(id);
-            holder.categoryTitleView.setText(title);
-            holder.categoryBudgetView.setText(String.format(Locale.getDefault(),"%,d",budget));
-            holder.categoryFactView.setText(String.format(Locale.getDefault(),"%,d",fact));
-            holder.categoryDeltaView.setText(String.format(Locale.getDefault(),"%,d",delta));
-
-            int deltaColor = R.color.primaryTextColor;
-            if(type.equals(OperationType.IN)){
-                deltaColor = delta >=0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
-            }else if (type.equals(OperationType.OUT)){
-                deltaColor = delta >=0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
+        @Override
+        public int getItemViewType(int position) {
+            if (position == 0){
+                return HEADER_ITEM;
+            } else {
+                return LIST_ITEM;
             }
-
-            holder.categoryDeltaView.setTextColor(getResources().getColor(deltaColor));
         }
 
         @Override
@@ -190,7 +258,7 @@ public class CategoryFragment extends Fragment implements LoaderManager.LoaderCa
             if (mCursor == null) {
                 return 0;
             }
-            return mCursor.getCount();
+            return mCursor.getCount() + 1;
         }
 
         public Cursor swapCursor(Cursor c) {
@@ -208,6 +276,28 @@ public class CategoryFragment extends Fragment implements LoaderManager.LoaderCa
             return temp;
         }
 
+        class HeaderHolder extends RecyclerView.ViewHolder{
+
+            TextView tvInBudget, tvInFact, tvInDelta;
+            TextView tvOutBudget, tvOutFact, tvOutDelta;
+            TextView tvCashflow;
+
+            public HeaderHolder(View itemView) {
+                super(itemView);
+
+                tvInBudget = (TextView) itemView.findViewById(R.id.tvInBudget);
+                tvInFact = (TextView) itemView.findViewById(R.id.tvInFact);
+                tvInDelta = (TextView) itemView.findViewById(R.id.tvInDelta);
+
+                tvOutBudget = (TextView) itemView.findViewById(R.id.tvOutBudget);
+                tvOutFact = (TextView) itemView.findViewById(R.id.tvOutFact);
+                tvOutDelta = (TextView) itemView.findViewById(R.id.tvOutDelta);
+
+                tvCashflow = (TextView) itemView.findViewById(R.id.tvCashflow);
+            }
+
+        }
+
         class CategoryHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
             TextView categoryTitleView;
             TextView categoryBudgetView;
@@ -216,10 +306,10 @@ public class CategoryFragment extends Fragment implements LoaderManager.LoaderCa
 
             public CategoryHolder(View itemView) {
                 super(itemView);
-                categoryTitleView = (TextView) itemView.findViewById(R.id.tvCategory);
-                categoryBudgetView = (TextView) itemView.findViewById(R.id.tvBudget);
+                categoryTitleView = (TextView) itemView.findViewById(R.id.lblIn);
+                categoryBudgetView = (TextView) itemView.findViewById(R.id.tvInBudget);
                 categoryFactView = (TextView) itemView.findViewById(R.id.tvFact);
-                categoryDeltaView = (TextView) itemView.findViewById(R.id.tvDelta);
+                categoryDeltaView = (TextView) itemView.findViewById(R.id.tvInDelta);
 
                 itemView.setOnClickListener(this);
             }

@@ -157,9 +157,11 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
-            if (holder instanceof HeaderHolder) {
+            int idIndex = mCursor.getColumnIndex(AccountEntry._ID);
+            int titleIndex = mCursor.getColumnIndex(AccountEntry.COLUMN_TITLE);
+            int sumIndex = mCursor.getColumnIndex(AccountEntry.SERVICE_COLUMN_SUM);
 
-                int sumIndex = mCursor.getColumnIndex(AccountEntry.SERVICE_COLUMN_SUM);
+            if (holder instanceof HeaderHolder) {
 
                 mCursor.moveToFirst();
                 int sum = 0;
@@ -172,10 +174,6 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
                 ((HeaderHolder)holder).accountSumView.setText(String.format(Locale.getDefault(), "%,d", sum));
 
             } else if (holder instanceof AccountHolder) {
-
-                int idIndex = mCursor.getColumnIndex(AccountEntry._ID);
-                int titleIndex = mCursor.getColumnIndex(AccountEntry.COLUMN_TITLE);
-                int sumIndex = mCursor.getColumnIndex(AccountEntry.SERVICE_COLUMN_SUM);
 
                 mCursor.moveToPosition(position -1); // get to the right location in the cursor
 
