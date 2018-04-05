@@ -271,6 +271,9 @@ public class CashFlowProvider extends ContentProvider {
         retCursor.setNotificationUri(getContext().getContentResolver(), uri);
 
         switch (match){
+            case ACCOUNTS:
+                retCursor.setNotificationUri(getContext().getContentResolver(), AccountBalanceEntry.CONTENT_URI);
+                break;
             case CATEGORY_COST_MONTH:
                 retCursor.setNotificationUri(getContext().getContentResolver(), CategoryEntry.CONTENT_URI);
                 retCursor.setNotificationUri(getContext().getContentResolver(), CategoryCostEntry.CONTENT_URI);
@@ -456,6 +459,17 @@ public class CashFlowProvider extends ContentProvider {
                         OperationEntry.TABLE_NAME,
                         selection,
                         selectionArgs);
+
+                delete(
+                        CategoryCostEntry.CONTENT_URI,
+                        selection,
+                        selectionArgs);
+
+                delete(
+                        AccountBalanceEntry.CONTENT_URI,
+                        selection,
+                        selectionArgs);
+
                 break;
             }
             case OPERATION_WITH_ID:{

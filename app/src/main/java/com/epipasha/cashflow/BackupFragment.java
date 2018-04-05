@@ -12,21 +12,29 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.epipasha.cashflow.data.CashFlowDbHelper;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import com.google.android.gms.common.api.ResultCallback;
+import com.epipasha.cashflow.data.Backuper;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.drive.CreateFileActivityOptions;
 import com.google.android.gms.drive.Drive;
-import com.google.android.gms.drive.DriveApi.DriveContentsResult;
+import com.google.android.gms.drive.DriveClient;
 import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFile;
 import com.google.android.gms.drive.DriveId;
+import com.google.android.gms.drive.DriveResourceClient;
 import com.google.android.gms.drive.MetadataChangeSet;
-import com.google.android.gms.drive.OpenFileActivityBuilder;
+import com.google.android.gms.drive.OpenFileActivityOptions;
+import com.google.android.gms.drive.query.Filters;
+import com.google.android.gms.drive.query.SearchableField;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
 
 import org.json.JSONException;
 
@@ -37,17 +45,21 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.HashSet;
+import java.util.Set;
 
-public class BackupFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks,
-        OnConnectionFailedListener{
+public class BackupFragment extends Fragment {
 
     private static final String TAG = "drive-quickstart";
-    private static final int REQUEST_CODE_CAPTURE_IMAGE = 1;
-    private static final int REQUEST_CODE_CREATOR = 2;
-    private static final int REQUEST_CODE_RESOLUTION = 3;
-    private static final int REQUEST_CODE_OPENER = 4;
+    protected static final int REQUEST_CODE_SIGN_IN = 0;
+    protected static final int REQUEST_CODE_OPEN_ITEM = 1;
+    private static final int REQUEST_CODE_CREATE_FILE = 2;
 
-    private GoogleApiClient mGoogleApiClient;
+    private DriveClient mDriveClient;
+    private DriveResourceClient mDriveResourceClient;
+    private TaskCompletionSource<DriveId> mOpenItemTaskSource;
+
+    private Button btnDriveShare, btnDriveRestore, btnConnect;
 
     public BackupFragment() {
     }
@@ -62,7 +74,7 @@ public class BackupFragment extends Fragment implements GoogleApiClient.Connecti
             @Override
             public void onClick(View v) {
                 try {
-                    String data = CashFlowDbHelper.backupDb(getActivity());
+                    String data = Backuper.backupDb(getActivity());
 
                     File root = android.os.Environment.getExternalStorageDirectory();
                     File file = new File(root.getAbsolutePath(), "myData.txt");
@@ -89,121 +101,180 @@ public class BackupFragment extends Fragment implements GoogleApiClient.Connecti
 
                     is.close();
 
-                    CashFlowDbHelper.restoreDb(getActivity(), new String(buffer, "UTF-8"));
+                    Backuper.restoreDb(getActivity(), new String(buffer, "UTF-8"));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
 
-        Button driveShare = (Button)v.findViewById(R.id.drive_share);
-        driveShare.setOnClickListener(new View.OnClickListener() {
+        btnDriveShare = (Button)v.findViewById(R.id.drive_share);
+        btnDriveShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveFileToDrive();
+                createFileWithIntent();
             }
         });
 
-        Button driveRestore = (Button)v.findViewById(R.id.drive_restore);
-        driveRestore.setOnClickListener(new View.OnClickListener() {
+        btnDriveRestore = (Button)v.findViewById(R.id.drive_restore);
+        btnDriveRestore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 downloadFileFromDrive();
             }
         });
 
+        btnConnect = (Button)v.findViewById(R.id.btnConnect);
+        btnConnect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signIn();
+            }
+        });
+
+        btnConnect.setVisibility(View.VISIBLE);
+        btnDriveRestore.setVisibility(View.GONE);
+        btnDriveShare.setVisibility(View.GONE);
+
+        loadDriveClient();
+
         return v;
     }
 
-    private void connect(){
-        if (mGoogleApiClient == null) {
-            // Create the API client and bind it to an instance variable.
-            // We use this instance as the callback for connection and connection
-            // failures.
-            // Since no account name is passed, the user is prompted to choose.
-            mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                    .addApi(Drive.API)
-                    .addScope(Drive.SCOPE_FILE)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .build();
-        }
-        // Connect the client. Once connected, the camera is launched.
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        connect();
-    }
-
-    @Override
-    public void onPause() {
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient.disconnect();
-        }
-        super.onPause();
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult result) {
-        // Called whenever the API client fails to connect.
-        Log.i(TAG, "GoogleApiClient connection failed: " + result.toString());
-        if (!result.hasResolution()) {
-            // show the localized error dialog.
-            GoogleApiAvailability.getInstance().getErrorDialog(getActivity(), result.getErrorCode(), 0).show();
-            return;
-        }
-        // The failure has a resolution. Resolve it.
-        // Called typically when the app is not yet authorized, and an
-        // authorization
-        // dialog is displayed to the user.
-        try {
-            result.startResolutionForResult(getActivity(), REQUEST_CODE_RESOLUTION);
-        } catch (IntentSender.SendIntentException e) {
-            Log.e(TAG, "Exception while starting resolution activity", e);
+    private void loadDriveClient() {
+        Set<Scope> requiredScopes = new HashSet<>(2);
+        requiredScopes.add(Drive.SCOPE_FILE);
+        requiredScopes.add(Drive.SCOPE_APPFOLDER);
+        GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(getActivity());
+        if (signInAccount != null && signInAccount.getGrantedScopes().containsAll(requiredScopes)) {
+            initializeDriveClient(signInAccount);
         }
     }
 
-    @Override
-    public void onConnected(Bundle connectionHint) {
-        Log.i(TAG, "API client connected.");
+    protected void signIn() {
+           GoogleSignInOptions signInOptions =
+                    new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestScopes(Drive.SCOPE_FILE)
+                            .requestScopes(Drive.SCOPE_APPFOLDER)
+                            .build();
+            GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(getActivity(), signInOptions);
+            startActivityForResult(googleSignInClient.getSignInIntent(), REQUEST_CODE_SIGN_IN);
 
-        Toast.makeText(getActivity(), "Connected to Google drive", Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void onConnectionSuspended(int cause) {
-        Log.i(TAG, "GoogleApiClient connection suspended");
+    protected Task<DriveId> pickTextFile() {
+        OpenFileActivityOptions openOptions =
+                new OpenFileActivityOptions.Builder()
+                        .setSelectionFilter(Filters.eq(SearchableField.MIME_TYPE, "text/plain"))
+                        .setActivityTitle("Select")
+                        .build();
+        return pickItem(openOptions);
     }
 
-    private void saveFileToDrive() {
-        // Start by creating a new contents, and setting a callback.
-        Log.i(TAG, "Creating new contents.");
-        Drive.DriveApi.newDriveContents(mGoogleApiClient)
-                .setResultCallback(new ResultCallback<DriveContentsResult>() {
-
+    private Task<DriveId> pickItem(OpenFileActivityOptions openOptions) {
+        mOpenItemTaskSource = new TaskCompletionSource<>();
+        mDriveClient
+                .newOpenFileActivityIntentSender(openOptions)
+                .continueWith(new Continuation<IntentSender, Void>() {
                     @Override
-                    public void onResult(DriveContentsResult result) {
-                        // If the operation was not successful, we cannot do anything
-                        // and must
-                        // fail.
-                        if (!result.getStatus().isSuccess()) {
-                            Log.i(TAG, "Failed to create new contents.");
-                            return;
+                    public Void then(@NonNull Task<IntentSender> task) throws Exception {
+                        startIntentSenderForResult(
+                                task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0, null);
+                        return null;
+                    }
+                });
+        return mOpenItemTaskSource.getTask();
+    }
+
+    private void downloadFileFromDrive(){
+
+        pickTextFile()
+                .addOnSuccessListener(getActivity(),
+                        new OnSuccessListener<DriveId>() {
+                            @Override
+                            public void onSuccess(DriveId driveId) {
+                                retrieveContents(driveId.asDriveFile());
+                            }
+                        })
+                .addOnFailureListener(getActivity(), new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, "No file selected", e);
+                    }
+                });
+
+    }
+
+    private void retrieveContents(DriveFile file) {
+        // [START open_file]
+        Task<DriveContents> openFileTask =
+                mDriveResourceClient.openFile(file, DriveFile.MODE_READ_ONLY);
+        // [END open_file]
+        // [START read_contents]
+        openFileTask
+                .continueWithTask(new Continuation<DriveContents, Task<Void>>() {
+                    @Override
+                    public Task<Void> then(@NonNull Task<DriveContents> task) throws Exception {
+                        DriveContents contents = task.getResult();
+                        // Process contents...
+                        // [START_EXCLUDE]
+                        // [START read_as_string]
+                        try {
+                            BufferedReader reader = new BufferedReader(
+                                    new InputStreamReader(contents.getInputStream()));
+                            StringBuilder builder = new StringBuilder();
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                builder.append(line).append("\n");
+                            }
+
+                            String contentsAsString = builder.toString();
+
+                            Backuper.restoreDb(getActivity(), contentsAsString);
+
+                        }catch (Exception e){
+
                         }
-                        // Otherwise, we can write our data to the new contents.
-                        Log.i(TAG, "New contents created.");
-                        // Get an output stream for the contents.
-                        OutputStream outputStream = result.getDriveContents().getOutputStream();
+                        // [END read_as_string]
+                        // [END_EXCLUDE]
+                        // [START discard_contents]
+                        Task<Void> discardTask = mDriveResourceClient.discardContents(contents);
+                        // [END discard_contents]
+                        return discardTask;
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle failure
+                        // [START_EXCLUDE]
+                        Log.e(TAG, "Unable to read contents", e);
+                        //showMessage(getString(R.string.read_failed));
+                        //finish();
+                        // [END_EXCLUDE]
+                    }
+                });
+        // [END read_contents]
+    }
+
+    private void createFileWithIntent() {
+        // [START create_file_with_intent]
+        Task<DriveContents> createContentsTask = mDriveResourceClient.createContents();
+        createContentsTask
+                .continueWithTask(new Continuation<DriveContents, Task<IntentSender>>() {
+                    @Override
+                    public Task<IntentSender> then(@NonNull Task<DriveContents> task)
+                            throws Exception {
+                        DriveContents contents = task.getResult();
+                        OutputStream outputStream = contents.getOutputStream();
+
                         // Write the bitmap data from it.
                         String str = null;
                         try {
-                            str = CashFlowDbHelper.backupDb(getActivity());
+                            str = Backuper.backupDb(getActivity());
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            return;
+                            //finish();
                         }
 
                         try {
@@ -211,108 +282,100 @@ public class BackupFragment extends Fragment implements GoogleApiClient.Connecti
                         } catch (IOException e1) {
                             Log.i(TAG, "Unable to write file contents.");
                         }
-                        // Create the initial metadata - MIME type and title.
-                        // Note that the user will be able to change the title later.
-                        MetadataChangeSet metadataChangeSet = new MetadataChangeSet.Builder()
-                                .setMimeType("application/json").setTitle("Cashflow backup.txt").build();
-                        // Create an intent for the file chooser, and start it.
-                        IntentSender intentSender = Drive.DriveApi
-                                .newCreateFileActivityBuilder()
-                                .setInitialMetadata(metadataChangeSet)
-                                .setInitialDriveContents(result.getDriveContents())
-                                .build(mGoogleApiClient);
-                        try {
-                            startIntentSenderForResult(
-                                    intentSender, REQUEST_CODE_CREATOR, null, 0, 0, 0, null);
-                        } catch (IntentSender.SendIntentException e) {
-                            Log.i(TAG, "Failed to launch file chooser.");
-                        }
+
+                        MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
+                                .setTitle("Cashflow backup")
+                                .setMimeType("text/plain")
+                                .setStarred(true)
+                                .build();
+
+                        CreateFileActivityOptions createOptions =
+                                new CreateFileActivityOptions.Builder()
+                                        .setInitialDriveContents(contents)
+                                        .setInitialMetadata(changeSet)
+                                        .build();
+                        return mDriveClient.newCreateFileActivityIntentSender(createOptions);
                     }
-                });
-    }
-
-    private void downloadFileFromDrive(){
-
-        Drive.DriveApi.newDriveContents(mGoogleApiClient)
-                .setResultCallback(new ResultCallback<DriveContentsResult>() {
-
+                })
+                .addOnSuccessListener(getActivity(),
+                        new OnSuccessListener<IntentSender>() {
+                            @Override
+                            public void onSuccess(IntentSender intentSender) {
+                                try {
+                                    startIntentSenderForResult(
+                                            intentSender, REQUEST_CODE_CREATE_FILE, null, 0, 0, 0, null);
+                                } catch (IntentSender.SendIntentException e) {
+                                    Log.e(TAG, "Unable to create file", e);
+                                    //showMessage(getString(R.string.file_create_error));
+                                    //finish();
+                                }
+                            }
+                        })
+                .addOnFailureListener(getActivity(), new OnFailureListener() {
                     @Override
-                    public void onResult(DriveContentsResult result) {
-
-                        IntentSender intentSender = Drive.DriveApi
-                                .newOpenFileActivityBuilder()
-                                //.setMimeType(new String[]{"application/json"})
-                                .build(mGoogleApiClient);
-                        try {
-                            startIntentSenderForResult(
-                                    intentSender, REQUEST_CODE_OPENER, null, 0, 0, 0, null);
-                        } catch (IntentSender.SendIntentException e) {
-                            Log.i(TAG, "Failed to launch file chooser.");
-                        }
-
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, "Unable to create file", e);
+                        //showMessage(getString(R.string.file_create_error));
+                        //finish();
                     }
                 });
-
+        // [END create_file_with_intent]
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-
-            case REQUEST_CODE_OPENER:
-
-                if (resultCode == RESULT_OK) {
-
-                    DriveId mFileId = (DriveId) data.getParcelableExtra(
-                            OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
-
-                    DriveFile file = mFileId.asDriveFile();
-                    file.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY, null)
-                            .setResultCallback(new ResultCallback<DriveContentsResult>() {
-                                @Override
-                                public void onResult(@NonNull DriveContentsResult result) {
-                                    if (!result.getStatus().isSuccess()) {
-                                        // display an error saying file can't be opened
-                                        return;
-                                    }
-                                    // DriveContents object contains pointers
-                                    // to the actual byte stream
-                                    DriveContents contents = result.getDriveContents();
-
-                                    BufferedReader reader = new BufferedReader(new InputStreamReader(contents.getInputStream()));
-                                    StringBuilder builder = new StringBuilder();
-                                    String line;
-                                    try {
-                                        while ((line = reader.readLine()) != null) {
-                                            builder.append(line);
-                                        }
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                    String contentsAsString = builder.toString();
-
-                                    try {
-                                        CashFlowDbHelper.restoreDb(getActivity(), contentsAsString);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
+            case REQUEST_CODE_SIGN_IN:
+                if (resultCode != RESULT_OK) {
+                    // Sign-in may fail or be cancelled by the user. For this sample, sign-in is
+                    // required and is fatal. For apps where sign-in is optional, handle
+                    // appropriately
+                    Log.e(TAG, "Sign-in failed.");
+                    //finish();
+                    return;
                 }
 
-                break;
-
-            case REQUEST_CODE_CREATOR: {
-
-                if (resultCode == RESULT_OK) {
-                    Toast.makeText(getActivity(), "Backup saved", Toast.LENGTH_SHORT).show();
+                Task<GoogleSignInAccount> getAccountTask =
+                        GoogleSignIn.getSignedInAccountFromIntent(data);
+                if (getAccountTask.isSuccessful()) {
+                    initializeDriveClient(getAccountTask.getResult());
+                } else {
+                    Log.e(TAG, "Sign-in failed.");
+                    //finish();
                 }
                 break;
+            case REQUEST_CODE_OPEN_ITEM:
+                if (resultCode == RESULT_OK) {
+                    DriveId driveId = data.getParcelableExtra(
+                            OpenFileActivityOptions.EXTRA_RESPONSE_DRIVE_ID);
+                    mOpenItemTaskSource.setResult(driveId);
+                } else {
+                    mOpenItemTaskSource.setException(new RuntimeException("Unable to open file"));
+                }
+                break;
+            case REQUEST_CODE_CREATE_FILE:{
+                if (resultCode != RESULT_OK) {
+                    Log.e(TAG, "Unable to create file");
+                    //showMessage(getString(R.string.file_create_error));
+                } else {
+                    DriveId driveId =
+                            data.getParcelableExtra(OpenFileActivityOptions.EXTRA_RESPONSE_DRIVE_ID);
+                    //showMessage(getString(R.string.file_created, "File created with ID: " + driveId));
+                }
+                //finish();
             }
-
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
+
+    private void initializeDriveClient(GoogleSignInAccount signInAccount) {
+        mDriveClient = Drive.getDriveClient(getContext(), signInAccount);
+        mDriveResourceClient = Drive.getDriveResourceClient(getContext(), signInAccount);
+
+        btnConnect.setVisibility(View.GONE);
+        btnDriveRestore.setVisibility(View.VISIBLE);
+        btnDriveShare.setVisibility(View.VISIBLE);
+    }
+
 }

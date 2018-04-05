@@ -200,7 +200,7 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
 
         @Override
         public int getItemCount() {
-            if (mCursor == null) {
+            if (mCursor == null || mCursor.getCount() == 0) {
                 return 0;
             }
             return mCursor.getCount() + 1;
