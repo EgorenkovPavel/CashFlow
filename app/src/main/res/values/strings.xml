@@ -47,5 +47,6 @@
     <string name="pref_selected_tab" translatable="false">selected_tab</string>
     <string name="empty_list_operations">List is empty</string>
     <string name="cashflow">Cashflow</string>
+    <string name="operation_master">Operation master</string>
 
 </resources>

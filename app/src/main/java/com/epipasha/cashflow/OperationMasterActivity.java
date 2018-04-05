@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import com.epipasha.cashflow.Prefs.OperationMasterPrefs;
 import com.epipasha.cashflow.data.CashFlowContract;
+import com.epipasha.cashflow.fragments.account.AccountFragment;
 import com.epipasha.cashflow.objects.OperationType;
 
 import java.util.Calendar;
@@ -52,7 +53,10 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
         setContentView(R.layout.activity_operation_master);
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        myToolbar.setTitle(getString(R.string.operation_master));
         setSupportActionBar(myToolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         findViews();
 
@@ -323,15 +327,7 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
 
         switch (loader.getId()){
             case ACCOUNT_LOADER_ID:{
-                SimpleCursorAdapter adapter = new SimpleCursorAdapter(
-                        this,
-                        R.layout.item_operation_master_account,
-                        cursor,
-                        new String[]{AccountEntry.COLUMN_TITLE, AccountEntry.SERVICE_COLUMN_SUM},
-                        new int[]{R.id.tvTitle, R.id.tvSum}
-                        ,0);
-
-                adapter.setDropDownViewResource(R.layout.item_operation_master_account);
+                AccountAdapter adapter = new AccountAdapter(this, cursor, CursorAdapter.NO_SELECTION);
                 spinAccount.setAdapter(adapter);
 
                 Utils.setPositionById(spinAccount, OperationMasterPrefs.getAccountId(this));
@@ -345,15 +341,7 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
                 break;
             }
             case REP_ACCOUNT_LOADER_ID:{
-                SimpleCursorAdapter adapter = new SimpleCursorAdapter(
-                        this,
-                        R.layout.item_operation_master_account,
-                        cursor,
-                        new String[]{AccountEntry.COLUMN_TITLE, AccountEntry.SERVICE_COLUMN_SUM},
-                        new int[]{R.id.tvTitle, R.id.tvSum}
-                        ,0);
-
-                adapter.setDropDownViewResource(R.layout.item_operation_master_account);
+                AccountAdapter adapter = new AccountAdapter(this, cursor, CursorAdapter.NO_SELECTION);
                 spinAnalytic.setAdapter(adapter);
 
                 Utils.setPositionById(spinAnalytic, OperationMasterPrefs.getAnalyticId(this, getCheckedOperationType()));
@@ -365,6 +353,37 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
+
+    class AccountAdapter extends CursorAdapter{
+
+        public AccountAdapter(Context context, Cursor c, int flags) {
+            super(context, c, flags);
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
+            return LayoutInflater.from(context)
+                    .inflate(R.layout.list_item_account, viewGroup, false);
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+
+            int idIndex = cursor.getColumnIndex(AccountEntry._ID);
+            int titleIndex = cursor.getColumnIndex(AccountEntry.COLUMN_TITLE);
+            int sumIndex = cursor.getColumnIndex(AccountEntry.SERVICE_COLUMN_SUM);
+
+            // Determine the values of the wanted data
+            final int id = cursor.getInt(idIndex);
+            String title = cursor.getString(titleIndex);
+            int sum = cursor.getInt(sumIndex);
+
+            //Set values
+            ((TextView)view.findViewById(R.id.account_list_item_name)).setText(title);
+            ((TextView)view.findViewById(R.id.account_list_item_sum)).setText(String.format(Locale.getDefault(), "%,d", sum));
+
+        }
     }
 
     class CategoryAdapter extends CursorAdapter{
