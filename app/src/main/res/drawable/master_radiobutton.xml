@@ -2,15 +2,15 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
         <item
-            android:drawable="@drawable/b"
+            android:drawable="@drawable/type"
             android:state_checked="true"
             android:state_pressed="true" />
         <item
-            android:drawable="@drawable/a"
+            android:drawable="@drawable/type_accent"
             android:state_pressed="true" />
         <item
-            android:drawable="@drawable/a"
+            android:drawable="@drawable/type_accent"
             android:state_checked="true" />
         <item
-            android:drawable="@drawable/b" />
+            android:drawable="@drawable/type" />
 </selector>

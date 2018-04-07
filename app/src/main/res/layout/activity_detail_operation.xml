@@ -24,7 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="16dp">
 
         <TextView
             android:layout_width="match_parent"
@@ -38,20 +38,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@drawable/input_field"
             android:gravity="fill_vertical"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:padding="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
             tools:text="12.10.2018" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="16dp"
             android:text="@string/type"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
         <RadioGroup
             android:id="@+id/operation_detail_type_group"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="horizontal">
 
@@ -77,13 +80,14 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/operation_detail_label_account"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingTop="16dp"
                 android:text="@string/account"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
@@ -91,20 +95,21 @@
                 android:id="@+id/operation_detail_account"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/b"
+                android:background="@drawable/input_field"
                 android:dropDownWidth="match_parent" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/operation_detail_label_category"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingTop="16dp"
                 android:text="@string/category"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
@@ -112,20 +117,21 @@
                 android:id="@+id/operation_detail_category"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/b"
+                android:background="@drawable/input_field"
                 android:dropDownWidth="match_parent"
                 android:spinnerMode="dropdown" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/operation_detail_label_recipient_account"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingTop="16dp"
                 android:text="@string/to"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
@@ -133,23 +139,31 @@
                 android:id="@+id/operation_detail_recipient_account"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/b"
+                android:background="@drawable/input_field"
                 android:dropDownWidth="match_parent"
                 android:spinnerMode="dropdown" />
         </LinearLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <TextView
+            android:id="@+id/lblSum"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingTop="16dp"
+            android:text="@string/sum"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
-            <EditText
-                android:id="@+id/operation_detail_sum"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:hint="@string/sum"
-                android:inputType="numberDecimal" />
+        <EditText
+            android:id="@+id/operation_detail_sum"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/input_field"
+            android:gravity="end"
+            android:inputType="numberDecimal"
+            android:padding="8dp"
+            tools:text="1000" />
 
-        </android.support.design.widget.TextInputLayout>
     </LinearLayout>
 
 </LinearLayout>

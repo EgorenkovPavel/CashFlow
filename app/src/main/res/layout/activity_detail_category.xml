@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -22,66 +23,72 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="16dp">
 
-        <android.support.design.widget.TextInputLayout
+        <TextView
+            android:id="@+id/lblName"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:text="@string/name"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
-            <EditText
-                android:id="@+id/category_detail_name"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:hint="@string/name"
-                android:inputType="text" />
-
-        </android.support.design.widget.TextInputLayout>
-
-        <LinearLayout
+        <EditText
+            android:id="@+id/category_detail_name"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:background="@drawable/input_field"
+            android:inputType="text"
+            android:padding="8dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/type" />
-
-            <RadioGroup
-                android:id="@+id/type_group"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <RadioButton
-                    android:id="@+id/category_detail_in"
-                    style="@style/TypeButton"
-                    android:checked="true"
-                    android:text="@string/in" />
-
-                <RadioButton
-                    android:id="@+id/category_detail_out"
-                    style="@style/TypeButton"
-                    android:checked="false"
-                    android:text="@string/out" />
-
-            </RadioGroup>
-        </LinearLayout>
-
-        <android.support.design.widget.TextInputLayout
+        <TextView
+            android:id="@+id/lblType"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:text="@string/type"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
-            <EditText
-                android:id="@+id/category_detail_budget"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:hint="@string/budget"
-                android:inputType="numberDecimal" />
+        <RadioGroup
+            android:id="@+id/type_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-        </android.support.design.widget.TextInputLayout>
+            <RadioButton
+                android:id="@+id/category_detail_in"
+                style="@style/TypeButton"
+                android:layout_marginRight="8dp"
+                android:checked="true"
+                android:text="@string/in" />
+
+            <RadioButton
+                android:id="@+id/category_detail_out"
+                style="@style/TypeButton"
+                android:layout_marginLeft="8dp"
+                android:checked="false"
+                android:text="@string/out" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/lblBudget"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:text="@string/budget"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+        <EditText
+            android:id="@+id/category_detail_budget"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/input_field"
+            android:gravity="end"
+            android:inputType="numberDecimal"
+            android:padding="8dp"
+            tools:text="1000" />
 
     </LinearLayout>
 
