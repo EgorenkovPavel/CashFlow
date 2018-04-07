@@ -61,18 +61,22 @@
             <RadioButton
                 android:id="@+id/operation_detail_btnIn"
                 style="@style/TypeButton"
+                android:layout_marginRight="8dp"
                 android:checked="true"
                 android:text="@string/in" />
 
             <RadioButton
                 android:id="@+id/operation_detail_btnOut"
                 style="@style/TypeButton"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:checked="false"
                 android:text="@string/out" />
 
             <RadioButton
                 android:id="@+id/operation_detail_btnTransfer"
                 style="@style/TypeButton"
+                android:layout_marginLeft="8dp"
                 android:checked="false"
                 android:text="@string/transfer" />
 
