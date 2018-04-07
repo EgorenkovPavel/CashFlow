@@ -2,31 +2,51 @@ package com.epipasha.cashflow;
 
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.epipasha.cashflow.data.CashFlowContract;
+import com.epipasha.cashflow.fragments.Adapter;
+import com.epipasha.cashflow.fragments.account.AccountAdapter;
 import com.epipasha.cashflow.fragments.account.AccountFragment;
 import com.epipasha.cashflow.fragments.account.DetailAccountActivity;
+import com.epipasha.cashflow.fragments.category.CategoryAdapter;
 import com.epipasha.cashflow.fragments.category.CategoryFragment;
 import com.epipasha.cashflow.fragments.category.DetailCategoryActivity;
+import com.epipasha.cashflow.fragments.operation.OperationAdapter;
 import com.epipasha.cashflow.fragments.operation.OperationFragment;
 
-public class MainActivity extends AppCompatActivity{
+import java.util.Calendar;
+
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final int ACCOUNT_LOADER_ID = 0;
+    private static final int CATEGORY_LOADER_ID = 1;
+    private static final int OPERATION_LOADER_ID = 2;
 
     private static final String FRAGMENT_TAG = "fragment_tag";
 
     private TabLayout tabs;
     private FloatingActionButton fab;
+    private RecyclerView recyclerView;
+    private Adapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,35 +99,51 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
+        initRecycledView();
+
         TabLayout.Tab tab = tabs.getTabAt(Prefs.getSelectedTab(this));
         tab.select();
         onTabSelected();
 
     }
 
+    private void initRecycledView(){
+        recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
+
+        recyclerView.setHasFixedSize(true);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+
+        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                layoutManager.getOrientation());
+        recyclerView.addItemDecoration(mDividerItemDecoration);
+
+            }
+
     private void onTabSelected() {
         switch (tabs.getSelectedTabPosition()){
             case 0:{
-                setContentFragment(new AccountFragment());
+                mAdapter = new AccountAdapter(this);
+                recyclerView.setAdapter(mAdapter);
+                getSupportLoaderManager().restartLoader(ACCOUNT_LOADER_ID, null, this);
+
                 break;
             }
             case 1:{
-                setContentFragment(new CategoryFragment());
+                mAdapter = new CategoryAdapter(this);
+                recyclerView.setAdapter(mAdapter);
+                getSupportLoaderManager().restartLoader(CATEGORY_LOADER_ID, null, this);
+
                 break;
             }
             case 2:{
-                setContentFragment(new OperationFragment());
+                mAdapter = new OperationAdapter(this);
+                recyclerView.setAdapter(mAdapter);
+                getSupportLoaderManager().restartLoader(OPERATION_LOADER_ID, null, this);
+
                 break;
             }
-        }
-    }
-
-    private void setContentFragment(Fragment newFrag) {
-        if(newFrag!=null) {
-            FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction tr = fm.beginTransaction();
-            tr.replace(R.id.container, newFrag, FRAGMENT_TAG);
-            tr.commit();
         }
     }
 
@@ -138,5 +174,52 @@ public class MainActivity extends AppCompatActivity{
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
+        switch (id){
+            case ACCOUNT_LOADER_ID:
+                return new CursorLoader(
+                        this,
+                        CashFlowContract.AccountEntry.CONTENT_URI,
+                        null,
+                        null,
+                        null,
+                        null);
+            case CATEGORY_LOADER_ID:
+                Calendar cal = Calendar.getInstance();
+                int year = cal.get(Calendar.YEAR);
+                int month = cal.get(Calendar.MONTH);
+
+                return new CursorLoader(
+                        this,
+                        CashFlowContract.CategoryEntry.buildCategoryCostUri(year, month),
+                        null,
+                        null,
+                        null,
+                        null);
+            case OPERATION_LOADER_ID:
+                return new CursorLoader(
+                        this,
+                        CashFlowContract.OperationEntry.CONTENT_URI,
+                        null,
+                        null,
+                        null,
+                        null);
+            default:
+                throw new RuntimeException("Loader Not Implemented: " + id);
+
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        mAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mAdapter.swapCursor(null);
     }
 }

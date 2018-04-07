@@ -28,6 +28,7 @@ import com.epipasha.cashflow.data.CashFlowContract;
 import com.epipasha.cashflow.data.CashFlowContract.AccountEntry;
 import com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
 import com.epipasha.cashflow.data.CashFlowContract.OperationEntry;
+import com.epipasha.cashflow.fragments.Adapter;
 import com.epipasha.cashflow.objects.OperationType;
 
 import java.text.SimpleDateFormat;
@@ -41,7 +42,7 @@ public class OperationFragment extends Fragment implements LoaderManager.LoaderC
     private static final int CATEGORY_LOADER_ID = 2;
     private static final int OPERATION_LOADER_ID = 3;
 
-    private OperationAdapter mAdapter;
+    private Adapter mAdapter;
     private RecyclerView recyclerView;
     private ProgressBar loadingIndicator;
     private TextView tvEmptyList;
@@ -98,7 +99,7 @@ public class OperationFragment extends Fragment implements LoaderManager.LoaderC
 
         showLoading();
 
-         getLoaderManager().restartLoader(OPERATION_LOADER_ID, null, this);
+        getLoaderManager().restartLoader(OPERATION_LOADER_ID, null, this);
 
         return v;
     }
@@ -180,133 +181,4 @@ public class OperationFragment extends Fragment implements LoaderManager.LoaderC
         tvEmptyList.setVisibility(View.VISIBLE);
     }
 
-    class OperationAdapter extends RecyclerView.Adapter<OperationAdapter.OperationHolder>{
-
-        private Cursor mCursor;
-        private Context mContext;
-        private final Drawable plus, minus, redo;
-
-        public OperationAdapter(Context mContext) {
-            this.mContext = mContext;
-            this.plus = ContextCompat.getDrawable(mContext, R.drawable.plus);
-            this.minus = ContextCompat.getDrawable(mContext, R.drawable.minus);
-            this.redo = ContextCompat.getDrawable(mContext, R.drawable.redo);
-        }
-
-        @Override
-        public OperationAdapter.OperationHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(mContext)
-                    .inflate(R.layout.list_item_operation, parent, false);
-
-            return new OperationAdapter.OperationHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(OperationAdapter.OperationHolder holder, int position) {
-
-            int idIndex = mCursor.getColumnIndex(OperationEntry._ID);
-            int dateIndex = mCursor.getColumnIndex(OperationEntry.COLUMN_DATE);
-            int accountIndex = mCursor.getColumnIndex(OperationEntry.SERVICE_COLUMN_ACCOUNT_TITLE);
-            int categoryIndex = mCursor.getColumnIndex(OperationEntry.SERVICE_COLUMN_CATEGORY_TITLE);
-            int repAccountIndex = mCursor.getColumnIndex(OperationEntry.SERVICE_COLUMN_RECIPIENT_ACCOUNT_TITLE);
-            int typeIndex = mCursor.getColumnIndex(OperationEntry.COLUMN_TYPE);
-            int sumIndex = mCursor.getColumnIndex(OperationEntry.COLUMN_SUM);
-
-            mCursor.moveToPosition(position); // get to the right location in the cursor
-
-            // Determine the values of the wanted data
-            final int id = mCursor.getInt(idIndex);
-            Date date = new Date(mCursor.getLong(dateIndex));
-            String account = mCursor.getString(accountIndex);
-            String category = mCursor.getString(categoryIndex);
-            String repAccount = mCursor.getString(repAccountIndex);
-            OperationType type = OperationType.toEnum(mCursor.getInt(typeIndex));
-            int sum = mCursor.getInt(sumIndex);
-
-            //Set values
-            holder.itemView.setTag(id);
-
-            SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault());
-            holder.operationDateView.setText(format.format(date));
-
-            holder.operationAccountView.setText(account);
-            holder.operationSumView.setText(String.format(Locale.getDefault(),"%,d",sum));
-
-            switch (type){
-                case IN:{
-                    holder.operationCategoryView.setText(category);
-                    holder.operationTypeImageView.setImageDrawable(plus);
-                    break;
-                }
-                case OUT:{
-                    holder.operationCategoryView.setText(category);
-                    holder.operationTypeImageView.setImageDrawable(minus);
-                    break;
-                }
-                case TRANSFER:{
-                    holder.operationCategoryView.setText(repAccount);
-                    holder.operationTypeImageView.setImageDrawable(redo);
-                    break;
-                }
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            if (mCursor == null) {
-                return 0;
-            }
-            return mCursor.getCount();
-        }
-
-        public Cursor swapCursor(Cursor c) {
-            // check if this cursor is the same as the previous cursor (mCursor)
-            if (mCursor == c) {
-                return null; // bc nothing has changed
-            }
-            Cursor temp = mCursor;
-            this.mCursor = c; // new cursor value assigned
-
-            //check if this is a valid cursor, then update the cursor
-            if (c != null) {
-                this.notifyDataSetChanged();
-            }
-
-            return temp;
-        }
-
-        class OperationHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-            TextView operationDateView;
-            TextView operationAccountView;
-            TextView operationCategoryView;
-            TextView operationSumView;
-            ImageView operationTypeImageView;
-
-            public OperationHolder(View itemView) {
-                super(itemView);
-                operationDateView = (TextView) itemView.findViewById(R.id.operation_list_item_date);
-                operationAccountView = (TextView) itemView.findViewById(R.id.operation_list_item_account);
-                operationCategoryView = (TextView) itemView.findViewById(R.id.operation_list_item_category);
-                operationSumView = (TextView) itemView.findViewById(R.id.operation_list_item_sum);
-                operationTypeImageView = (ImageView) itemView.findViewById(R.id.operation_list_item_type);
-
-                itemView.setOnClickListener(this);
-            }
-
-            @Override
-            public void onClick(View view) {
-                int adapterPosition = getAdapterPosition();
-                mCursor.moveToPosition(adapterPosition);
-
-                int idIndex = mCursor.getColumnIndex(CashFlowContract.OperationEntry._ID);
-                int id = mCursor.getInt(idIndex);
-
-                Intent i = new Intent(mContext, DetailOperationActivity.class);
-
-                Uri uri = CashFlowContract.OperationEntry.buildOperationUriWithId(id);
-                i.setData(uri);
-                startActivity(i);
-            }
-        }
-    }
 }
