@@ -24,7 +24,7 @@
         </activity>
 
         <activity
-            android:name=".fragments.account.DetailAccountActivity"
+            android:name=".detailActivities.DetailAccountActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
@@ -33,7 +33,7 @@
         </activity>
 
         <activity
-            android:name=".fragments.category.DetailCategoryActivity"
+            android:name=".detailActivities.DetailCategoryActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
@@ -42,7 +42,7 @@
         </activity>
 
         <activity
-            android:name=".fragments.operation.DetailOperationActivity"
+            android:name=".detailActivities.DetailOperationActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme">
             <meta-data

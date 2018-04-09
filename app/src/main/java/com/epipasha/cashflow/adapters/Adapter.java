@@ -1,4 +1,4 @@
-package com.epipasha.cashflow.fragments;
+package com.epipasha.cashflow.adapters;
 
 import android.content.Context;
 import android.database.Cursor;

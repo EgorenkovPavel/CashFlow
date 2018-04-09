@@ -1,10 +1,8 @@
-package com.epipasha.cashflow.fragments;
+package com.epipasha.cashflow.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
-
-import com.epipasha.cashflow.fragments.Adapter;
 
 public abstract class HeaderAdapter<HeaderHolder extends RecyclerView.ViewHolder, ItemHolder extends RecyclerView.ViewHolder> extends Adapter {
     protected static final int HEADER_ITEM = 234;

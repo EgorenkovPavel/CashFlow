@@ -1,4 +1,4 @@
-package com.epipasha.cashflow.fragments.account;
+package com.epipasha.cashflow.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.CashFlowContract;
-import com.epipasha.cashflow.fragments.HeaderAdapter;
+import com.epipasha.cashflow.detailActivities.DetailAccountActivity;
 
 import java.util.Locale;
 

@@ -1,8 +1,7 @@
-package com.epipasha.cashflow.fragments.operation;
+package com.epipasha.cashflow.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
@@ -15,8 +14,8 @@ import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.CashFlowContract;
+import com.epipasha.cashflow.detailActivities.DetailOperationActivity;
 import com.epipasha.cashflow.objects.OperationType;
-import com.epipasha.cashflow.fragments.Adapter;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

@@ -3,12 +3,10 @@ package com.epipasha.cashflow;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -17,21 +15,19 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.epipasha.cashflow.data.CashFlowContract;
-import com.epipasha.cashflow.fragments.Adapter;
-import com.epipasha.cashflow.fragments.account.AccountAdapter;
-import com.epipasha.cashflow.fragments.account.AccountFragment;
-import com.epipasha.cashflow.fragments.account.DetailAccountActivity;
-import com.epipasha.cashflow.fragments.category.CategoryAdapter;
-import com.epipasha.cashflow.fragments.category.CategoryFragment;
-import com.epipasha.cashflow.fragments.category.DetailCategoryActivity;
-import com.epipasha.cashflow.fragments.operation.OperationAdapter;
-import com.epipasha.cashflow.fragments.operation.OperationFragment;
+import com.epipasha.cashflow.adapters.Adapter;
+import com.epipasha.cashflow.adapters.AccountAdapter;
+import com.epipasha.cashflow.detailActivities.DetailAccountActivity;
+import com.epipasha.cashflow.adapters.CategoryAdapter;
+import com.epipasha.cashflow.detailActivities.DetailCategoryActivity;
+import com.epipasha.cashflow.adapters.OperationAdapter;
 
 import java.util.Calendar;
 
@@ -41,12 +37,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private static final int CATEGORY_LOADER_ID = 1;
     private static final int OPERATION_LOADER_ID = 2;
 
-    private static final String FRAGMENT_TAG = "fragment_tag";
-
     private TabLayout tabs;
     private FloatingActionButton fab;
     private RecyclerView recyclerView;
     private Adapter mAdapter;
+    private ItemTouchHelper operationItemTouchHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,7 +114,33 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 layoutManager.getOrientation());
         recyclerView.addItemDecoration(mDividerItemDecoration);
 
+        operationItemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
             }
+
+            // Called when a user swipes left or right on a ViewHolder
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+
+                // Retrieve the id of the task to delete
+                int id = (int) viewHolder.itemView.getTag();
+
+                // Build appropriate uri with String row id appended
+                String stringId = Integer.toString(id);
+                Uri uri = CashFlowContract.OperationEntry.CONTENT_URI;
+                uri = uri.buildUpon().appendPath(stringId).build();
+
+                // COMPLETED (2) Delete a single row of data using a ContentResolver
+                getContentResolver().delete(uri, null, null);
+
+                // COMPLETED (3) Restart the loader to re-query for all tasks after a deletion
+                getSupportLoaderManager().restartLoader(OPERATION_LOADER_ID, null, MainActivity.this);
+
+            }
+        });
+    }
 
     private void onTabSelected() {
         switch (tabs.getSelectedTabPosition()){
@@ -128,6 +149,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 recyclerView.setAdapter(mAdapter);
                 getSupportLoaderManager().restartLoader(ACCOUNT_LOADER_ID, null, this);
 
+                operationItemTouchHelper.attachToRecyclerView(null);
                 break;
             }
             case 1:{
@@ -135,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 recyclerView.setAdapter(mAdapter);
                 getSupportLoaderManager().restartLoader(CATEGORY_LOADER_ID, null, this);
 
+                operationItemTouchHelper.attachToRecyclerView(null);
                 break;
             }
             case 2:{
@@ -142,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 recyclerView.setAdapter(mAdapter);
                 getSupportLoaderManager().restartLoader(OPERATION_LOADER_ID, null, this);
 
+                operationItemTouchHelper.attachToRecyclerView(recyclerView);
                 break;
             }
         }
@@ -178,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
+
         switch (id){
             case ACCOUNT_LOADER_ID:
                 return new CursorLoader(
@@ -215,11 +240,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        mAdapter.swapCursor(cursor);
+        //TODO
+        if (loader.getId() == ACCOUNT_LOADER_ID && mAdapter instanceof AccountAdapter
+                || loader.getId() == CATEGORY_LOADER_ID && mAdapter instanceof CategoryAdapter
+                || loader.getId() == OPERATION_LOADER_ID && mAdapter instanceof OperationAdapter)
+            mAdapter.swapCursor(cursor);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mAdapter.swapCursor(null);
     }
+
 }

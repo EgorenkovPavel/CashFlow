@@ -1,8 +1,7 @@
-package com.epipasha.cashflow.fragments.category;
+package com.epipasha.cashflow.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,7 +11,7 @@ import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.CashFlowContract;
-import com.epipasha.cashflow.fragments.HeaderAdapter;
+import com.epipasha.cashflow.detailActivities.DetailCategoryActivity;
 import com.epipasha.cashflow.objects.OperationType;
 
 import java.util.Locale;
