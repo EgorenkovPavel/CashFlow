@@ -68,8 +68,7 @@ public class AccountAdapter extends HeaderAdapter<AccountAdapter.HeaderHolder, A
             mCursor.moveToNext();
         }
 
-        ((AccountAdapter.HeaderHolder)holder).accountTitleView.setText(mContext.getString(R.string.sum));
-        ((AccountAdapter.HeaderHolder)holder).accountSumView.setText(String.format(Locale.getDefault(), "%,d", sum));
+        holder.accountSumView.setText(String.format(Locale.getDefault(), "%,d", sum));
 
     }
 
@@ -87,7 +86,7 @@ public class AccountAdapter extends HeaderAdapter<AccountAdapter.HeaderHolder, A
 
         @Override
         public void onClick(View view) {
-            int adapterPosition = getAdapterPosition();
+            int adapterPosition = getAdapterPosition()-1;
             mCursor.moveToPosition(adapterPosition);
 
             int idIndex = mCursor.getColumnIndex(CashFlowContract.AccountEntry._ID);

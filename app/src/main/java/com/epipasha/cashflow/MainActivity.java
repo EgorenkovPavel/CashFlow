@@ -24,6 +24,7 @@ import android.view.View;
 import com.epipasha.cashflow.data.CashFlowContract;
 import com.epipasha.cashflow.adapters.Adapter;
 import com.epipasha.cashflow.adapters.AccountAdapter;
+import com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
 import com.epipasha.cashflow.detailActivities.DetailAccountActivity;
 import com.epipasha.cashflow.adapters.CategoryAdapter;
 import com.epipasha.cashflow.detailActivities.DetailCategoryActivity;
@@ -219,11 +220,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
                 return new CursorLoader(
                         this,
-                        CashFlowContract.CategoryEntry.buildCategoryCostUri(year, month),
+                        CategoryEntry.buildCategoryCostUri(year, month),
                         null,
                         null,
                         null,
-                        null);
+                        CategoryEntry.TABLE_NAME +"."+CategoryEntry.COLUMN_TYPE + "," + CategoryEntry.TABLE_NAME +"."+CategoryEntry.COLUMN_TITLE);
             case OPERATION_LOADER_ID:
                 return new CursorLoader(
                         this,

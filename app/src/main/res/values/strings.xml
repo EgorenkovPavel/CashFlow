@@ -48,5 +48,6 @@
     <string name="empty_list_operations">List is empty</string>
     <string name="cashflow">Cashflow</string>
     <string name="operation_master">Operation master</string>
+    <string name="total_sum">Total sum</string>
 
 </resources>

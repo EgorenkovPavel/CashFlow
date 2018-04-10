@@ -49,19 +49,19 @@ public class CategoryAdapter extends HeaderAdapter<CategoryAdapter.HeaderHolder,
 
         //Set values
         holder.itemView.setTag(id);
-        ((CategoryAdapter.CategoryHolder)holder).categoryTitleView.setText(title);
-        ((CategoryAdapter.CategoryHolder)holder).categoryBudgetView.setText(String.format(Locale.getDefault(), "%,d", budget));
-        ((CategoryAdapter.CategoryHolder)holder).categoryFactView.setText(String.format(Locale.getDefault(), "%,d", fact));
-        ((CategoryAdapter.CategoryHolder)holder).categoryDeltaView.setText(String.format(Locale.getDefault(), "%,d", delta));
+        holder.categoryTitleView.setText(title);
+        holder.categoryBudgetView.setText(String.format(Locale.getDefault(), "%,d", budget));
+        holder.categoryFactView.setText(String.format(Locale.getDefault(), "%,d", fact));
+        holder.categoryDeltaView.setText(String.format(Locale.getDefault(), "%,d", delta));
 
-        int deltaColor = R.color.primaryTextColor;
-        if (type.equals(OperationType.IN)) {
-            deltaColor = delta >= 0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
-        } else if (type.equals(OperationType.OUT)) {
-            deltaColor = delta >= 0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
-        }
-
-        ((CategoryAdapter.CategoryHolder)holder).categoryDeltaView.setTextColor(mContext.getResources().getColor(deltaColor));
+//        int deltaColor = R.color.primaryTextColor;
+//        if (type.equals(OperationType.IN)) {
+//            deltaColor = delta >= 0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
+//        } else if (type.equals(OperationType.OUT)) {
+//            deltaColor = delta >= 0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
+//        }
+//
+//        holder.categoryDeltaView.setTextColor(mContext.getResources().getColor(deltaColor));
 
     }
 
@@ -170,7 +170,7 @@ public class CategoryAdapter extends HeaderAdapter<CategoryAdapter.HeaderHolder,
 
         @Override
         public void onClick(View view) {
-            int adapterPosition = getAdapterPosition();
+            int adapterPosition = getAdapterPosition()-1;
             mCursor.moveToPosition(adapterPosition);
 
             int idIndex = mCursor.getColumnIndex(CashFlowContract.CategoryEntry._ID);

@@ -7,14 +7,14 @@
 
     <TextView
         android:id="@+id/account_list_item_sum"
-        style="@style/two_line_list_secondary_text"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
         android:layout_weight="1"
         android:gravity="right"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -22,17 +22,16 @@
 
     <TextView
         android:id="@+id/account_list_item_name"
-        style="@style/two_line_list_primary_text"
         android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_weight="1"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:text="@string/total_sum"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/account_list_item_sum"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Bank" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

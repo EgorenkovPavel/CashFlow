@@ -186,7 +186,7 @@ public class CashFlowProvider extends ContentProvider {
                         selectionArgs,
                         null,
                         null,
-                        CategoryEntry.COLUMN_TITLE);
+                        sortOrder);
                 break;
             }
 
@@ -271,12 +271,8 @@ public class CashFlowProvider extends ContentProvider {
         retCursor.setNotificationUri(getContext().getContentResolver(), uri);
 
         switch (match){
-            case ACCOUNTS:
-                retCursor.setNotificationUri(getContext().getContentResolver(), AccountBalanceEntry.CONTENT_URI);
-                break;
             case CATEGORY_COST_MONTH:
                 retCursor.setNotificationUri(getContext().getContentResolver(), CategoryEntry.CONTENT_URI);
-                retCursor.setNotificationUri(getContext().getContentResolver(), CategoryCostEntry.CONTENT_URI);
                 break;
         }
 
@@ -651,8 +647,9 @@ public class CashFlowProvider extends ContentProvider {
             db.insertOrThrow(CategoryCostEntry.TABLE_NAME, null, values);
         }
 
-        getContext().getContentResolver().notifyChange(CategoryCostEntry.CONTENT_URI, null);
-        getContext().getContentResolver().notifyChange(AccountBalanceEntry.CONTENT_URI, null);
+        getContext().getContentResolver().notifyChange(CategoryEntry.CONTENT_URI, null);
+        getContext().getContentResolver().notifyChange(AccountEntry.CONTENT_URI, null);
+        getContext().getContentResolver().notifyChange(OperationEntry.CONTENT_URI, null);
 
     }
 

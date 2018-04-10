@@ -426,14 +426,14 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
             ((TextView)view.findViewById(R.id.tvFact)).setText(String.format(Locale.getDefault(),"%,d",fact));
             ((TextView)view.findViewById(R.id.tvInDelta)).setText(String.format(Locale.getDefault(),"%,d",delta));
 
-            int deltaColor = R.color.primaryTextColor;
-            if(type.equals(OperationType.IN)){
-                deltaColor = delta >=0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
-            }else if (type.equals(OperationType.OUT)){
-                deltaColor = delta >=0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
-            }
-
-            ((TextView)view.findViewById(R.id.tvInDelta)).setTextColor(getResources().getColor(deltaColor));
+//            int deltaColor = R.color.primaryTextColor;
+//            if(type.equals(OperationType.IN)){
+//                deltaColor = delta >=0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
+//            }else if (type.equals(OperationType.OUT)){
+//                deltaColor = delta >=0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
+//            }
+//
+//            ((TextView)view.findViewById(R.id.tvInDelta)).setTextColor(getResources().getColor(deltaColor));
 
         }
     }

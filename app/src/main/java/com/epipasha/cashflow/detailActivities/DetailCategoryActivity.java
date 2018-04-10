@@ -10,9 +10,11 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextWatcher;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
+import com.epipasha.cashflow.NumberTextWatcherForThousand;
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
 import com.epipasha.cashflow.objects.OperationType;
@@ -53,7 +55,14 @@ public class DetailCategoryActivity extends AppCompatActivity implements LoaderM
         super.onStop();
 
         String title = etTitle.getText().toString();
-        int budget = Integer.valueOf(etBudget.getText().toString());
+
+        int budget = 0;
+        try {
+            budget = Integer.valueOf(etBudget.getText().toString());
+        }catch (Exception e){
+
+        }
+
         //TODO Ошибка опредения бюжетаесли поле не заполнено, возможно нужно применить NumberTextWatcherForThousand
         OperationType type = getSelectedType();
 

@@ -1,48 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <android.support.constraint.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/lblIn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Transport" />
+    <TextView
+        android:id="@+id/lblIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Transport" />
 
     <TextView
         android:id="@+id/tvInBudget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:textSize="8sp"
         app:layout_constraintBottom_toBottomOf="@+id/lblInBudget"
-        app:layout_constraintEnd_toEndOf="@+id/tvInDelta"
+        app:layout_constraintStart_toEndOf="@+id/lblInBudget"
         app:layout_constraintTop_toTopOf="@+id/lblInBudget"
+        app:layout_constraintVertical_bias="0.0"
         tools:text="3000" />
 
     <TextView
         android:id="@+id/tvFact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:textSize="8sp"
         app:layout_constraintBottom_toBottomOf="@+id/lblInFact"
-        app:layout_constraintEnd_toEndOf="@+id/tvInBudget"
+        app:layout_constraintStart_toEndOf="@+id/lblInFact"
         app:layout_constraintTop_toTopOf="@+id/lblInFact"
+        app:layout_constraintVertical_bias="1.0"
         tools:text="5000" />
 
     <TextView
         android:id="@+id/tvInDelta"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="-2000" />
@@ -51,8 +55,10 @@
         android:id="@+id/lblInBudget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:text="@string/budget"
         android:textSize="8sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/lblIn"
         app:layout_constraintTop_toBottomOf="@+id/lblIn" />
 
@@ -60,11 +66,10 @@
         android:id="@+id/lblInFact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
         android:text="@string/fact"
         android:textSize="8sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/lblInBudget"
-        app:layout_constraintTop_toBottomOf="@+id/lblInBudget" />
+        app:layout_constraintStart_toEndOf="@+id/tvInBudget"
+        app:layout_constraintTop_toTopOf="@+id/tvInBudget" />
 
-    </android.support.constraint.ConstraintLayout>
+</android.support.constraint.ConstraintLayout>
