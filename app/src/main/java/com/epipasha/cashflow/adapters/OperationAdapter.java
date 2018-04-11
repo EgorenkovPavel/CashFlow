@@ -27,9 +27,9 @@ public class OperationAdapter extends Adapter<OperationAdapter.OperationHolder> 
 
     public OperationAdapter(Context mContext) {
         super(mContext);
-        this.plus = ContextCompat.getDrawable(mContext, R.drawable.plus);
-        this.minus = ContextCompat.getDrawable(mContext, R.drawable.minus);
-        this.redo = ContextCompat.getDrawable(mContext, R.drawable.redo);
+        this.plus = ContextCompat.getDrawable(mContext, R.drawable.ic_plus);
+        this.minus = ContextCompat.getDrawable(mContext, R.drawable.ic_minus);
+        this.redo = ContextCompat.getDrawable(mContext, R.drawable.ic_redo);
     }
 
     @Override
