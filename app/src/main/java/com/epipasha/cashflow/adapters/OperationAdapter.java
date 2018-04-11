@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.CashFlowContract;
-import com.epipasha.cashflow.detailActivities.DetailOperationActivity;
+import com.epipasha.cashflow.activities.DetailOperationActivity;
 import com.epipasha.cashflow.objects.OperationType;
 
 import java.text.SimpleDateFormat;

@@ -25,9 +25,9 @@ import com.epipasha.cashflow.data.CashFlowContract;
 import com.epipasha.cashflow.adapters.Adapter;
 import com.epipasha.cashflow.adapters.AccountAdapter;
 import com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
-import com.epipasha.cashflow.detailActivities.DetailAccountActivity;
+import com.epipasha.cashflow.activities.DetailAccountActivity;
 import com.epipasha.cashflow.adapters.CategoryAdapter;
-import com.epipasha.cashflow.detailActivities.DetailCategoryActivity;
+import com.epipasha.cashflow.activities.DetailCategoryActivity;
 import com.epipasha.cashflow.adapters.OperationAdapter;
 
 import java.util.Calendar;

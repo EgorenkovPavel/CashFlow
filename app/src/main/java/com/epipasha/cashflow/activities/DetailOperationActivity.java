@@ -1,4 +1,4 @@
-package com.epipasha.cashflow.detailActivities;
+package com.epipasha.cashflow.activities;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
