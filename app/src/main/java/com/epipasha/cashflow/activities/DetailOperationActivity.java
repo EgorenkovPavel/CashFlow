@@ -13,6 +13,8 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
@@ -129,38 +131,21 @@ public class DetailOperationActivity extends AppCompatActivity implements Loader
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.detail_activity_menu, menu);
+        return true;
+    }
 
-        int sum = (int) sumWatcher.getLong(edtSum.getText().toString());
-
-        if(isNew && sum==0){
-            return;
-        }
-
-        ContentValues values = new ContentValues();
-        values.put(OperationEntry.COLUMN_DATE, operationDate.getTime());
-        values.put(OperationEntry.COLUMN_SUM, sum);
-        values.put(OperationEntry.COLUMN_ACCOUNT_ID, Utils.getSelectedId(accountSpinner));
-
-        OperationType type = getSelectedType();
-        values.put(OperationEntry.COLUMN_TYPE, getSelectedType().toDbValue());
-        switch (type){
-            case IN: case OUT:{
-                values.put(OperationEntry.COLUMN_CATEGORY_ID, Utils.getSelectedId(categorySpinner));
-                break;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_save:{
+                saveOperation();
+                finish();
+                return true;
             }
-            case TRANSFER:{
-                values.put(OperationEntry.COLUMN_RECIPIENT_ACCOUNT_ID, Utils.getSelectedId(recipientAccountSpinner));
-                break;
-            }
-        }
-
-        if (isNew){
-            mUri = getContentResolver().insert(OperationEntry.CONTENT_URI, values);
-            isNew = false;
-        } else {
-            getContentResolver().update(mUri, values, null, null);
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -376,4 +361,37 @@ public class DetailOperationActivity extends AppCompatActivity implements Loader
         dialog.show();
     }
 
+    private void saveOperation(){
+        int sum = (int) sumWatcher.getLong(edtSum.getText().toString());
+
+        if(isNew && sum==0){
+            return;
+        }
+
+        ContentValues values = new ContentValues();
+        values.put(OperationEntry.COLUMN_DATE, operationDate.getTime());
+        values.put(OperationEntry.COLUMN_SUM, sum);
+        values.put(OperationEntry.COLUMN_ACCOUNT_ID, Utils.getSelectedId(accountSpinner));
+
+        OperationType type = getSelectedType();
+        values.put(OperationEntry.COLUMN_TYPE, getSelectedType().toDbValue());
+        switch (type){
+            case IN: case OUT:{
+                values.put(OperationEntry.COLUMN_CATEGORY_ID, Utils.getSelectedId(categorySpinner));
+                break;
+            }
+            case TRANSFER:{
+                values.put(OperationEntry.COLUMN_RECIPIENT_ACCOUNT_ID, Utils.getSelectedId(recipientAccountSpinner));
+                break;
+            }
+        }
+
+        if (isNew){
+            mUri = getContentResolver().insert(OperationEntry.CONTENT_URI, values);
+            isNew = false;
+        } else {
+            getContentResolver().update(mUri, values, null, null);
+        }
+
+    }
 }

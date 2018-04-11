@@ -53,5 +53,6 @@
     <string name="new_category">New category</string>
     <string name="new_operation">New operation</string>
     <string name="operation">Operation</string>
+    <string name="save">Save</string>
 
 </resources>

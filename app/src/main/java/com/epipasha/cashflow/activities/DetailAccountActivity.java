@@ -10,6 +10,8 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.epipasha.cashflow.R;
@@ -50,23 +52,21 @@ public class DetailAccountActivity extends AppCompatActivity implements LoaderMa
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.detail_activity_menu, menu);
+        return true;
+    }
 
-        String title = etTitle.getText().toString();
-
-        if(isNew && title.isEmpty()){
-            return;
-        }
-
-        ContentValues values = new ContentValues();
-        values.put(AccountEntry.COLUMN_TITLE, title);
-
-        if (isNew){
-            mUri = getContentResolver().insert(AccountEntry.CONTENT_URI, values);
-            isNew = false;
-        } else {
-            getContentResolver().update(mUri, values, null, null);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_save:{
+                saveAccount();
+                finish();
+                return true;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -98,5 +98,23 @@ public class DetailAccountActivity extends AppCompatActivity implements LoaderMa
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
+
+    private void saveAccount(){
+        String title = etTitle.getText().toString();
+
+        if(isNew && title.isEmpty()){
+            return;
+        }
+
+        ContentValues values = new ContentValues();
+        values.put(AccountEntry.COLUMN_TITLE, title);
+
+        if (isNew){
+            mUri = getContentResolver().insert(AccountEntry.CONTENT_URI, values);
+            isNew = false;
+        } else {
+            getContentResolver().update(mUri, values, null, null);
+        }
     }
 }

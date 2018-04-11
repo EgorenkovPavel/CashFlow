@@ -11,6 +11,8 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
@@ -57,39 +59,21 @@ public class DetailCategoryActivity extends AppCompatActivity implements LoaderM
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.detail_activity_menu, menu);
+        return true;
+    }
 
-        String title = etTitle.getText().toString();
-
-        int budget = 0;
-        try {
-            budget = Integer.valueOf(etBudget.getText().toString());
-        }catch (Exception e){
-
-        }
-
-        //TODO Ошибка опредения бюжетаесли поле не заполнено, возможно нужно применить NumberTextWatcherForThousand
-        OperationType type = getSelectedType();
-
-        if(isNew && title.isEmpty()){
-            return;
-        }
-
-        if (type == null){
-            return;
-        }
-
-        ContentValues values = new ContentValues();
-        values.put(CategoryEntry.COLUMN_TITLE, title);
-        values.put(CategoryEntry.COLUMN_TYPE, type.toDbValue());
-        values.put(CategoryEntry.COLUMN_BUDGET, budget);
-
-        if (isNew){
-            mUri = getContentResolver().insert(CategoryEntry.CONTENT_URI, values);
-            isNew = false;
-        } else {
-            getContentResolver().update(mUri, values, null, null);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_save:{
+                saveCategory();
+                finish();
+                return true;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -125,7 +109,6 @@ public class DetailCategoryActivity extends AppCompatActivity implements LoaderM
 
     }
 
-
     private OperationType getSelectedType(){
         switch (rgType.getCheckedRadioButtonId()){
             case R.id.category_detail_in: return OperationType.IN;
@@ -144,6 +127,40 @@ public class DetailCategoryActivity extends AppCompatActivity implements LoaderM
                 rgType.check(R.id.category_detail_out);
                 break;
             }
+        }
+    }
+
+    private void saveCategory(){
+        String title = etTitle.getText().toString();
+
+        int budget = 0;
+        try {
+            budget = Integer.valueOf(etBudget.getText().toString());
+        }catch (Exception e){
+
+        }
+
+        //TODO Ошибка опредения бюжетаесли поле не заполнено, возможно нужно применить NumberTextWatcherForThousand
+        OperationType type = getSelectedType();
+
+        if(isNew && title.isEmpty()){
+            return;
+        }
+
+        if (type == null){
+            return;
+        }
+
+        ContentValues values = new ContentValues();
+        values.put(CategoryEntry.COLUMN_TITLE, title);
+        values.put(CategoryEntry.COLUMN_TYPE, type.toDbValue());
+        values.put(CategoryEntry.COLUMN_BUDGET, budget);
+
+        if (isNew){
+            mUri = getContentResolver().insert(CategoryEntry.CONTENT_URI, values);
+            isNew = false;
+        } else {
+            getContentResolver().update(mUri, values, null, null);
         }
     }
 }
