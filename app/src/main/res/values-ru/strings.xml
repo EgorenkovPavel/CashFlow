@@ -26,4 +26,19 @@
     <string name="restore">Восстановить</string>
     <string name="file_system">Файловая система</string>
     <string name="empty_list_operations">Список пуст</string>
+    <string name="total_sum">Общая сумма</string>
+    <string name="new_account">Новый счет</string>
+    <string name="new_category">Новая категория</string>
+    <string name="new_operation">Новая операция</string>
+    <string name="operation">Операция</string>
+    <string name="save">Созранить</string>
+    <string name="no_account_selected">Не выбран счет</string>
+    <string name="no_analytic_selected">Не выбрана аналитика</string>
+    <string name="no_sum">Не заполнена сумма</string>
+    <string name="error">Ошибка</string>
+    <string name="operation_created">Операция создана</string>
+    <string name="undo">Отмена</string>
+    <string name="operation_deleted">Операция удалена</string>
+    <string name="operation_master">Мастер ввода операция</string>
+    <string name="cashflow">Денежный поток</string>
 </resources>

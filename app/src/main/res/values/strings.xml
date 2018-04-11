@@ -54,5 +54,12 @@
     <string name="new_operation">New operation</string>
     <string name="operation">Operation</string>
     <string name="save">Save</string>
+    <string name="no_account_selected">No account selected!!!</string>
+    <string name="no_analytic_selected">No analytic selected!!!</string>
+    <string name="no_sum">Type the sum</string>
+    <string name="error">Error</string>
+    <string name="operation_created">Operation created!!!</string>
+    <string name="undo">UNDO</string>
+    <string name="operation_deleted">Operation deleted</string>
 
 </resources>

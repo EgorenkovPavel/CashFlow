@@ -217,19 +217,19 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
 
     private void createOperation(){
         int accountId = Utils.getSelectedId(spinAccount);
-        if(accountId == 0){
-            Snackbar.make(parentContainer, "No account selected!!!", Snackbar.LENGTH_LONG).show();
+        if(accountId <= 0){
+            Snackbar.make(parentContainer, R.string.no_account_selected, Snackbar.LENGTH_LONG).show();
             return;
         }
 
         int analyticId = Utils.getSelectedId(spinAnalytic);
-        if (analyticId == 0) {
-            Snackbar.make(parentContainer, "No analytic selected!!!", Snackbar.LENGTH_LONG).show();
+        if (analyticId <= 0) {
+            Snackbar.make(parentContainer, R.string.no_analytic_selected, Snackbar.LENGTH_LONG).show();
             return;
         }
 
         if(sum == 0){
-            Snackbar.make(parentContainer, "Type the sum", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(parentContainer, R.string.no_sum, Snackbar.LENGTH_LONG).show();
             return;
         }
 
@@ -262,17 +262,17 @@ public class OperationMasterActivity extends AppCompatActivity implements Loader
 
         final Uri uri = getContentResolver().insert(OperationEntry.CONTENT_URI, values);
         if (uri == null){
-            Snackbar.make(parentContainer, "ERROR", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(parentContainer, R.string.error, Snackbar.LENGTH_LONG).show();
         } else {
-            Snackbar snackbar = Snackbar.make(parentContainer, "Operation created!!!", Snackbar.LENGTH_LONG);
-            snackbar.setAction("UNDO", new View.OnClickListener() {
+            Snackbar snackbar = Snackbar.make(parentContainer, R.string.operation_created, Snackbar.LENGTH_LONG);
+            snackbar.setAction(R.string.undo, new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     int numRowsDeleted = getContentResolver().delete(uri, null, null);
                     if (numRowsDeleted > 0){
-                        Snackbar.make(view, "Operation deleted", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(view, R.string.operation_deleted, Snackbar.LENGTH_LONG).show();
                     } else {
-                        Snackbar.make(parentContainer, "ERROR", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(parentContainer, R.string.error, Snackbar.LENGTH_LONG).show();
                     }
                 }
             });
