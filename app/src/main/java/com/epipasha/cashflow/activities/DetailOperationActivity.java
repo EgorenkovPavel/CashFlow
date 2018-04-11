@@ -120,6 +120,12 @@ public class DetailOperationActivity extends AppCompatActivity implements Loader
             setSelectedType(OperationType.IN);
             getSupportLoaderManager().initLoader(ID_ACCOUNT_LOADER, null, this);
         }
+
+        if(isNew) {
+            setTitle(getString(R.string.new_operation));
+        }else{
+            setTitle(getString(R.string.operation));
+        }
     }
 
     @Override

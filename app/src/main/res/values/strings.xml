@@ -49,5 +49,9 @@
     <string name="cashflow">Cashflow</string>
     <string name="operation_master">Operation master</string>
     <string name="total_sum">Total sum</string>
+    <string name="new_account">New account</string>
+    <string name="new_category">New category</string>
+    <string name="new_operation">New operation</string>
+    <string name="operation">Operation</string>
 
 </resources>

@@ -41,6 +41,12 @@ public class DetailAccountActivity extends AppCompatActivity implements LoaderMa
         if (!isNew) {
             getSupportLoaderManager().initLoader(ID_DETAIL_LOADER, null, this);
         }
+
+        if(isNew) {
+            setTitle(getString(R.string.new_account));
+        }else{
+            setTitle(getString(R.string.account));
+        }
     }
 
     @Override

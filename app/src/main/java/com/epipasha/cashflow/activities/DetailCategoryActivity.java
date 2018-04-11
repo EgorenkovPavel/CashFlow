@@ -48,6 +48,12 @@ public class DetailCategoryActivity extends AppCompatActivity implements LoaderM
         if (!isNew) {
             getSupportLoaderManager().initLoader(ID_DETAIL_LOADER, null, this);
         }
+
+        if(isNew) {
+            setTitle(getString(R.string.new_category));
+        }else{
+            setTitle(getString(R.string.category));
+        }
     }
 
     @Override
