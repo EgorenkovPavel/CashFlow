@@ -31,7 +31,7 @@
     <string name="budget">Budget</string>
     <string name="preferences">Preferences</string>
     <string name="pref_show_operation_master_on_start" translatable="false">pref_show_operation_master_on_start</string>
-    <string name="title_show_operation_master">Show operation master on start</string>
+    <string name="title_show_operation_master">Operation master</string>
     <string name="fact">Fact</string>
     <string name="operation_type">Operation type</string>
     <string name="backup">Backup</string>
@@ -64,5 +64,7 @@
     <string name="error_fill_title">Fill title</string>
     <string name="error_fill_budget">Fill budget</string>
     <string name="error_fill_sum">Fill sum</string>
+    <string name="summary_show_operation_master">Show on start</string>
+    <string name="summary_dont_show_operation_master">Don\'t show on start</string>
 
 </resources>

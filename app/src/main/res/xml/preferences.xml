@@ -3,6 +3,8 @@
 
     <CheckBoxPreference
         android:key="@string/pref_show_operation_master_on_start"
-        android:title="@string/title_show_operation_master"/>
+        android:title="@string/title_show_operation_master"
+        android:summaryOn="@string/summary_show_operation_master"
+        android:summaryOff="@string/summary_dont_show_operation_master"/>
 
 </PreferenceScreen>

@@ -19,7 +19,7 @@
     <string name="more">еще</string>
     <string name="next">Далее</string>
     <string name="preferences">Настройки</string>
-    <string name="title_show_operation_master">Показывать мастер ввода операций при запуске</string>
+    <string name="title_show_operation_master">Мастер ввода операций</string>
     <string name="fact">Факт</string>
     <string name="operation_type">Тип операции</string>
     <string name="backup">Сохранить</string>
@@ -44,4 +44,6 @@
     <string name="error_fill_title">Не заполнено имя</string>
     <string name="error_fill_sum">Не заполнена сумма</string>
     <string name="error_fill_budget">Не заполнен бюджет</string>
+    <string name="summary_show_operation_master">Показывать при старте</string>
+    <string name="summary_dont_show_operation_master">Не показывать при старте</string>
 </resources>

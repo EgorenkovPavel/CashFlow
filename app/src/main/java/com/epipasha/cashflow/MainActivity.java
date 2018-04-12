@@ -101,6 +101,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         tab.select();
         onTabSelected();
 
+        if (Prefs.isShowOperationMasterOnStart(this)){
+            Intent i = new Intent(MainActivity.this, OperationMasterActivity.class);
+            startActivity(i);
+        }
+
     }
 
     private void initRecycledView(){
