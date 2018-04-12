@@ -61,5 +61,8 @@
     <string name="operation_created">Operation created!!!</string>
     <string name="undo">UNDO</string>
     <string name="operation_deleted">Operation deleted</string>
+    <string name="error_fill_title">Fill title</string>
+    <string name="error_fill_budget">Fill budget</string>
+    <string name="error_fill_sum">Fill sum</string>
 
 </resources>

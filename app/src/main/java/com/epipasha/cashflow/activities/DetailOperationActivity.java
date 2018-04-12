@@ -141,7 +141,6 @@ public class DetailOperationActivity extends AppCompatActivity implements Loader
         switch (item.getItemId()){
             case R.id.action_save:{
                 saveOperation();
-                finish();
                 return true;
             }
             default:
@@ -364,7 +363,8 @@ public class DetailOperationActivity extends AppCompatActivity implements Loader
     private void saveOperation(){
         int sum = (int) sumWatcher.getLong(edtSum.getText().toString());
 
-        if(isNew && sum==0){
+        if(sum==0){
+            edtSum.setError(getString(R.string.error_fill_sum));
             return;
         }
 
@@ -393,5 +393,6 @@ public class DetailOperationActivity extends AppCompatActivity implements Loader
             getContentResolver().update(mUri, values, null, null);
         }
 
+        finish();
     }
 }

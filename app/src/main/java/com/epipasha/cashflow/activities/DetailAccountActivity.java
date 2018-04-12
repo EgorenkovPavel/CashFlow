@@ -62,7 +62,6 @@ public class DetailAccountActivity extends AppCompatActivity implements LoaderMa
         switch (item.getItemId()){
             case R.id.action_save:{
                 saveAccount();
-                finish();
                 return true;
             }
             default:
@@ -103,7 +102,8 @@ public class DetailAccountActivity extends AppCompatActivity implements LoaderMa
     private void saveAccount(){
         String title = etTitle.getText().toString();
 
-        if(isNew && title.isEmpty()){
+        if(title.isEmpty()){
+            etTitle.setError(getString(R.string.error_fill_title));
             return;
         }
 
@@ -116,5 +116,7 @@ public class DetailAccountActivity extends AppCompatActivity implements LoaderMa
         } else {
             getContentResolver().update(mUri, values, null, null);
         }
+
+        finish();
     }
 }

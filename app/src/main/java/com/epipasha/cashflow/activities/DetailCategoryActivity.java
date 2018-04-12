@@ -69,7 +69,6 @@ public class DetailCategoryActivity extends AppCompatActivity implements LoaderM
         switch (item.getItemId()){
             case R.id.action_save:{
                 saveCategory();
-                finish();
                 return true;
             }
             default:
@@ -133,19 +132,20 @@ public class DetailCategoryActivity extends AppCompatActivity implements LoaderM
     private void saveCategory(){
         String title = etTitle.getText().toString();
 
+        if(title.isEmpty()){
+            etTitle.setError(getString(R.string.error_fill_title));
+            return;
+        }
+
         int budget = 0;
         try {
             budget = Integer.valueOf(etBudget.getText().toString());
         }catch (Exception e){
-
-        }
-
-        //TODO Ошибка опредения бюжетаесли поле не заполнено, возможно нужно применить NumberTextWatcherForThousand
-        OperationType type = getSelectedType();
-
-        if(isNew && title.isEmpty()){
+            etBudget.setError(getString(R.string.error_fill_budget));
             return;
         }
+
+        OperationType type = getSelectedType();
 
         if (type == null){
             return;
@@ -162,5 +162,7 @@ public class DetailCategoryActivity extends AppCompatActivity implements LoaderM
         } else {
             getContentResolver().update(mUri, values, null, null);
         }
+
+        finish();
     }
 }
