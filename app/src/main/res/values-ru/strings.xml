@@ -41,4 +41,7 @@
     <string name="operation_deleted">Операция удалена</string>
     <string name="operation_master">Мастер ввода операция</string>
     <string name="cashflow">Денежный поток</string>
+    <string name="error_fill_title">Не заполнено имя</string>
+    <string name="error_fill_sum">Не заполнена сумма</string>
+    <string name="error_fill_budget">Не заполнен бюджет</string>
 </resources>

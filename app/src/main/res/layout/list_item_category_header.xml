@@ -11,6 +11,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="@string/out"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/lblIn"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toTopOf="@+id/lblIn" />
@@ -20,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/fact"
-        android:textSize="8sp"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/lblOutBudget"
         app:layout_constraintTop_toBottomOf="@+id/lblOutBudget" />
 
@@ -29,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/budget"
-        android:textSize="8sp"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/lblOut"
         app:layout_constraintTop_toBottomOf="@+id/lblOut" />
 
@@ -37,9 +39,10 @@
         android:id="@+id/tvOutDelta"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/lblOut"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/tvCashflow"
         app:layout_constraintTop_toTopOf="@+id/lblOut"
         app:layout_constraintVertical_bias="0.0"
         tools:text="-2000" />
@@ -48,7 +51,7 @@
         android:id="@+id/tvOutBudget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="8sp"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@+id/lblOutBudget"
         app:layout_constraintEnd_toEndOf="@+id/tvOutDelta"
         app:layout_constraintTop_toTopOf="@+id/lblOutBudget"
@@ -58,7 +61,7 @@
         android:id="@+id/tvOutFact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="8sp"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@+id/lblOutFact"
         app:layout_constraintEnd_toEndOf="@+id/tvOutDelta"
         app:layout_constraintTop_toTopOf="@+id/lblOutFact"
@@ -70,6 +73,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/in"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="@+id/lblCashflow"
         app:layout_constraintTop_toBottomOf="@+id/lblCashflow" />
 
@@ -77,9 +82,9 @@
         android:id="@+id/lblInFact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="16dp"
         android:text="@string/fact"
-        android:textSize="8sp"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/lblInBudget"
         app:layout_constraintTop_toBottomOf="@+id/lblInBudget" />
@@ -89,7 +94,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/budget"
-        android:textSize="8sp"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/lblIn"
         app:layout_constraintTop_toBottomOf="@+id/lblIn" />
 
@@ -98,6 +103,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/lblIn"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintTop_toTopOf="@+id/lblIn"
@@ -108,7 +115,7 @@
         android:id="@+id/tvInBudget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="8sp"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@+id/lblInBudget"
         app:layout_constraintEnd_toEndOf="@+id/tvInDelta"
         app:layout_constraintTop_toTopOf="@+id/lblInBudget"
@@ -118,7 +125,7 @@
         android:id="@+id/tvInFact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="8sp"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@+id/lblInFact"
         app:layout_constraintEnd_toEndOf="@+id/tvInDelta"
         app:layout_constraintTop_toTopOf="@+id/lblInFact"
@@ -129,8 +136,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="@string/cashflow"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -138,8 +146,10 @@
         android:id="@+id/tvCashflow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintBottom_toBottomOf="@+id/lblCashflow"
-        app:layout_constraintEnd_toEndOf="@+id/tvOutDelta"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/lblCashflow"
         app:layout_constraintVertical_bias="0.0"
         tools:text="10000" />
