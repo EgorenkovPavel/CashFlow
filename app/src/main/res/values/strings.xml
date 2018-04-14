@@ -66,5 +66,8 @@
     <string name="error_fill_sum">Fill sum</string>
     <string name="summary_show_operation_master">Show on start</string>
     <string name="summary_dont_show_operation_master">Don\'t show on start</string>
+    <string name="error_choose_account">Choose account</string>
+    <string name="error_choose_category">Choose category</string>
+    <string name="error_choose_rep_account">Choose recipient account</string>
 
 </resources>

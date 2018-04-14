@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -23,6 +24,7 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.epipasha.cashflow.NumberTextWatcherForThousand;
 import com.epipasha.cashflow.R;
@@ -354,17 +356,36 @@ public class DetailOperationActivity extends DetailActivity implements LoaderMan
         ContentValues values = new ContentValues();
         values.put(OperationEntry.COLUMN_DATE, operationDate.getTime());
         values.put(OperationEntry.COLUMN_SUM, sum);
-        values.put(OperationEntry.COLUMN_ACCOUNT_ID, Utils.getSelectedId(accountSpinner));
+
+        int accountId = Utils.getSelectedId(accountSpinner);
+        if(accountId <=0){
+            Toast.makeText(this, getString(R.string.error_choose_account), Toast.LENGTH_SHORT).show();
+            return;
+        }else {
+            values.put(OperationEntry.COLUMN_ACCOUNT_ID, accountId);
+        }
 
         OperationType type = getSelectedType();
         values.put(OperationEntry.COLUMN_TYPE, getSelectedType().toDbValue());
         switch (type){
             case IN: case OUT:{
-                values.put(OperationEntry.COLUMN_CATEGORY_ID, Utils.getSelectedId(categorySpinner));
+                int categoryId = Utils.getSelectedId(categorySpinner);
+                if (categoryId <= 0){
+                    Toast.makeText(this, getString(R.string.error_choose_category), Toast.LENGTH_SHORT).show();
+                    return;
+                }else {
+                    values.put(OperationEntry.COLUMN_CATEGORY_ID, categoryId);
+                }
                 break;
             }
             case TRANSFER:{
-                values.put(OperationEntry.COLUMN_RECIPIENT_ACCOUNT_ID, Utils.getSelectedId(recipientAccountSpinner));
+                int repAccountId = Utils.getSelectedId(recipientAccountSpinner);
+                if(repAccountId <= 0){
+                    Toast.makeText(this, getString(R.string.error_choose_rep_account), Toast.LENGTH_SHORT).show();
+                    return;
+                }else {
+                    values.put(OperationEntry.COLUMN_RECIPIENT_ACCOUNT_ID, repAccountId);
+                }
                 break;
             }
         }
