@@ -6,7 +6,7 @@ import android.view.MenuItem;
 
 import com.epipasha.cashflow.R;
 
-public abstract class DetailActivity extends AppCompatActivity {
+public abstract class DetailActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -30,21 +30,5 @@ public abstract class DetailActivity extends AppCompatActivity {
     }
 
     public abstract void saveObject();
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        animatePreviousActivity();
-    }
-
-    private void animatePreviousActivity(){
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.slide_out_right);
-    }
-
-    @Override
-    public void finish() {
-        super.finish();
-        animatePreviousActivity();
-    }
 
 }

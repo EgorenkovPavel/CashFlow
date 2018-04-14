@@ -27,6 +27,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.Prefs.OperationMasterPrefs;
+import com.epipasha.cashflow.activities.BaseActivity;
 import com.epipasha.cashflow.data.CashFlowContract;
 import com.epipasha.cashflow.objects.OperationType;
 
@@ -34,7 +35,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class OperationMasterActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class OperationMasterActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int ACCOUNT_LOADER_ID = 432;
     private static final int CATEGORY_LOADER_ID = 879;

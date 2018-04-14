@@ -8,7 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-public class BackupActivity extends AppCompatActivity {
+import com.epipasha.cashflow.activities.BaseActivity;
+
+public class BackupActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +31,6 @@ public class BackupActivity extends AppCompatActivity {
         tr.add(R.id.container, new BackupFragment());
         tr.commit();
 
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        finish();
-        return super.onOptionsItemSelected(item);
     }
 
 }

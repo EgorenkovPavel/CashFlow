@@ -9,7 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-public class PreferencesActivity extends AppCompatActivity {
+import com.epipasha.cashflow.activities.BaseActivity;
+
+public class PreferencesActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

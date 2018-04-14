@@ -1,10 +1,12 @@
 package com.epipasha.cashflow;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.LoaderManager;
@@ -16,10 +18,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 
 import com.epipasha.cashflow.data.CashFlowContract;
 import com.epipasha.cashflow.adapters.Adapter;
@@ -175,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 break;
             }
         }
+        fab.setVisibility(View.VISIBLE);
     }
 
     @Override
