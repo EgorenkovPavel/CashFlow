@@ -17,7 +17,7 @@ import android.widget.EditText;
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.CashFlowContract.AccountEntry;
 
-public class DetailAccountActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class DetailAccountActivity extends DetailActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int ID_DETAIL_LOADER = 353;
 
@@ -52,24 +52,6 @@ public class DetailAccountActivity extends AppCompatActivity implements LoaderMa
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.detail_activity_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.action_save:{
-                saveAccount();
-                return true;
-            }
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
     public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
         switch (loaderId) {
 
@@ -99,7 +81,8 @@ public class DetailAccountActivity extends AppCompatActivity implements LoaderMa
 
     }
 
-    private void saveAccount(){
+    @Override
+    public void saveObject() {
         String title = etTitle.getText().toString();
 
         if(title.isEmpty()){
@@ -119,4 +102,5 @@ public class DetailAccountActivity extends AppCompatActivity implements LoaderMa
 
         finish();
     }
+
 }

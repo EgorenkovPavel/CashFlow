@@ -258,4 +258,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mAdapter.swapCursor(null);
     }
 
+    @Override
+    public void startActivity(Intent intent) {
+        super.startActivity(intent);
+        animateOpenActivity();
+    }
+
+    private void animateOpenActivity(){
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.fade_out);
+    }
+
 }

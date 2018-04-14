@@ -9,7 +9,6 @@
 
     <TextView
         android:id="@+id/operation_list_item_account"
-        style="@style/two_line_list_primary_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="72dp"
@@ -34,7 +33,6 @@
 
     <TextView
         android:id="@+id/operation_list_item_category"
-        style="@style/two_line_list_secondary_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"

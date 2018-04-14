@@ -21,7 +21,7 @@ import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
 import com.epipasha.cashflow.objects.OperationType;
 
-public class DetailCategoryActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class DetailCategoryActivity extends DetailActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int ID_DETAIL_LOADER = 353;
 
@@ -55,24 +55,6 @@ public class DetailCategoryActivity extends AppCompatActivity implements LoaderM
             setTitle(getString(R.string.new_category));
         }else{
             setTitle(getString(R.string.category));
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.detail_activity_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.action_save:{
-                saveCategory();
-                return true;
-            }
-            default:
-                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -129,7 +111,8 @@ public class DetailCategoryActivity extends AppCompatActivity implements LoaderM
         }
     }
 
-    private void saveCategory(){
+    @Override
+    public void saveObject(){
         String title = etTitle.getText().toString();
 
         if(title.isEmpty()){

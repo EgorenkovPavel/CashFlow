@@ -38,7 +38,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
-public class DetailOperationActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class DetailOperationActivity extends DetailActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int ID_OPERATION_LOADER = 353;
     private static final int ID_ACCOUNT_LOADER = 438;
@@ -127,24 +127,6 @@ public class DetailOperationActivity extends AppCompatActivity implements Loader
             setTitle(getString(R.string.new_operation));
         }else{
             setTitle(getString(R.string.operation));
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.detail_activity_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.action_save:{
-                saveOperation();
-                return true;
-            }
-            default:
-                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -360,7 +342,8 @@ public class DetailOperationActivity extends AppCompatActivity implements Loader
         dialog.show();
     }
 
-    private void saveOperation(){
+    @Override
+    public void saveObject(){
         int sum = (int) sumWatcher.getLong(edtSum.getText().toString());
 
         if(sum==0){
