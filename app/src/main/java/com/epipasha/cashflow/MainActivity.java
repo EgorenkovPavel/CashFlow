@@ -179,7 +179,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 break;
             }
         }
-        fab.setVisibility(View.VISIBLE);
     }
 
     @Override

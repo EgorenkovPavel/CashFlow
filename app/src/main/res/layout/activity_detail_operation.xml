@@ -157,7 +157,8 @@
             android:layout_weight="1"
             android:paddingTop="8dp"
             android:text="@string/sum"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:labelFor="@id/operation_detail_sum"/>
 
         <EditText
             android:id="@+id/operation_detail_sum"

@@ -46,4 +46,8 @@
     <string name="error_fill_budget">Не заполнен бюджет</string>
     <string name="summary_show_operation_master">Показывать при старте</string>
     <string name="summary_dont_show_operation_master">Не показывать при старте</string>
+    <string name="error_choose_account">Выберите счет</string>
+    <string name="error_choose_category">Выберите категорию</string>
+    <string name="error_choose_rep_account">Выберите счет-получатель</string>
+    <string name="connect">Подключить</string>
 </resources>

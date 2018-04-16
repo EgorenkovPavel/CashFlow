@@ -9,42 +9,20 @@
         android:id="@+id/lblOut"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="32dp"
         android:text="@string/out"
-        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/lblIn"
         app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toTopOf="@+id/lblIn" />
-
-    <TextView
-        android:id="@+id/lblOutFact"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/fact"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="@+id/lblOutBudget"
-        app:layout_constraintTop_toBottomOf="@+id/lblOutBudget" />
-
-    <TextView
-        android:id="@+id/lblOutBudget"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/budget"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="@+id/lblOut"
-        app:layout_constraintTop_toBottomOf="@+id/lblOut" />
+        app:layout_constraintTop_toTopOf="@+id/lblIn"
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/tvOutDelta"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/lblOut"
-        app:layout_constraintEnd_toEndOf="@+id/tvCashflow"
-        app:layout_constraintTop_toTopOf="@+id/lblOut"
-        app:layout_constraintVertical_bias="0.0"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/tvOutBudget"
+        app:layout_constraintTop_toBottomOf="@+id/tvOutFact"
         tools:text="-2000" />
 
     <TextView
@@ -52,9 +30,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/lblOutBudget"
-        app:layout_constraintEnd_toEndOf="@+id/tvOutDelta"
-        app:layout_constraintTop_toTopOf="@+id/lblOutBudget"
+        app:layout_constraintBottom_toTopOf="@+id/tvInFact"
+        app:layout_constraintEnd_toEndOf="@+id/lblOut"
+        app:layout_constraintTop_toTopOf="@+id/tvInBudget"
         tools:text="3000" />
 
     <TextView
@@ -62,30 +40,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/lblOutFact"
-        app:layout_constraintEnd_toEndOf="@+id/tvOutDelta"
-        app:layout_constraintTop_toTopOf="@+id/lblOutFact"
+        app:layout_constraintBottom_toBottomOf="@+id/tvInFact"
+        app:layout_constraintEnd_toEndOf="@+id/tvOutBudget"
+        app:layout_constraintTop_toTopOf="@+id/tvInFact"
         tools:text="5000" />
 
     <TextView
         android:id="@+id/lblIn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         android:text="@string/in"
-        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="@+id/lblCashflow"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/lblCashflow" />
 
     <TextView
         android:id="@+id/lblInFact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
         android:text="@string/fact"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/lblInBudget"
         app:layout_constraintTop_toBottomOf="@+id/lblInBudget" />
 
@@ -93,32 +68,34 @@
         android:id="@+id/lblInBudget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="@string/budget"
         android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="@+id/lblIn"
+        app:layout_constraintStart_toStartOf="@+id/lblCashflow"
         app:layout_constraintTop_toBottomOf="@+id/lblIn" />
 
     <TextView
         android:id="@+id/tvInDelta"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/lblIn"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toTopOf="@+id/lblIn"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintTop_toBottomOf="@+id/tvInFact"
         tools:text="-2000" />
 
     <TextView
         android:id="@+id/tvInBudget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@+id/lblInBudget"
-        app:layout_constraintEnd_toEndOf="@+id/tvInDelta"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintTop_toTopOf="@+id/lblInBudget"
+        app:layout_constraintVertical_bias="1.0"
         tools:text="3000" />
 
     <TextView
@@ -127,7 +104,7 @@
         android:layout_height="wrap_content"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@+id/lblInFact"
-        app:layout_constraintEnd_toEndOf="@+id/tvInDelta"
+        app:layout_constraintEnd_toEndOf="@+id/tvInBudget"
         app:layout_constraintTop_toTopOf="@+id/lblInFact"
         tools:text="5000" />
 

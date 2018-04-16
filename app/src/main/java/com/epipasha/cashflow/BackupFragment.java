@@ -69,7 +69,7 @@ public class BackupFragment extends Fragment {
             Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_backup, container, false);
 
-        Button share = (Button) v.findViewById(R.id.file_share);
+        Button share = (Button) v.findViewById(R.id.btnFileShare);
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,7 +87,7 @@ public class BackupFragment extends Fragment {
             }
         });
 
-        Button restore = (Button) v.findViewById(R.id.file_restore);
+        Button restore = (Button) v.findViewById(R.id.btnFileRestore);
         restore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,7 +108,7 @@ public class BackupFragment extends Fragment {
             }
         });
 
-        btnDriveShare = (Button)v.findViewById(R.id.drive_share);
+        btnDriveShare = (Button)v.findViewById(R.id.btnDriveShare);
         btnDriveShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -116,7 +116,7 @@ public class BackupFragment extends Fragment {
             }
         });
 
-        btnDriveRestore = (Button)v.findViewById(R.id.drive_restore);
+        btnDriveRestore = (Button)v.findViewById(R.id.btnDriveRestore);
         btnDriveRestore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -69,5 +69,6 @@
     <string name="error_choose_account">Choose account</string>
     <string name="error_choose_category">Choose category</string>
     <string name="error_choose_rep_account">Choose recipient account</string>
+    <string name="connect">Connect</string>
 
 </resources>

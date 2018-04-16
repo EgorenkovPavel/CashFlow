@@ -54,15 +54,6 @@ public class CategoryAdapter extends HeaderAdapter<CategoryAdapter.HeaderHolder,
         holder.categoryFactView.setText(String.format(Locale.getDefault(), "%,d", fact));
         holder.categoryDeltaView.setText(String.format(Locale.getDefault(), "%,d", delta));
 
-//        int deltaColor = R.color.primaryTextColor;
-//        if (type.equals(OperationType.IN)) {
-//            deltaColor = delta >= 0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
-//        } else if (type.equals(OperationType.OUT)) {
-//            deltaColor = delta >= 0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
-//        }
-//
-//        holder.categoryDeltaView.setTextColor(mContext.getResources().getColor(deltaColor));
-
     }
 
     @Override

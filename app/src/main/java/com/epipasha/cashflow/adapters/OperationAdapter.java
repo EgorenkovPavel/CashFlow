@@ -2,6 +2,7 @@ package com.epipasha.cashflow.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
@@ -25,6 +26,8 @@ public class OperationAdapter extends Adapter<OperationAdapter.OperationHolder> 
 
     private final Drawable plus, minus, redo;
 
+    private int idIndex, dateIndex, accountIndex, categoryIndex, repAccountIndex, typeIndex, sumIndex;
+
     public OperationAdapter(Context mContext) {
         super(mContext);
         this.plus = ContextCompat.getDrawable(mContext, R.drawable.ic_plus);
@@ -41,15 +44,22 @@ public class OperationAdapter extends Adapter<OperationAdapter.OperationHolder> 
     }
 
     @Override
-    public void onBindViewHolder(OperationAdapter.OperationHolder holder, int position) {
+    public Cursor swapCursor(Cursor c) {
+        if(c != null){
+            idIndex = c.getColumnIndex(CashFlowContract.OperationEntry._ID);
+            dateIndex = c.getColumnIndex(CashFlowContract.OperationEntry.COLUMN_DATE);
+            accountIndex = c.getColumnIndex(CashFlowContract.OperationEntry.SERVICE_COLUMN_ACCOUNT_TITLE);
+            categoryIndex = c.getColumnIndex(CashFlowContract.OperationEntry.SERVICE_COLUMN_CATEGORY_TITLE);
+            repAccountIndex = c.getColumnIndex(CashFlowContract.OperationEntry.SERVICE_COLUMN_RECIPIENT_ACCOUNT_TITLE);
+            typeIndex = c.getColumnIndex(CashFlowContract.OperationEntry.COLUMN_TYPE);
+            sumIndex = c.getColumnIndex(CashFlowContract.OperationEntry.COLUMN_SUM);
+        }
 
-        int idIndex = mCursor.getColumnIndex(CashFlowContract.OperationEntry._ID);
-        int dateIndex = mCursor.getColumnIndex(CashFlowContract.OperationEntry.COLUMN_DATE);
-        int accountIndex = mCursor.getColumnIndex(CashFlowContract.OperationEntry.SERVICE_COLUMN_ACCOUNT_TITLE);
-        int categoryIndex = mCursor.getColumnIndex(CashFlowContract.OperationEntry.SERVICE_COLUMN_CATEGORY_TITLE);
-        int repAccountIndex = mCursor.getColumnIndex(CashFlowContract.OperationEntry.SERVICE_COLUMN_RECIPIENT_ACCOUNT_TITLE);
-        int typeIndex = mCursor.getColumnIndex(CashFlowContract.OperationEntry.COLUMN_TYPE);
-        int sumIndex = mCursor.getColumnIndex(CashFlowContract.OperationEntry.COLUMN_SUM);
+        return super.swapCursor(c);
+    }
+
+    @Override
+    public void onBindViewHolder(OperationAdapter.OperationHolder holder, int position) {
 
         mCursor.moveToPosition(position); // get to the right location in the cursor
 
