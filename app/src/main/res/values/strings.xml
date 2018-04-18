@@ -70,5 +70,8 @@
     <string name="error_choose_category">Choose category</string>
     <string name="error_choose_rep_account">Choose recipient account</string>
     <string name="connect">Connect</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="dialog_delete_operation">Delete operation?</string>
 
 </resources>

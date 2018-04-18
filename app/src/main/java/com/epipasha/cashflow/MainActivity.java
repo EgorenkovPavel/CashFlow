@@ -1,7 +1,9 @@
 package com.epipasha.cashflow;
 
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -12,6 +14,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -132,21 +135,34 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
             // Called when a user swipes left or right on a ViewHolder
             @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int swipeDir) {
 
-                // Retrieve the id of the task to delete
-                int id = (int) viewHolder.itemView.getTag();
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setMessage(R.string.dialog_delete_operation)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // Retrieve the id of the task to delete
+                                int operationId = (int) viewHolder.itemView.getTag();
 
-                // Build appropriate uri with String row id appended
-                String stringId = Integer.toString(id);
-                Uri uri = CashFlowContract.OperationEntry.CONTENT_URI;
-                uri = uri.buildUpon().appendPath(stringId).build();
+                                // Build appropriate uri with String row id appended
+                                String stringId = Integer.toString(operationId);
+                                Uri uri = CashFlowContract.OperationEntry.CONTENT_URI;
+                                uri = uri.buildUpon().appendPath(stringId).build();
 
-                // COMPLETED (2) Delete a single row of data using a ContentResolver
-                getContentResolver().delete(uri, null, null);
+                                // COMPLETED (2) Delete a single row of data using a ContentResolver
+                                getContentResolver().delete(uri, null, null);
 
-                // COMPLETED (3) Restart the loader to re-query for all tasks after a deletion
-                getSupportLoaderManager().restartLoader(OPERATION_LOADER_ID, null, MainActivity.this);
+                                // COMPLETED (3) Restart the loader to re-query for all tasks after a deletion
+                                getSupportLoaderManager().restartLoader(OPERATION_LOADER_ID, null, MainActivity.this);
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                mAdapter.notifyDataSetChanged();
+                            }
+                        });
+                // Create the AlertDialog object and return it
+                builder.create().show();
 
             }
         });
