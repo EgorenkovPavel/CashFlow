@@ -306,7 +306,7 @@ public class OperationMasterActivity extends BaseActivity implements LoaderManag
                         null,
                         CategoryEntry.COLUMN_TYPE + " = " + getCheckedOperationType().toDbValue(),
                         null,
-                        null);
+                        CategoryEntry.TABLE_NAME +"."+CategoryEntry.COLUMN_TITLE);
 
             }
             case REP_ACCOUNT_LOADER_ID:{

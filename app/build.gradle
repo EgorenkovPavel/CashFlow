@@ -59,7 +59,13 @@ dependencies {
     testImplementation "android.arch.persistence.room:testing:1.0.0"
     // Paging
     implementation "android.arch.paging:runtime:1.0.0-beta1"
+
+    implementation 'com.google.firebase:firebase-core:12.0.1'
+
+    implementation 'com.google.firebase:firebase-database:12.0.1'
 }
+
+apply plugin: 'com.google.gms.google-services'
 
 
 allprojects {
