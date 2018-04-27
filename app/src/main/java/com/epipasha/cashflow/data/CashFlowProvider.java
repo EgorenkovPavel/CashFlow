@@ -20,6 +20,7 @@ import com.epipasha.cashflow.objects.OperationType;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 public class CashFlowProvider extends ContentProvider {
@@ -33,6 +34,7 @@ public class CashFlowProvider extends ContentProvider {
     private static final int OPERATION_WITH_ID = 301;
     private static final int BUDGET = 400;
     private static final int CATEGORY_COST = 500;
+    private static final int CATEGORY_COST_BY_CATEGORY = 501;
     private static final int ACCOUNT_BALANCE = 600;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
@@ -55,6 +57,7 @@ public class CashFlowProvider extends ContentProvider {
         uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_BUDGET, BUDGET);
 
         uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_CATEGORY_COST, CATEGORY_COST);
+        uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_CATEGORY_COST + "/#", CATEGORY_COST_BY_CATEGORY);
 
         uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_ACCOUNT_BALANCE, ACCOUNT_BALANCE);
 
@@ -257,6 +260,22 @@ public class CashFlowProvider extends ContentProvider {
                         selection,
                         selectionArgs,
                         null,
+                        null,
+                        null);
+                break;
+            }
+
+            case CATEGORY_COST_BY_CATEGORY:{
+                String id = uri.getLastPathSegment();
+
+                retCursor = db.query(CategoryCostEntry.TABLE_NAME,
+                        new String[]
+                                {CategoryCostEntry.COLUMN_YEAR,
+                                CategoryCostEntry.COLUMN_MONTH,
+                                "SUM("+ CategoryCostEntry.COLUMN_SUM+")"},
+                        CategoryCostEntry.COLUMN_CATEGORY_ID + " = " + id,
+                        selectionArgs,
+                        CategoryCostEntry.COLUMN_YEAR + "," + CategoryCostEntry.COLUMN_MONTH,
                         null,
                         null);
                 break;
@@ -638,7 +657,14 @@ public class CashFlowProvider extends ContentProvider {
 
         if (type.equals(OperationType.IN) || type.equals(OperationType.OUT)){
             ContentValues values = new ContentValues();
-            values.put(CategoryCostEntry.COLUMN_DATE, operationValues.getAsLong(OperationEntry.COLUMN_DATE));
+            Date date = new Date(operationValues.getAsLong(OperationEntry.COLUMN_DATE));
+
+            Calendar c = new GregorianCalendar();
+            c.setTime(date);
+
+            values.put(CategoryCostEntry.COLUMN_DATE, date.getTime());
+            values.put(CategoryCostEntry.COLUMN_YEAR, c.get(Calendar.YEAR));
+            values.put(CategoryCostEntry.COLUMN_MONTH, c.get(Calendar.MONTH));
             values.put(CategoryCostEntry.COLUMN_OPERATION_ID, id);
             values.put(CategoryCostEntry.COLUMN_ACCOUNT_ID, operationValues.getAsInteger(OperationEntry.COLUMN_ACCOUNT_ID));
             values.put(CategoryCostEntry.COLUMN_CATEGORY_ID, operationValues.getAsInteger(OperationEntry.COLUMN_CATEGORY_ID));

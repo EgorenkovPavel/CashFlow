@@ -89,6 +89,8 @@ public class CashFlowDbHelper extends SQLiteOpenHelper{
 
         final String SQL_CREATE_CATEGORY_COST_TABLE = "CREATE TABLE " + CategoryCostEntry.TABLE_NAME + " (" +
                 CategoryCostEntry.COLUMN_DATE + " INTEGER NOT NULL," +
+                CategoryCostEntry.COLUMN_YEAR + " INTEGER NOT NULL," +
+                CategoryCostEntry.COLUMN_MONTH + " INTEGER NOT NULL," +
                 CategoryCostEntry.COLUMN_OPERATION_ID + " INTEGER NOT NULL," +
                 CategoryCostEntry.COLUMN_ACCOUNT_ID + " INTEGER NOT NULL," +
                 CategoryCostEntry.COLUMN_CATEGORY_ID + " INTEGER NOT NULL," +

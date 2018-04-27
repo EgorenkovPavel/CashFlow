@@ -25,6 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:paddingBottom="8dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="8dp">
@@ -33,9 +34,9 @@
             android:id="@+id/lblName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:labelFor="@id/category_detail_name"
             android:text="@string/name"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-            android:labelFor="@id/category_detail_name"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
         <EditText
             android:id="@+id/category_detail_name"
@@ -79,10 +80,10 @@
             android:id="@+id/lblBudget"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:labelFor="@id/category_detail_budget"
             android:paddingTop="8dp"
             android:text="@string/budget"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-            android:labelFor="@id/category_detail_budget"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
         <EditText
             android:id="@+id/category_detail_budget"
@@ -93,6 +94,19 @@
             android:inputType="numberDecimal"
             android:padding="8dp"
             tools:text="1000" />
+
+        <TextView
+            android:id="@+id/lblChart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="Chart"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+        <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
     </LinearLayout>
 

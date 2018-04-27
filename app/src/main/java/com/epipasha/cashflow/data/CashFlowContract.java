@@ -110,10 +110,18 @@ public class CashFlowContract {
         public static final String TABLE_NAME = "category_cost";
 
         public static final String COLUMN_DATE = "category_cost_date";
+        public static final String COLUMN_YEAR = "category_cost_year";
+        public static final String COLUMN_MONTH = "category_cost_month";
         public static final String COLUMN_OPERATION_ID = "category_cost_operation_id";
         public static final String COLUMN_ACCOUNT_ID = "category_cost_account_id";
         public static final String COLUMN_CATEGORY_ID = "category_cost_category_id";
         public static final String COLUMN_SUM = "category_cost_balance_sum";
+
+        public static Uri buildCategoryCostUriWithId(long id) {
+            return CONTENT_URI.buildUpon()
+                    .appendPath(Long.toString(id))
+                    .build();
+        }
 
     }
 

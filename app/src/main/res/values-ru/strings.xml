@@ -31,7 +31,7 @@
     <string name="new_category">Новая категория</string>
     <string name="new_operation">Новая операция</string>
     <string name="operation">Операция</string>
-    <string name="save">Созранить</string>
+    <string name="save">Сохранить</string>
     <string name="no_account_selected">Не выбран счет</string>
     <string name="no_analytic_selected">Не выбрана аналитика</string>
     <string name="no_sum">Не заполнена сумма</string>
