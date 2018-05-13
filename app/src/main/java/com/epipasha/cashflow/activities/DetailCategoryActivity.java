@@ -28,8 +28,13 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class DetailCategoryActivity extends DetailActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -156,18 +161,26 @@ public class DetailCategoryActivity extends DetailActivity implements LoaderMana
         do {
             entries.add(new BarEntry(column, cursor.getInt(2)));
 
-            int month = cursor.getInt(1) + 1;
+            int month = cursor.getInt(1);
             int year = cursor.getInt(0);
-            labels.add("" + month + ", " + year);
+
+            Calendar cal = Calendar.getInstance();
+            cal.set(year, month, 1);
+
+            DateFormat df = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
+
+            labels.add(df.format(cal.getTime()));
 
             column++;
         }while(cursor.moveToNext());
 
         BarDataSet set = new BarDataSet(entries, "BarDataSet");
+        set.setColor(getResources().getColor(R.color.colorPrimary));
 
         BarData data = new BarData(set);
         data.setBarWidth(0.9f); // set custom bar width
         data.setValueTextSize(10);
+        data.setHighlightEnabled(false);
 
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -196,27 +209,13 @@ public class DetailCategoryActivity extends DetailActivity implements LoaderMana
 
             @Override
             public void afterTextChanged(Editable editable) {
-                mChart.getAxisLeft().getLimitLines().clear();
-
-                if (!etBudget.getText().toString().isEmpty()) {
-                    YAxis yAxis = mChart.getAxisLeft();
-                    LimitLine line = new LimitLine(Float.valueOf(etBudget.getText().toString()));
-                    line.setEnabled(true);
-                    line.setLineWidth(3);
-                    yAxis.addLimitLine(line);
-                }
-
+                addBudgetLineToChart();
             }
         });
 
         YAxis yAxis = mChart.getAxisLeft();
         yAxis.setAxisMinimum(0);
-        if (!etBudget.getText().toString().isEmpty()) {
-            LimitLine line = new LimitLine(Float.valueOf(etBudget.getText().toString()));
-            line.setEnabled(true);
-            line.setLineWidth(3);
-            yAxis.addLimitLine(line);
-        }
+        addBudgetLineToChart();
 
         mChart.getAxisRight().setEnabled(false);
         mChart.getDescription().setEnabled(false);
@@ -266,4 +265,29 @@ public class DetailCategoryActivity extends DetailActivity implements LoaderMana
 
         finish();
     }
+
+    private void addBudgetLineToChart(){
+        mChart.getAxisLeft().getLimitLines().clear();
+
+        String budgetText = etBudget.getText().toString();
+        if(budgetText.isEmpty()){
+            return;
+        }
+
+        float budget = Float.valueOf(budgetText);
+        if(budget == 0){
+            return;
+        }
+
+        YAxis yAxis = mChart.getAxisLeft();
+        LimitLine line = new LimitLine(budget);
+        line.setEnabled(true);
+        line.setLineWidth(3);
+        line.setLineColor(getResources().getColor(R.color.colorAccent));
+        line.setTextColor(getResources().getColor(R.color.colorAccent));
+        line.setLabel(getString(R.string.budget));
+        yAxis.addLimitLine(line);
+
+    }
+
 }
