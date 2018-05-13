@@ -4,9 +4,12 @@ import static android.app.Activity.RESULT_OK;
 
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,6 +58,9 @@ public class BackupFragment extends Fragment {
     protected static final int REQUEST_CODE_OPEN_ITEM = 1;
     private static final int REQUEST_CODE_CREATE_FILE = 2;
 
+    private static final int REQUEST_CODE_FILE_BACKUP = 3;
+    private static final int REQUEST_CODE_FILE_RESTORE = 4;
+
     private DriveClient mDriveClient;
     private DriveResourceClient mDriveResourceClient;
     private TaskCompletionSource<DriveId> mOpenItemTaskSource;
@@ -73,17 +79,7 @@ public class BackupFragment extends Fragment {
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    String data = Backuper.backupDb(getActivity());
-
-                    File root = android.os.Environment.getExternalStorageDirectory();
-                    File file = new File(root.getAbsolutePath(), "myData.txt");
-                    FileOutputStream outputStream = new FileOutputStream(file);
-                    outputStream.write(data.getBytes());
-                    outputStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                startFileBackup(REQUEST_CODE_FILE_BACKUP);
             }
         });
 
@@ -91,20 +87,7 @@ public class BackupFragment extends Fragment {
         restore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    File root = android.os.Environment.getExternalStorageDirectory();
-                    File file = new File(root.getAbsolutePath(), "myData.txt");
-                    FileInputStream is = new FileInputStream(file);
-                    int size = is.available();
-
-                    byte[] buffer = new byte[size];
-
-                    is.close();
-
-                    Backuper.restoreDb(getActivity(), new String(buffer, "UTF-8"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                fileRestore();
             }
         });
 
@@ -139,6 +122,78 @@ public class BackupFragment extends Fragment {
         loadDriveClient();
 
         return v;
+    }
+
+    private void startFileBackup(int request){
+        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Check Permissions Now
+            requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    request);
+        } else {
+            // permission has been granted, continue as usual
+            switch (request){
+                case REQUEST_CODE_FILE_BACKUP: {
+                    fileBackup();
+                    break;
+                }
+                case REQUEST_CODE_FILE_RESTORE: {
+                    fileRestore();
+                    break;
+                }
+            }
+        }
+    }
+
+    private void fileRestore() {
+        try {
+            File root = android.os.Environment.getExternalStorageDirectory();
+            File file = new File(root.getAbsolutePath(), "myData.txt");
+            FileInputStream is = new FileInputStream(file);
+            int size = is.available();
+
+            byte[] buffer = new byte[size];
+
+            is.close();
+
+            Backuper.restoreDb(getActivity(), new String(buffer, "UTF-8"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void fileBackup() {
+        try {
+            String data = Backuper.backupDb(getActivity());
+
+            File root = android.os.Environment.getExternalStorageDirectory();
+            File file = new File(root.getAbsolutePath(), "myData.txt");
+            FileOutputStream outputStream = new FileOutputStream(file);
+            outputStream.write(data.getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        if (grantResults.length == 0
+                || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        switch (requestCode) {
+            case REQUEST_CODE_FILE_BACKUP: {
+                fileBackup();
+                break;
+            }
+            case REQUEST_CODE_FILE_RESTORE: {
+                fileRestore();
+                break;
+            }
+        }
     }
 
     private void loadDriveClient() {
