@@ -45,7 +45,6 @@
     <string name="file_system">File system</string>
     <string name="google_drive" translatable="false">Google drive</string>
     <string name="pref_selected_tab" translatable="false">selected_tab</string>
-    <string name="empty_list_operations">List is empty</string>
     <string name="cashflow">Cashflow</string>
     <string name="operation_master">Operation master</string>
     <string name="total_sum">Total sum</string>
@@ -70,8 +69,9 @@
     <string name="error_choose_category">Choose category</string>
     <string name="error_choose_rep_account">Choose recipient account</string>
     <string name="connect">Connect</string>
-    <string name="ok">OK</string>
-    <string name="cancel">Cancel</string>
+    <string name="ok" translatable="false">OK</string>
+    <string name="cancel" translatable="false">Cancel</string>
     <string name="dialog_delete_operation">Delete operation?</string>
+    <string name="chart">Chart</string>
 
 </resources>

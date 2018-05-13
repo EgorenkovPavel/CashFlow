@@ -1,14 +1,11 @@
 package com.epipasha.cashflow;
 
 
-import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.LoaderManager;
@@ -21,12 +18,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.LinearInterpolator;
 
 import com.epipasha.cashflow.data.CashFlowContract;
 import com.epipasha.cashflow.adapters.Adapter;
@@ -46,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private static final int OPERATION_LOADER_ID = 2;
 
     private TabLayout tabs;
-    private FloatingActionButton fab;
     private RecyclerView recyclerView;
     private Adapter mAdapter;
     private ItemTouchHelper operationItemTouchHelper;
@@ -77,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
         });
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

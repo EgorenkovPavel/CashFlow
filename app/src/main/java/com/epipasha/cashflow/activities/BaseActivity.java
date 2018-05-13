@@ -3,8 +3,6 @@ package com.epipasha.cashflow.activities;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import com.epipasha.cashflow.R;
-
 public abstract class BaseActivity extends AppCompatActivity {
 
     @Override

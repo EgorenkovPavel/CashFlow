@@ -1,25 +1,14 @@
 package com.epipasha.cashflow.data;
 
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.net.Uri;
-import android.util.Log;
 
 import com.epipasha.cashflow.data.CashFlowContract.AccountBalanceEntry;
 import com.epipasha.cashflow.data.CashFlowContract.AccountEntry;
 import com.epipasha.cashflow.data.CashFlowContract.CategoryCostEntry;
 import com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
 import com.epipasha.cashflow.data.CashFlowContract.OperationEntry;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.Iterator;
 
 public class CashFlowDbHelper extends SQLiteOpenHelper{
 

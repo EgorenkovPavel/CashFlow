@@ -25,7 +25,6 @@
     <string name="backup">Сохранить</string>
     <string name="restore">Восстановить</string>
     <string name="file_system">Файловая система</string>
-    <string name="empty_list_operations">Список пуст</string>
     <string name="total_sum">Общая сумма</string>
     <string name="new_account">Новый счет</string>
     <string name="new_category">Новая категория</string>
@@ -50,4 +49,6 @@
     <string name="error_choose_category">Выберите категорию</string>
     <string name="error_choose_rep_account">Выберите счет-получатель</string>
     <string name="connect">Подключить</string>
+    <string name="dialog_delete_operation">Удалить операцию?</string>
+    <string name="chart">Диаграмма</string>
 </resources>

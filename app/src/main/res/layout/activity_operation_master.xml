@@ -1,172 +1,175 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-<android.support.constraint.ConstraintLayout
-    android:id="@+id/master_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/appbar"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/master_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-    </android.support.design.widget.AppBarLayout>
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/tvOperationType"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/operation_type"
-        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appbar" />
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
+        </android.support.design.widget.AppBarLayout>
 
-    <RadioGroup
-        android:id="@+id/type_group"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/appbar"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="@+id/tvOperationType"
-        app:layout_constraintStart_toStartOf="@+id/tvOperationType"
-        app:layout_constraintTop_toBottomOf="@+id/tvOperationType"
-        tools:ignore="NotSibling">
+        <TextView
+            android:id="@+id/tvOperationType"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/operation_type"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/appbar" />
 
-        <RadioButton
-            android:id="@+id/btnIn"
-            style="@style/TypeButton"
-            android:layout_marginRight="8dp"
-            android:text="@string/in" />
+        <RadioGroup
+            android:id="@+id/type_group"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/appbar"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="@+id/tvOperationType"
+            app:layout_constraintStart_toStartOf="@+id/tvOperationType"
+            app:layout_constraintTop_toBottomOf="@+id/tvOperationType"
+            tools:ignore="NotSibling">
 
-        <RadioButton
-            android:id="@+id/btnOut"
-            style="@style/TypeButton"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:text="@string/out" />
+            <RadioButton
+                android:id="@+id/btnIn"
+                style="@style/TypeButton"
+                android:layout_marginRight="8dp"
+                android:text="@string/in" />
 
-        <RadioButton
-            android:id="@+id/btnTransfer"
-            style="@style/TypeButton"
-            android:layout_marginLeft="8dp"
-            android:text="@string/transfer" />
+            <RadioButton
+                android:id="@+id/btnOut"
+                style="@style/TypeButton"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:text="@string/out" />
 
-    </RadioGroup>
+            <RadioButton
+                android:id="@+id/btnTransfer"
+                style="@style/TypeButton"
+                android:layout_marginLeft="8dp"
+                android:text="@string/transfer" />
 
-    <TextView
-        android:id="@+id/tvAccount"
-        android:layout_width="wrap_content"
-        android:layout_height="16dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/account"
-        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-        app:layout_constraintBottom_toTopOf="@+id/spinner_account"
-        app:layout_constraintStart_toStartOf="@+id/tvOperationType"
-        app:layout_constraintTop_toBottomOf="@+id/type_group" />
+        </RadioGroup>
 
-    <Spinner
-        android:id="@+id/spinner_account"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/type_group"
-        android:layout_weight="1"
-        android:background="@drawable/input_field"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
-        app:layout_constraintEnd_toEndOf="@+id/tvOperationType"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/tvOperationType"
-        app:layout_constraintTop_toBottomOf="@+id/tvAccount" />
+        <TextView
+            android:id="@+id/tvAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/account"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            app:layout_constraintBottom_toTopOf="@+id/spinner_account"
+            app:layout_constraintStart_toStartOf="@+id/tvOperationType"
+            app:layout_constraintTop_toBottomOf="@+id/type_group" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="16dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/category"
-        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-        app:layout_constraintBottom_toTopOf="@+id/spinner_analytic"
-        app:layout_constraintStart_toStartOf="@+id/tvOperationType"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_account" />
+        <Spinner
+            android:id="@+id/spinner_account"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/type_group"
+            android:layout_weight="1"
+            android:background="@drawable/input_field"
+            app:layout_constraintBottom_toTopOf="@+id/textView"
+            app:layout_constraintEnd_toEndOf="@+id/tvOperationType"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@+id/tvOperationType"
+            app:layout_constraintTop_toBottomOf="@+id/tvAccount" />
 
-    <Spinner
-        android:id="@+id/spinner_analytic"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/spinner_account"
-        android:layout_weight="3"
-        android:background="@drawable/input_field"
-        app:layout_constraintBottom_toTopOf="@+id/operation_master_sum"
-        app:layout_constraintEnd_toEndOf="@+id/tvOperationType"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/tvOperationType"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/category"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            app:layout_constraintBottom_toTopOf="@+id/spinner_analytic"
+            app:layout_constraintStart_toStartOf="@+id/tvOperationType"
+            app:layout_constraintTop_toBottomOf="@+id/spinner_account" />
 
-    <TextView
-        android:id="@+id/operation_master_sum"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/keyboard"
-        android:layout_alignParentStart="true"
-        android:ems="10"
-        android:gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-        app:layout_constraintBottom_toTopOf="@+id/keyboard"
-        app:layout_constraintEnd_toEndOf="@+id/tvOperationType"
-        app:layout_constraintStart_toStartOf="@+id/tvOperationType"
-        tools:text="1000" />
+        <Spinner
+            android:id="@+id/spinner_analytic"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/spinner_account"
+            android:layout_weight="3"
+            android:background="@drawable/input_field"
+            app:layout_constraintBottom_toTopOf="@+id/operation_master_sum"
+            app:layout_constraintEnd_toEndOf="@+id/tvOperationType"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@+id/tvOperationType"
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
 
-    <Button
-        android:id="@+id/operation_master_next"
-        style="?android:attr/buttonBarButtonStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/next"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/operation_master_more" />
+        <TextView
+            android:id="@+id/operation_master_sum"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/keyboard"
+            android:layout_alignParentStart="true"
+            android:ems="10"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            app:layout_constraintBottom_toTopOf="@+id/keyboard"
+            app:layout_constraintEnd_toEndOf="@+id/tvOperationType"
+            app:layout_constraintStart_toStartOf="@+id/tvOperationType"
+            tools:text="1000" />
 
-    <Button
-        android:id="@+id/operation_master_more"
-        style="?android:attr/buttonBarButtonStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/more"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/operation_master_next"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        <Button
+            android:id="@+id/operation_master_next"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="@string/next"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/operation_master_more" />
 
-    <include
-        android:id="@+id/keyboard"
-        layout="@layout/include_keyboard"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/operation_master_next"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <Button
+            android:id="@+id/operation_master_more"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/more"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/operation_master_next"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent" />
 
-</android.support.constraint.ConstraintLayout>
+        <include
+            android:id="@+id/keyboard"
+            layout="@layout/include_keyboard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toTopOf="@+id/operation_master_next"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
 </android.support.design.widget.CoordinatorLayout>
