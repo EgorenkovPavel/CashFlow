@@ -73,5 +73,6 @@
     <string name="cancel" translatable="false">Cancel</string>
     <string name="dialog_delete_operation">Delete operation?</string>
     <string name="chart">Chart</string>
+    <string name="delete">Delete</string>
 
 </resources>
