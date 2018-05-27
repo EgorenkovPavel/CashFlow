@@ -81,8 +81,14 @@ public class OperationAdapter extends Adapter<OperationAdapter.OperationHolder> 
         //Set values
         holder.itemView.setTag(id);
 
-        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault());
+        SimpleDateFormat format = new SimpleDateFormat("MM.yyyy HH:mm", Locale.getDefault());
         holder.operationDateView.setText(format.format(date));
+
+        format.applyPattern("MM");
+        holder.tvDateDay.setText(format.format(date));
+
+        format.applyPattern("EEEE");
+        holder.tvDayOfWeek.setText(format.format(date));
 
         holder.operationAccountView.setText(account);
         holder.operationSumView.setText(String.format(Locale.getDefault(),"%,d",sum));
@@ -112,6 +118,8 @@ public class OperationAdapter extends Adapter<OperationAdapter.OperationHolder> 
         TextView operationCategoryView;
         TextView operationSumView;
         ImageView operationTypeImageView;
+        TextView tvDateDay;
+        TextView tvDayOfWeek;
 
         public OperationHolder(View itemView) {
             super(itemView);
@@ -120,6 +128,8 @@ public class OperationAdapter extends Adapter<OperationAdapter.OperationHolder> 
             operationCategoryView = (TextView) itemView.findViewById(R.id.operation_list_item_category);
             operationSumView = (TextView) itemView.findViewById(R.id.operation_list_item_sum);
             operationTypeImageView = (ImageView) itemView.findViewById(R.id.operation_list_item_type);
+            tvDateDay = itemView.findViewById(R.id.tv_date_day);
+            tvDayOfWeek = itemView.findViewById(R.id.tv_day_of_week);
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
