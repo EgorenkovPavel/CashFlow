@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
@@ -50,8 +51,9 @@ public class CategoryAdapter extends HeaderAdapter<CategoryAdapter.HeaderHolder,
         //Set values
         holder.itemView.setTag(id);
         holder.categoryTitleView.setText(title);
-        holder.categoryBudgetView.setText(String.format(Locale.getDefault(), "%,d", budget));
-        holder.categoryFactView.setText(String.format(Locale.getDefault(), "%,d", fact));
+        holder.pbBudget.setMax(budget);
+        holder.pbBudget.setProgress(fact);
+        holder.tvProgressLabel.setText(String.format(Locale.getDefault(), "%,d", fact) + " / " + String.format(Locale.getDefault(), "%,d", budget));
         holder.categoryDeltaView.setText(String.format(Locale.getDefault(), "%,d", delta));
 
     }
@@ -145,16 +147,17 @@ public class CategoryAdapter extends HeaderAdapter<CategoryAdapter.HeaderHolder,
 
     class CategoryHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         TextView categoryTitleView;
-        TextView categoryBudgetView;
-        TextView categoryFactView;
         TextView categoryDeltaView;
+        ProgressBar pbBudget;
+        TextView tvProgressLabel;
+
 
         public CategoryHolder(View itemView) {
             super(itemView);
-            categoryTitleView = (TextView) itemView.findViewById(R.id.lblIn);
-            categoryBudgetView = (TextView) itemView.findViewById(R.id.tvInBudget);
-            categoryFactView = (TextView) itemView.findViewById(R.id.tvFact);
+            categoryTitleView = (TextView) itemView.findViewById(R.id.tv_category);
             categoryDeltaView = (TextView) itemView.findViewById(R.id.tvInDelta);
+            pbBudget = itemView.findViewById(R.id.pb_budget);
+            tvProgressLabel = itemView.findViewById(R.id.tv_progress_lbl);
 
             itemView.setOnClickListener(this);
         }

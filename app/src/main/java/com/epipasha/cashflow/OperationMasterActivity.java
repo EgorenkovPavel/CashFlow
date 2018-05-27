@@ -395,7 +395,7 @@ public class OperationMasterActivity extends BaseActivity implements LoaderManag
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
             return LayoutInflater.from(context)
-                    .inflate(R.layout.list_item_category, viewGroup, false);
+                    .inflate(R.layout.list_item_master_category, viewGroup, false);
         }
 
         @Override
@@ -421,10 +421,10 @@ public class OperationMasterActivity extends BaseActivity implements LoaderManag
                 delta = budget - fact;
             }
 
-            ((TextView)view.findViewById(R.id.lblIn)).setText(title);
-            ((TextView)view.findViewById(R.id.tvInBudget)).setText(String.format(Locale.getDefault(),"%,d",budget));
-            ((TextView)view.findViewById(R.id.tvFact)).setText(String.format(Locale.getDefault(),"%,d",fact));
-            ((TextView)view.findViewById(R.id.tvInDelta)).setText(String.format(Locale.getDefault(),"%,d",delta));
+            ((TextView)view.findViewById(R.id.tv_category)).setText(title);
+//            ((TextView)view.findViewById(R.id.tvInBudget)).setText(String.format(Locale.getDefault(),"%,d",budget));
+//            ((TextView)view.findViewById(R.id.tvFact)).setText(String.format(Locale.getDefault(),"%,d",fact));
+//            ((TextView)view.findViewById(R.id.tvInDelta)).setText(String.format(Locale.getDefault(),"%,d",delta));
 
 //            int deltaColor = R.color.primaryTextColor;
 //            if(type.equals(OperationType.IN)){
