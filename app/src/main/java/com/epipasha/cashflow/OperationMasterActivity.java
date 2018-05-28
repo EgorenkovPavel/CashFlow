@@ -45,7 +45,7 @@ public class OperationMasterActivity extends BaseActivity implements LoaderManag
     private ViewGroup parentContainer;
     private RadioGroup groupType;
     private Spinner spinAccount, spinAnalytic;
-    private TextView lblSum;
+    private TextView lblSum, lblAnalytic;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,10 +104,12 @@ public class OperationMasterActivity extends BaseActivity implements LoaderManag
     private void initAnalyticSpinner() {
         switch (groupType.getCheckedRadioButtonId()){
             case R.id.btnIn: case R.id.btnOut:{
+                lblAnalytic.setText(getString(R.string.category));
                 getSupportLoaderManager().restartLoader(CATEGORY_LOADER_ID, null, OperationMasterActivity.this);
                 break;
             }
             case R.id.btnTransfer:{
+                lblAnalytic.setText(getString(R.string.account));
                 getSupportLoaderManager().restartLoader(REP_ACCOUNT_LOADER_ID, null, OperationMasterActivity.this);
                 break;
             }
@@ -146,6 +148,7 @@ public class OperationMasterActivity extends BaseActivity implements LoaderManag
 
         spinAnalytic = (Spinner)findViewById(R.id.spinner_analytic);
 
+        lblAnalytic = findViewById(R.id.lblAnalytic);
         lblSum = (TextView) findViewById(R.id.operation_master_sum);
 
         Button btn0 = (Button) findViewById(R.id.digit_0);
