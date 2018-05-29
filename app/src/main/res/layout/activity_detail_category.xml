@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:labelFor="@id/category_detail_name"
             android:text="@string/name"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+            style="@style/label" />
 
         <EditText
             android:id="@+id/category_detail_name"
@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="8dp"
             android:text="@string/type"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+            style="@style/label" />
 
         <RadioGroup
             android:id="@+id/type_group"
@@ -61,14 +61,12 @@
             <RadioButton
                 android:id="@+id/category_detail_in"
                 style="@style/TypeButton"
-                android:layout_marginRight="8dp"
                 android:checked="true"
                 android:text="@string/in" />
 
             <RadioButton
                 android:id="@+id/category_detail_out"
                 style="@style/TypeButton"
-                android:layout_marginLeft="8dp"
                 android:checked="false"
                 android:text="@string/out" />
 
@@ -80,7 +78,7 @@
             android:labelFor="@id/category_detail_budget"
             android:paddingTop="8dp"
             android:text="@string/budget"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+            style="@style/label" />
 
         <EditText
             android:id="@+id/category_detail_budget"
@@ -97,7 +95,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="8dp"
             android:text="@string/chart"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+            style="@style/label" />
 
         <com.github.mikephil.charting.charts.BarChart
                 android:id="@+id/chart"

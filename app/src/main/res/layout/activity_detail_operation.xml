@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,9 +7,13 @@
     android:orientation="vertical">
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -20,156 +24,169 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/lblDate"
+        style="@style/label"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="8dp">
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:text="@string/date"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/date"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+    <TextView
+        android:id="@+id/lblDate2"
+        style="@style/label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/time"
+        app:layout_constraintBottom_toTopOf="@+id/operation_detail_time"
+        app:layout_constraintStart_toStartOf="@+id/operation_detail_time" />
 
-        <TextView
-            android:id="@+id/operation_detail_date"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/input_field"
-            android:gravity="fill_vertical"
-            android:padding="8dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            tools:text="12.10.2018" />
+    <TextView
+        android:id="@+id/operation_detail_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:layout_marginStart="16dp"
+        android:layout_weight="1"
+        android:background="@drawable/input_field"
+        android:gravity="fill_vertical"
+        android:padding="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintEnd_toStartOf="@+id/operation_detail_time"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lblDate"
+        tools:text="12.10.2018" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:text="@string/type"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+    <TextView
+        android:id="@+id/operation_detail_time"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="4dp"
+        android:layout_weight="1"
+        android:background="@drawable/input_field"
+        android:gravity="fill_vertical"
+        android:padding="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/operation_detail_date"
+        app:layout_constraintTop_toTopOf="@+id/operation_detail_date"
+        tools:text="14.25" />
 
-        <RadioGroup
-            android:id="@+id/operation_detail_type_group"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="horizontal">
+    <TextView
+        android:id="@+id/lblType"
+        style="@style/label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/type"
+        app:layout_constraintStart_toStartOf="@+id/lblDate"
+        app:layout_constraintTop_toBottomOf="@+id/operation_detail_date" />
 
-            <RadioButton
-                android:id="@+id/operation_detail_btnIn"
-                style="@style/TypeButton"
-                android:layout_marginRight="8dp"
-                android:checked="true"
-                android:text="@string/in" />
+    <TextView
+        android:id="@+id/operation_detail_label_account"
+        style="@style/label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1"
+        android:text="@string/account"
+        app:layout_constraintStart_toStartOf="@+id/operation_detail_type_group"
+        app:layout_constraintTop_toBottomOf="@+id/operation_detail_type_group" />
 
-            <RadioButton
-                android:id="@+id/operation_detail_btnOut"
-                style="@style/TypeButton"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:checked="false"
-                android:text="@string/out" />
+    <Spinner
+        android:id="@+id/operation_detail_account"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:background="@drawable/input_field"
+        android:dropDownWidth="match_parent"
+        app:layout_constraintEnd_toEndOf="@+id/operation_detail_time"
+        app:layout_constraintStart_toStartOf="@+id/operation_detail_label_account"
+        app:layout_constraintTop_toBottomOf="@+id/operation_detail_label_account" />
 
-            <RadioButton
-                android:id="@+id/operation_detail_btnTransfer"
-                style="@style/TypeButton"
-                android:layout_marginLeft="8dp"
-                android:checked="false"
-                android:text="@string/transfer" />
+    <Spinner
+        android:id="@+id/operation_detail_category"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:background="@drawable/input_field"
+        android:dropDownWidth="match_parent"
+        android:spinnerMode="dropdown"
+        app:layout_constraintEnd_toEndOf="@+id/operation_detail_account"
+        app:layout_constraintStart_toStartOf="@+id/operation_detail_label_category"
+        app:layout_constraintTop_toBottomOf="@+id/operation_detail_label_category" />
 
-        </RadioGroup>
+    <TextView
+        android:id="@+id/operation_detail_label_category"
+        style="@style/label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/category"
+        app:layout_constraintStart_toStartOf="@+id/operation_detail_account"
+        app:layout_constraintTop_toBottomOf="@+id/operation_detail_account" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+    <TextView
+        android:id="@+id/lblSum"
+        style="@style/label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1"
+        android:labelFor="@id/operation_detail_sum"
+        android:text="@string/sum"
+        app:layout_constraintStart_toStartOf="@+id/operation_detail_category"
+        app:layout_constraintTop_toBottomOf="@+id/operation_detail_category" />
 
-            <TextView
-                android:id="@+id/operation_detail_label_account"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="8dp"
-                android:text="@string/account"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+    <EditText
+        android:id="@+id/operation_detail_sum"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@drawable/input_field"
+        android:gravity="end"
+        android:inputType="numberDecimal"
+        android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/operation_detail_category"
+        app:layout_constraintStart_toStartOf="@+id/lblSum"
+        app:layout_constraintTop_toBottomOf="@+id/lblSum"
+        tools:text="1000" />
 
-            <Spinner
-                android:id="@+id/operation_detail_account"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@drawable/input_field"
-                android:dropDownWidth="match_parent" />
+    <RadioGroup
+        android:id="@+id/operation_detail_type_group"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="@+id/operation_detail_time"
+        app:layout_constraintStart_toStartOf="@+id/lblType"
+        app:layout_constraintTop_toBottomOf="@+id/lblType">
 
-        </LinearLayout>
+        <RadioButton
+            android:id="@+id/operation_detail_btnIn"
+            style="@style/TypeButton"
+            android:checked="true"
+            android:text="@string/in" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        <RadioButton
+            android:id="@+id/operation_detail_btnOut"
+            style="@style/TypeButton"
+            android:checked="false"
+            android:text="@string/out" />
 
-            <TextView
-                android:id="@+id/operation_detail_label_category"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="8dp"
-                android:text="@string/category"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+        <RadioButton
+            android:id="@+id/operation_detail_btnTransfer"
+            style="@style/TypeButton"
+            android:checked="false"
+            android:text="@string/transfer" />
 
-            <Spinner
-                android:id="@+id/operation_detail_category"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@drawable/input_field"
-                android:dropDownWidth="match_parent"
-                android:spinnerMode="dropdown" />
-        </LinearLayout>
+    </RadioGroup>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/operation_detail_label_recipient_account"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="8dp"
-                android:text="@string/to"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
-
-            <Spinner
-                android:id="@+id/operation_detail_recipient_account"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@drawable/input_field"
-                android:dropDownWidth="match_parent"
-                android:spinnerMode="dropdown" />
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingTop="8dp"
-            android:text="@string/sum"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-            android:labelFor="@id/operation_detail_sum"/>
-
-        <EditText
-            android:id="@+id/operation_detail_sum"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/input_field"
-            android:gravity="end"
-            android:inputType="numberDecimal"
-            android:padding="8dp"
-            tools:text="1000" />
-
-    </LinearLayout>
-
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

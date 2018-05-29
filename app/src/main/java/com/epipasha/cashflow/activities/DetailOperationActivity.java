@@ -50,13 +50,12 @@ public class DetailOperationActivity extends DetailActivity implements LoaderMan
     private int accountId, categoryId, recAccountId;
     private NumberTextWatcherForThousand sumWatcher;
 
-    private Spinner categorySpinner;
+    private Spinner analyticSpinner;
     private Spinner accountSpinner;
-    private Spinner recipientAccountSpinner;
-    private TextView edtDate;
+    private TextView edtDate, edtTime;
     private EditText edtSum;
     private RadioGroup rgType;
-    private TextView lblAccount,lblCategory, lblRecipientAccount;
+    private TextView lblAccount, lblAnalytic;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,12 +68,20 @@ public class DetailOperationActivity extends DetailActivity implements LoaderMan
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         edtDate = (TextView)findViewById(R.id.operation_detail_date);
+        edtTime = (TextView)findViewById(R.id.operation_detail_time);
         edtDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 chooseDate();
             }
         });
+        edtTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chooseTime();
+            }
+        });
+
         rgType = (RadioGroup) findViewById(R.id.operation_detail_type_group);
         rgType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -84,8 +91,7 @@ public class DetailOperationActivity extends DetailActivity implements LoaderMan
         });
 
         lblAccount = (TextView) findViewById(R.id.operation_detail_label_account);
-        lblCategory = (TextView) findViewById(R.id.operation_detail_label_category);
-        lblRecipientAccount = (TextView) findViewById(R.id.operation_detail_label_recipient_account);
+        lblAnalytic = (TextView) findViewById(R.id.operation_detail_label_category);
 
         accountSpinner = (Spinner) findViewById(R.id.operation_detail_account);
         accountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -102,8 +108,7 @@ public class DetailOperationActivity extends DetailActivity implements LoaderMan
 
             }
         });
-        categorySpinner = (Spinner) findViewById(R.id.operation_detail_category);
-        recipientAccountSpinner = (Spinner) findViewById(R.id.operation_detail_recipient_account);
+        analyticSpinner = (Spinner) findViewById(R.id.operation_detail_category);
 
         edtSum = (EditText) findViewById(R.id.operation_detail_sum);
         sumWatcher = new NumberTextWatcherForThousand(edtSum);
@@ -217,9 +222,9 @@ public class DetailOperationActivity extends DetailActivity implements LoaderMan
                         ,0);
 
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                categorySpinner.setAdapter(adapter);
+                analyticSpinner.setAdapter(adapter);
 
-                Utils.setPositionById(categorySpinner, categoryId);
+                Utils.setPositionById(analyticSpinner, categoryId);
                 break;
             }
 
@@ -233,9 +238,9 @@ public class DetailOperationActivity extends DetailActivity implements LoaderMan
                         ,0);
 
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                recipientAccountSpinner.setAdapter(adapter);
+                analyticSpinner.setAdapter(adapter);
 
-                Utils.setPositionById(recipientAccountSpinner, recAccountId);
+                Utils.setPositionById(analyticSpinner, recAccountId);
                 break;
             }
         }
@@ -248,8 +253,11 @@ public class DetailOperationActivity extends DetailActivity implements LoaderMan
     }
 
     private void setSelectedDate(){
-        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault());
+        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
         edtDate.setText(format.format(operationDate));
+
+        format.applyPattern("HH:mm");
+        edtTime.setText(format.format(operationDate));
     }
 
     private void setSelectedType(OperationType type){
@@ -271,16 +279,13 @@ public class DetailOperationActivity extends DetailActivity implements LoaderMan
             }
         }
 
-        int categoryVis = type ==OperationType.TRANSFER ? View.GONE : View.VISIBLE;
-        int repAccountVis = type !=OperationType.TRANSFER  ? View.GONE : View.VISIBLE;
-
-        lblCategory.setVisibility(categoryVis);
-        categorySpinner.setVisibility(categoryVis);
-
-        lblRecipientAccount.setVisibility(repAccountVis);
-        recipientAccountSpinner.setVisibility(repAccountVis);
-
-        lblAccount.setText(type ==OperationType.TRANSFER ? getResources().getText(R.string.from) : getResources().getText(R.string.account));
+        if(type == OperationType.TRANSFER){
+            lblAccount.setText(getString(R.string.from));
+            lblAnalytic.setText(getString(R.string.to));
+        }else{
+            lblAccount.setText(getString(R.string.account));
+            lblAnalytic.setText(getString(R.string.category));
+        }
 
     }
 
@@ -307,7 +312,7 @@ public class DetailOperationActivity extends DetailActivity implements LoaderMan
                         c.set(year, monthOfYear, dayOfMonth);
                         operationDate = new Date(c.getTimeInMillis());
 
-                        chooseTime();
+                        setSelectedDate();
                     }
                 },
                 calendar.get(Calendar.YEAR),
@@ -365,7 +370,7 @@ public class DetailOperationActivity extends DetailActivity implements LoaderMan
         values.put(OperationEntry.COLUMN_TYPE, getSelectedType().toDbValue());
         switch (type){
             case IN: case OUT:{
-                int categoryId = Utils.getSelectedId(categorySpinner);
+                int categoryId = Utils.getSelectedId(analyticSpinner);
                 if (categoryId <= 0){
                     Toast.makeText(this, getString(R.string.error_choose_category), Toast.LENGTH_SHORT).show();
                     return;
@@ -375,7 +380,7 @@ public class DetailOperationActivity extends DetailActivity implements LoaderMan
                 break;
             }
             case TRANSFER:{
-                int repAccountId = Utils.getSelectedId(recipientAccountSpinner);
+                int repAccountId = Utils.getSelectedId(analyticSpinner);
                 if(repAccountId <= 0){
                     Toast.makeText(this, getString(R.string.error_choose_rep_account), Toast.LENGTH_SHORT).show();
                     return;

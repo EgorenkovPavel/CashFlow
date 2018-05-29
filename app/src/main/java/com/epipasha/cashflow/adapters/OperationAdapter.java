@@ -84,7 +84,7 @@ public class OperationAdapter extends Adapter<OperationAdapter.OperationHolder> 
         SimpleDateFormat format = new SimpleDateFormat("MM.yyyy HH:mm", Locale.getDefault());
         holder.operationDateView.setText(format.format(date));
 
-        format.applyPattern("MM");
+        format.applyPattern("dd");
         holder.tvDateDay.setText(format.format(date));
 
         format.applyPattern("EEEE");

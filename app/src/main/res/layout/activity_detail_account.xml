@@ -27,7 +27,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:text="@string/name"
-        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        style="@style/label"
         android:labelFor="@id/account_detail_name"/>
 
     <EditText

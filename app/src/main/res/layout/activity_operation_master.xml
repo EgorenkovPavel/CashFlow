@@ -165,6 +165,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="16dp"
             android:text="@string/account"
+            style="@style/label"
             app:layout_constraintBottom_toTopOf="@+id/spinner_account"
             app:layout_constraintEnd_toStartOf="@+id/spinner_analytic"
             app:layout_constraintStart_toStartOf="parent" />
@@ -176,6 +177,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="16dp"
             android:text="@string/category"
+            style="@style/label"
             app:layout_constraintBottom_toTopOf="@+id/spinner_analytic"
             app:layout_constraintEnd_toEndOf="@+id/spinner_analytic"
             app:layout_constraintStart_toStartOf="@+id/spinner_analytic" />
