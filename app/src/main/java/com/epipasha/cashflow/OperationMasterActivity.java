@@ -424,7 +424,7 @@ public class OperationMasterActivity extends BaseActivity implements LoaderManag
                 delta = budget - fact;
             }
 
-            ((TextView)view.findViewById(R.id.tv_category)).setText(title);
+            ((TextView)view.findViewById(R.id.lbl_in)).setText(title);
 //            ((TextView)view.findViewById(R.id.tvInBudget)).setText(String.format(Locale.getDefault(),"%,d",budget));
 //            ((TextView)view.findViewById(R.id.tvFact)).setText(String.format(Locale.getDefault(),"%,d",fact));
 //            ((TextView)view.findViewById(R.id.tvInDelta)).setText(String.format(Locale.getDefault(),"%,d",delta));

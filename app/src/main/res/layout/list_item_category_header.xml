@@ -6,107 +6,24 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/lblOut"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:text="@string/out"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_category"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toTopOf="@+id/tv_category"
-        app:layout_constraintVertical_bias="1.0" />
-
-    <TextView
-        android:id="@+id/tvOutDelta"
+        android:id="@+id/lbl_out"
+        style="@style/label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="@+id/tvOutBudget"
-        app:layout_constraintTop_toBottomOf="@+id/tvOutFact"
-        tools:text="-2000" />
+        android:text="@string/out"
+        app:layout_constraintStart_toStartOf="@+id/pb_in"
+        app:layout_constraintTop_toBottomOf="@+id/pb_in" />
 
     <TextView
-        android:id="@+id/tvOutBudget"
+        android:id="@+id/lbl_in"
+        style="@style/label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/tvInFact"
-        app:layout_constraintEnd_toEndOf="@+id/lblOut"
-        app:layout_constraintTop_toTopOf="@+id/tvInBudget"
-        tools:text="3000" />
-
-    <TextView
-        android:id="@+id/tvOutFact"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvInFact"
-        app:layout_constraintEnd_toEndOf="@+id/tvOutBudget"
-        app:layout_constraintTop_toTopOf="@+id/tvInFact"
-        tools:text="5000" />
-
-    <TextView
-        android:id="@+id/tv_category"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         android:text="@string/in"
-        app:layout_constraintEnd_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/lblCashflow" />
-
-    <TextView
-        android:id="@+id/lblInFact"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/fact"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="@+id/lblInBudget"
-        app:layout_constraintTop_toBottomOf="@+id/lblInBudget" />
-
-    <TextView
-        android:id="@+id/lblInBudget"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/budget"
-        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/lblCashflow"
-        app:layout_constraintTop_toBottomOf="@+id/tv_category" />
-
-    <TextView
-        android:id="@+id/tvInDelta"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/tvInFact"
-        tools:text="-2000" />
-
-    <TextView
-        android:id="@+id/tvInBudget"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/lblInBudget"
-        app:layout_constraintEnd_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toTopOf="@+id/lblInBudget"
-        app:layout_constraintVertical_bias="1.0"
-        tools:text="3000" />
-
-    <TextView
-        android:id="@+id/tvInFact"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/lblInFact"
-        app:layout_constraintEnd_toEndOf="@+id/tvInBudget"
-        app:layout_constraintTop_toTopOf="@+id/lblInFact"
-        tools:text="5000" />
+        app:layout_constraintTop_toBottomOf="@+id/lblCashflow" />
 
     <TextView
         android:id="@+id/lblCashflow"
@@ -131,11 +48,52 @@
         app:layout_constraintVertical_bias="0.0"
         tools:text="10000" />
 
-    <android.support.constraint.Guideline
-        android:id="@+id/guideline"
+    <ProgressBar
+        android:id="@+id/pb_in"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        tools:max="5000"
+        tools:progress="3000"
+        android:progressDrawable="@drawable/progress_bar"
+        app:layout_constraintEnd_toEndOf="@+id/tvCashflow"
+        app:layout_constraintStart_toStartOf="@+id/lbl_in"
+        app:layout_constraintTop_toBottomOf="@+id/lbl_in" />
+
+    <ProgressBar
+        android:id="@+id/pb_out"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        tools:max="7000"
+        tools:progress="1000"
+        android:progressDrawable="@drawable/progress_bar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/pb_in"
+        app:layout_constraintStart_toStartOf="@+id/lbl_out"
+        app:layout_constraintTop_toBottomOf="@+id/lbl_out" />
+
+    <TextView
+        android:id="@+id/tv_progress_in_lbl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
+        android:layout_marginEnd="8dp"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/pb_in"
+        app:layout_constraintEnd_toEndOf="@+id/pb_in"
+        app:layout_constraintTop_toTopOf="@+id/pb_in"
+        tools:text="3000 / 5000" />
+
+    <TextView
+        android:id="@+id/tv_progress_out_lbl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/pb_out"
+        app:layout_constraintEnd_toEndOf="@+id/pb_out"
+        app:layout_constraintTop_toTopOf="@+id/pb_out"
+        tools:text="1000 / 7000" />
 
 </android.support.constraint.ConstraintLayout>

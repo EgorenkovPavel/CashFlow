@@ -6,7 +6,7 @@
     android:layout_height="72dp">
 
     <TextView
-        android:id="@+id/tv_category"
+        android:id="@+id/lbl_in"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -23,9 +23,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_category"
+        app:layout_constraintBottom_toBottomOf="@+id/lbl_in"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tv_category"
+        app:layout_constraintTop_toTopOf="@+id/lbl_in"
         tools:text="-2000" />
 
     <ProgressBar
@@ -40,8 +40,8 @@
         android:progressDrawable="@drawable/progress_bar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/tvInDelta"
-        app:layout_constraintStart_toStartOf="@+id/tv_category"
-        app:layout_constraintTop_toBottomOf="@+id/tv_category" />
+        app:layout_constraintStart_toStartOf="@+id/lbl_in"
+        app:layout_constraintTop_toBottomOf="@+id/lbl_in" />
 
     <TextView
         android:id="@+id/tv_progress_lbl"

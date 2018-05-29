@@ -69,10 +69,8 @@ public class CategoryAdapter extends HeaderAdapter<CategoryAdapter.HeaderHolder,
 
         int inBudget = 0;
         int inFact = 0;
-        int inDelta = 0;
         int outBudget = 0;
         int outFact = 0;
-        int outDelta = 0;
 
         mCursor.moveToFirst();
         while (!mCursor.isAfterLast()){
@@ -92,18 +90,19 @@ public class CategoryAdapter extends HeaderAdapter<CategoryAdapter.HeaderHolder,
             mCursor.moveToNext();
         }
 
-        inDelta = inFact - inBudget;
-        outDelta = outBudget - outFact;
+        holder.pbIn.setMax(inBudget);
+        holder.pbIn.setProgress(inFact);
+        holder.lblIn.setText(String.format(Locale.getDefault(), "%,d", inFact)
+                + " / "
+                + String.format(Locale.getDefault(), "%,d", inBudget));
 
-        ((CategoryAdapter.HeaderHolder)holder).tvInBudget.setText(String.format(Locale.getDefault(), "%,d", inBudget));
-        ((CategoryAdapter.HeaderHolder)holder).tvInFact.setText(String.format(Locale.getDefault(), "%,d", inFact));
-        ((CategoryAdapter.HeaderHolder)holder).tvInDelta.setText(String.format(Locale.getDefault(), "%,d", inDelta));
+        holder.pbOut.setMax(outBudget);
+        holder.pbOut.setProgress(outFact);
+        holder.lblOut.setText(String.format(Locale.getDefault(), "%,d", outFact)
+                + " / "
+                + String.format(Locale.getDefault(), "%,d", outBudget));
 
-        ((CategoryAdapter.HeaderHolder)holder).tvOutBudget.setText(String.format(Locale.getDefault(), "%,d", outBudget));
-        ((CategoryAdapter.HeaderHolder)holder).tvOutFact.setText(String.format(Locale.getDefault(), "%,d", outFact));
-        ((CategoryAdapter.HeaderHolder)holder).tvOutDelta.setText(String.format(Locale.getDefault(), "%,d", outDelta));
-
-        ((CategoryAdapter.HeaderHolder)holder).tvCashflow.setText(String.format(Locale.getDefault(), "%,d", inFact - outFact));
+        holder.tvCashflow.setText(String.format(Locale.getDefault(), "%,d", inFact - outFact));
 
     }
 
@@ -125,22 +124,20 @@ public class CategoryAdapter extends HeaderAdapter<CategoryAdapter.HeaderHolder,
 
     class HeaderHolder extends RecyclerView.ViewHolder{
 
-        TextView tvInBudget, tvInFact, tvInDelta;
-        TextView tvOutBudget, tvOutFact, tvOutDelta;
+        ProgressBar pbIn, pbOut;
+        TextView lblIn, lblOut;
         TextView tvCashflow;
 
         public HeaderHolder(View itemView) {
             super(itemView);
 
-            tvInBudget = (TextView) itemView.findViewById(R.id.tvInBudget);
-            tvInFact = (TextView) itemView.findViewById(R.id.tvInFact);
-            tvInDelta = (TextView) itemView.findViewById(R.id.tvInDelta);
+            pbIn = itemView.findViewById(R.id.pb_in);
+            pbOut = itemView.findViewById(R.id.pb_out);
 
-            tvOutBudget = (TextView) itemView.findViewById(R.id.tvOutBudget);
-            tvOutFact = (TextView) itemView.findViewById(R.id.tvOutFact);
-            tvOutDelta = (TextView) itemView.findViewById(R.id.tvOutDelta);
+            lblIn = itemView.findViewById(R.id.tv_progress_in_lbl);
+            lblOut = itemView.findViewById(R.id.tv_progress_out_lbl);
 
-            tvCashflow = (TextView) itemView.findViewById(R.id.tvCashflow);
+            tvCashflow = itemView.findViewById(R.id.tvCashflow);
         }
 
     }
@@ -154,7 +151,7 @@ public class CategoryAdapter extends HeaderAdapter<CategoryAdapter.HeaderHolder,
 
         public CategoryHolder(View itemView) {
             super(itemView);
-            categoryTitleView = (TextView) itemView.findViewById(R.id.tv_category);
+            categoryTitleView = (TextView) itemView.findViewById(R.id.lbl_in);
             categoryDeltaView = (TextView) itemView.findViewById(R.id.tvInDelta);
             pbBudget = itemView.findViewById(R.id.pb_budget);
             tvProgressLabel = itemView.findViewById(R.id.tv_progress_lbl);
