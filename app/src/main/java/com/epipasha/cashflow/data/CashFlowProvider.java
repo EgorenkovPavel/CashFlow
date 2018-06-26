@@ -35,6 +35,7 @@ public class CashFlowProvider extends ContentProvider {
     private static final int BUDGET = 400;
     private static final int CATEGORY_COST = 500;
     private static final int CATEGORY_COST_BY_CATEGORY = 501;
+    private static final int CATEGORY_COST_BY_OPERATION_TYPE = 502;
     private static final int ACCOUNT_BALANCE = 600;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
@@ -58,6 +59,7 @@ public class CashFlowProvider extends ContentProvider {
 
         uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_CATEGORY_COST, CATEGORY_COST);
         uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_CATEGORY_COST + "/#", CATEGORY_COST_BY_CATEGORY);
+        uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_CATEGORY_COST_GROUPED, CATEGORY_COST_BY_OPERATION_TYPE);
 
         uriMatcher.addURI(CashFlowContract.AUTHORITY, CashFlowContract.PATH_ACCOUNT_BALANCE, ACCOUNT_BALANCE);
 
@@ -254,7 +256,7 @@ public class CashFlowProvider extends ContentProvider {
                 break;
             }
 
-            case CATEGORY_COST:{
+            case CATEGORY_COST: {
                 retCursor = db.query(CategoryCostEntry.TABLE_NAME,
                         projection,
                         selection,
@@ -265,15 +267,42 @@ public class CashFlowProvider extends ContentProvider {
                 break;
             }
 
-            case CATEGORY_COST_BY_CATEGORY:{
-                String id = uri.getLastPathSegment();
+            case CATEGORY_COST_BY_OPERATION_TYPE:{
 
-                retCursor = db.query(CategoryCostEntry.TABLE_NAME,
+                retCursor = db.query(CategoryCostEntry.TABLE_NAME +
+                        " INNER JOIN " + CategoryEntry.TABLE_NAME +
+                        " ON " + CategoryCostEntry.TABLE_NAME + "." + CategoryCostEntry.COLUMN_CATEGORY_ID +
+                        " = " + CategoryEntry.TABLE_NAME + "." + CategoryEntry._ID,
+                        new String[]
+                                {CategoryCostEntry.COLUMN_YEAR,
+                                        CategoryCostEntry.COLUMN_MONTH,
+                                        "SUM( CASE WHEN " + CategoryEntry.COLUMN_TYPE + " = " +
+                                                OperationType.IN.toDbValue() + " THEN " +
+                                                CategoryCostEntry.COLUMN_SUM +" ELSE 0 END)",
+                                        "SUM( CASE WHEN " + CategoryEntry.COLUMN_TYPE + " = " +
+                                                OperationType.OUT.toDbValue() + " THEN " +
+                                                CategoryCostEntry.COLUMN_SUM +" ELSE 0 END)"},
+                        selection,
+                        selectionArgs,
+                        CategoryCostEntry.COLUMN_YEAR + "," + CategoryCostEntry.COLUMN_MONTH,
+                        null,
+                        null);
+                break;
+            }
+
+            case CATEGORY_COST_BY_CATEGORY:{
+                String categoryId = uri.getLastPathSegment();
+
+                retCursor = db.query(CategoryCostEntry.TABLE_NAME
+                                + " INNER JOIN "
+                                + CategoryEntry.TABLE_NAME
+                        + " ON " + CategoryCostEntry.TABLE_NAME + "." + CategoryCostEntry.COLUMN_CATEGORY_ID
+                        + " = " + CategoryEntry.TABLE_NAME + "." + CategoryEntry._ID,
                         new String[]
                                 {CategoryCostEntry.COLUMN_YEAR,
                                 CategoryCostEntry.COLUMN_MONTH,
                                 "SUM("+ CategoryCostEntry.COLUMN_SUM+")"},
-                        CategoryCostEntry.COLUMN_CATEGORY_ID + " = " + id,
+                        CategoryEntry._ID + " = " + categoryId,
                         selectionArgs,
                         CategoryCostEntry.COLUMN_YEAR + "," + CategoryCostEntry.COLUMN_MONTH,
                         null,

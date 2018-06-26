@@ -3,6 +3,8 @@ package com.epipasha.cashflow.data;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+import com.epipasha.cashflow.objects.OperationType;
+
 public class CashFlowContract {
 
     public static final String AUTHORITY = "com.epipasha.cashflow";
@@ -14,6 +16,7 @@ public class CashFlowContract {
     public static final String PATH_OPERATION = "operation";
     public static final String PATH_BUDGET = "budget";
     public static final String PATH_CATEGORY_COST = "category_cost";
+    public static final String PATH_CATEGORY_COST_GROUPED = "category_cost_grouped";
     public static final String PATH_ACCOUNT_BALANCE = "account_balance";
 
     public static final class AccountEntry implements BaseColumns{
@@ -120,6 +123,12 @@ public class CashFlowContract {
         public static Uri buildCategoryCostUriWithId(long id) {
             return CONTENT_URI.buildUpon()
                     .appendPath(Long.toString(id))
+                    .build();
+        }
+
+        public static Uri buildCategoryCostUriWithOperationType() {
+            return BASE_CONTENT_URI.buildUpon()
+                    .appendPath(PATH_CATEGORY_COST_GROUPED)
                     .build();
         }
 

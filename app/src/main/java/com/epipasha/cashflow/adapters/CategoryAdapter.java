@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.epipasha.cashflow.AnalyticActivity;
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.CashFlowContract;
 import com.epipasha.cashflow.activities.DetailCategoryActivity;
@@ -122,7 +123,7 @@ public class CategoryAdapter extends HeaderAdapter<CategoryAdapter.HeaderHolder,
         return new CategoryAdapter.HeaderHolder(view);
     }
 
-    class HeaderHolder extends RecyclerView.ViewHolder{
+    class HeaderHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         ProgressBar pbIn, pbOut;
         TextView lblIn, lblOut;
@@ -138,8 +139,15 @@ public class CategoryAdapter extends HeaderAdapter<CategoryAdapter.HeaderHolder,
             lblOut = itemView.findViewById(R.id.tv_progress_out_lbl);
 
             tvCashflow = itemView.findViewById(R.id.tvCashflow);
+
+            itemView.setOnClickListener(this);
         }
 
+        @Override
+        public void onClick(View view) {
+            Intent i = new Intent(mContext, AnalyticActivity.class);
+            mContext.startActivity(i);
+        }
     }
 
     class CategoryHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -147,7 +155,6 @@ public class CategoryAdapter extends HeaderAdapter<CategoryAdapter.HeaderHolder,
         TextView categoryDeltaView;
         ProgressBar pbBudget;
         TextView tvProgressLabel;
-
 
         public CategoryHolder(View itemView) {
             super(itemView);

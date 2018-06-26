@@ -10,10 +10,12 @@
         style="@style/label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:layout_marginTop="8dp"
         android:text="@string/out"
-        app:layout_constraintStart_toStartOf="@+id/pb_in"
-        app:layout_constraintTop_toBottomOf="@+id/pb_in" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/lbl_in"
+        app:layout_constraintTop_toBottomOf="@+id/lbl_in" />
 
     <TextView
         android:id="@+id/lbl_in"
@@ -53,26 +55,31 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        tools:max="5000"
-        tools:progress="3000"
+        android:layout_marginStart="8dp"
         android:progressDrawable="@drawable/progress_bar"
+        app:layout_constraintBottom_toBottomOf="@+id/lbl_in"
         app:layout_constraintEnd_toEndOf="@+id/tvCashflow"
-        app:layout_constraintStart_toStartOf="@+id/lbl_in"
-        app:layout_constraintTop_toBottomOf="@+id/lbl_in" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/barrier3"
+        app:layout_constraintTop_toTopOf="@+id/lbl_in"
+        tools:max="5000"
+        tools:progress="3000" />
 
     <ProgressBar
         android:id="@+id/pb_out"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        tools:max="7000"
-        tools:progress="1000"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:progressDrawable="@drawable/progress_bar"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/lbl_out"
         app:layout_constraintEnd_toEndOf="@+id/pb_in"
-        app:layout_constraintStart_toStartOf="@+id/lbl_out"
-        app:layout_constraintTop_toBottomOf="@+id/lbl_out" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/barrier3"
+        app:layout_constraintTop_toBottomOf="@+id/lbl_in"
+        tools:max="7000"
+        tools:progress="1000" />
 
     <TextView
         android:id="@+id/tv_progress_in_lbl"
@@ -95,5 +102,13 @@
         app:layout_constraintEnd_toEndOf="@+id/pb_out"
         app:layout_constraintTop_toTopOf="@+id/pb_out"
         tools:text="1000 / 7000" />
+
+    <android.support.constraint.Barrier
+        android:id="@+id/barrier3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="right"
+        app:constraint_referenced_ids="lbl_out,lbl_in"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
