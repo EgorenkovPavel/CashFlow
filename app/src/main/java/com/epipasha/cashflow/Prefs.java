@@ -9,61 +9,42 @@ import com.epipasha.cashflow.objects.OperationType;
 public final class Prefs {
 
     public static boolean isShowOperationMasterOnStart(Context context){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return (prefs.getBoolean(context.getString(R.string.pref_show_operation_master_on_start), false));
+        return getBooleanPref(context, R.string.pref_show_operation_master_on_start, false);
     }
 
     public static int getSelectedTab(Context context){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return (prefs.getInt(context.getString(R.string.pref_selected_tab), 0));
+        return getIntPref(context, R.string.pref_selected_tab, 0);
     }
 
     public static void setSelectedTab(Context context, int selectedTab){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt(context.getString(R.string.pref_selected_tab), selectedTab);
-        editor.apply();
+        saveIntPref(context, R.string.pref_selected_tab, selectedTab);
     }
 
     public static class OperationMasterPrefs {
 
         public static OperationType getOperationType(Context context){
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             return OperationType.toEnum(
-                    prefs.getInt(
-                            context.getString(R.string.pref_operation_master_operation_type_pos),
-                            OperationType.IN.toDbValue()));
+                    getIntPref(context, R.string.pref_operation_master_operation_type_pos, OperationType.IN.toDbValue()));
         }
 
         public static int getAccountId(Context context){
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            return (prefs.getInt(context.getString(R.string.pref_operation_master_account_pos), 0));
+            return getIntPref(context, R.string.pref_operation_master_account_pos, 0);
         }
 
         public static int getAnalyticId(Context context, OperationType type){
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            return (prefs.getInt(context.getString(getAnalyticPref(type)), 0));
+            return getIntPref(context, getAnalyticPref(type), 0);
         }
 
         public static void saveOperationType(Context context, OperationType type){
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putInt(context.getString(R.string.pref_operation_master_operation_type_pos), type.toDbValue());
-            editor.apply();
+            saveIntPref(context, R.string.pref_operation_master_operation_type_pos, type.toDbValue());
         }
 
         public static void saveAccountId(Context context, int accountId){
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putInt(context.getString(R.string.pref_operation_master_account_pos), accountId);
-            editor.apply();
+            saveIntPref(context, R.string.pref_operation_master_account_pos, accountId);
         }
 
         public static void saveAnalyticId(Context context, int analyticId, OperationType type){
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putInt(context.getString(getAnalyticPref(type)), analyticId);
-            editor.apply();
+            saveIntPref(context, getAnalyticPref(type), analyticId);
         }
 
         private static int getAnalyticPref(OperationType type){
@@ -79,6 +60,82 @@ public final class Prefs {
                     throw new RuntimeException("Operation type not found " + type);
             }
         }
+    }
+
+    public static class AnalyticChartPrefs{
+
+        public static boolean showInGrafic(Context context){
+            return getBooleanPref(context, R.string.pref_analytic_chart_show_in_grafic, true);
+        }
+
+        public static boolean showOutGrafic(Context context){
+            return getBooleanPref(context, R.string.pref_analytic_chart_show_out_grafic, true);
+        }
+
+        public static boolean showInBudgetGrafic(Context context){
+            return getBooleanPref(context, R.string.pref_analytic_chart_show_in_budget_grafic, true);
+        }
+
+        public static boolean showOutBudgetGrafic(Context context){
+            return getBooleanPref(context, R.string.pref_analytic_chart_show_out_budget_grafic, true);
+        }
+
+        public static boolean showCashflowGrafic(Context context){
+            return getBooleanPref(context, R.string.pref_analytic_chart_show_cashflow_grafic, true);
+        }
+
+        public static boolean showDeltaGrafic(Context context){
+            return getBooleanPref(context, R.string.pref_analytic_chart_show_delta_grafic, true);
+        }
+
+        public static void saveShowInGrafic(Context context, Boolean value){
+            saveBooleanPref(context, R.string.pref_analytic_chart_show_in_grafic, value);
+        }
+
+        public static void saveShowOutGrafic(Context context, Boolean value){
+            saveBooleanPref(context, R.string.pref_analytic_chart_show_out_grafic, value);
+        }
+
+        public static void saveShowInBudgetGrafic(Context context, Boolean value){
+            saveBooleanPref(context, R.string.pref_analytic_chart_show_in_budget_grafic, value);
+        }
+
+        public static void saveShowOutBudgetGrafic(Context context, Boolean value){
+            saveBooleanPref(context, R.string.pref_analytic_chart_show_out_budget_grafic, value);
+        }
+
+        public static void saveShowCashflowGrafic(Context context, Boolean value){
+            saveBooleanPref(context, R.string.pref_analytic_chart_show_cashflow_grafic, value);
+        }
+
+        public static void saveShowDeltaGrafic(Context context, Boolean value){
+            saveBooleanPref(context, R.string.pref_analytic_chart_show_delta_grafic, value);
+        }
+
+    }
+
+    private static boolean getBooleanPref(Context context, int pref, boolean defValue){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return (prefs.getBoolean(context.getString(pref), defValue));
+    }
+
+    private static void saveBooleanPref(Context context, int pref, boolean value){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(context.getString(pref), value);
+        editor.apply();
+    }
+
+    private static int getIntPref(Context context, int pref, int defValue){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return (prefs.getInt(context.getString(pref), defValue));
+    }
+
+    private static void saveIntPref(Context context, int pref, int value){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(context.getString(pref), value);
+        editor.apply();
     }
 
 }

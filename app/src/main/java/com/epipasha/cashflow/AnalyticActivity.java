@@ -1,5 +1,9 @@
 package com.epipasha.cashflow;
 
+import static com.epipasha.cashflow.data.CashFlowContract.*;
+
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -7,11 +11,15 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.epipasha.cashflow.activities.BaseActivity;
 import com.epipasha.cashflow.data.CashFlowContract;
@@ -20,6 +28,7 @@ import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -41,6 +50,8 @@ import java.util.Locale;
 public class AnalyticActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int ID_CHART_LOADER = 789;
+    private static final int ID_CATEGORY_LOADER_IN = 234;
+    private static final int ID_CATEGORY_LOADER_OUT = 475;
     private LineChart mChartIn;
 
     @Override
@@ -55,24 +66,161 @@ public class AnalyticActivity extends BaseActivity implements LoaderManager.Load
 
         mChartIn = findViewById(R.id.chart_in);
 
+        startLoadingChart();
+    }
+
+    private void startLoadingChart() {
         getSupportLoaderManager().initLoader(ID_CHART_LOADER, null, this);
+        getSupportLoaderManager().initLoader(ID_CATEGORY_LOADER_IN, null, this);
+        getSupportLoaderManager().initLoader(ID_CATEGORY_LOADER_OUT, null, this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.analytic_activity_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+
+                final CharSequence[] titles = new CharSequence[6];
+                titles[0] = "IN";
+                titles[1] = "OUT";
+                titles[2] = "IN budget";
+                titles[3] = "OUT budget";
+                titles[4] = "Delta";
+                titles[5] = "Cashflow";
+
+                final boolean[] values = new boolean[6];
+                values[0] = Prefs.AnalyticChartPrefs.showInGrafic(this);
+                values[1] = Prefs.AnalyticChartPrefs.showOutGrafic(this);
+                values[2] = Prefs.AnalyticChartPrefs.showInBudgetGrafic(this);
+                values[3] = Prefs.AnalyticChartPrefs.showOutBudgetGrafic(this);
+                values[4] = Prefs.AnalyticChartPrefs.showDeltaGrafic(this);
+                values[5] = Prefs.AnalyticChartPrefs.showCashflowGrafic(this);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Choose grafics")
+                        .setMultiChoiceItems(titles, values, new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i, boolean b) {
+                                values[i] = b;
+                            }
+                        })
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                Prefs.AnalyticChartPrefs.saveShowInGrafic(AnalyticActivity.this, values[0]);
+                                Prefs.AnalyticChartPrefs.saveShowOutGrafic(AnalyticActivity.this, values[1]);
+                                Prefs.AnalyticChartPrefs.saveShowInBudgetGrafic(AnalyticActivity.this, values[2]);
+                                Prefs.AnalyticChartPrefs.saveShowOutBudgetGrafic(AnalyticActivity.this, values[3]);
+                                Prefs.AnalyticChartPrefs.saveShowDeltaGrafic(AnalyticActivity.this, values[4]);
+                                Prefs.AnalyticChartPrefs.saveShowCashflowGrafic(AnalyticActivity.this, values[5]);
+
+                                YAxis yAxis = mChartIn.getAxisLeft();
+                                yAxis.getLimitLines().clear();
+
+                                startLoadingChart();
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                            }
+                        });
+
+                builder.create().show();
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
-        return new CursorLoader(this,
-                CashFlowContract.CategoryCostEntry.buildCategoryCostUriWithOperationType(),
-                null,
-                null,
-                null,
-                null);
+        switch (id){
+            case ID_CHART_LOADER:
+                return new CursorLoader(this,
+                        CategoryCostEntry.buildCategoryCostUriWithOperationType(),
+                        null,
+                        null,
+                        null,
+                        null);
+            case ID_CATEGORY_LOADER_IN:
+                return new CursorLoader(this,
+                        CategoryEntry.CONTENT_URI,
+                        new String[]{CategoryEntry.COLUMN_TYPE,
+                        "SUM("+ CategoryEntry.COLUMN_BUDGET + ")"},
+                        CategoryEntry.COLUMN_TYPE + "=?",
+                        new String[]{String.valueOf(OperationType.IN.toDbValue())},
+                        null);
+            case ID_CATEGORY_LOADER_OUT:
+                return new CursorLoader(this,
+                        CategoryEntry.CONTENT_URI,
+                        new String[]{CategoryEntry.COLUMN_TYPE,
+                        "SUM("+ CategoryEntry.COLUMN_BUDGET + ")"},
+                        CategoryEntry.COLUMN_TYPE + "=?",
+                        new String[]{String.valueOf(OperationType.OUT.toDbValue())},
+                        null);
+            default:
+                    throw new UnsupportedOperationException();
+        }
+
     }
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
-        if(data != null && data.moveToFirst()){
-            loadChart(data);
+
+        switch (loader.getId()){
+            case ID_CHART_LOADER:{
+                if(data != null && data.moveToFirst()){
+                    loadChart(data);
+                }
+                break;
+            }
+            case ID_CATEGORY_LOADER_IN: case ID_CATEGORY_LOADER_OUT:{
+                if(data != null && data.moveToFirst()){
+                    addBudgetLines(data);
+                }
+                break;
+            }
+        }
+    }
+
+    private void addBudgetLines(Cursor cursor) {
+        YAxis yAxis = mChartIn.getAxisLeft();
+        do{
+            OperationType type = OperationType.toEnum(cursor.getInt(0));
+            if(type == OperationType.IN && !Prefs.AnalyticChartPrefs.showInBudgetGrafic(this))
+                continue;
+            else if (type == OperationType.OUT && !Prefs.AnalyticChartPrefs.showOutBudgetGrafic(this))
+                continue;
+
+            LimitLine line = new LimitLine(cursor.getInt(1));
+            line.setEnabled(true);
+            line.setLineWidth(1);
+            line.setLineColor(getColor(type));
+            line.setTextColor(getColor(type));
+            line.setLabel(getString(R.string.budget) + " " + type.getTitle(this));
+            yAxis.addLimitLine(line);
+        }while(cursor.moveToNext());
+
+    }
+
+    private int getColor(OperationType type){
+        switch (type){
+            case IN:
+                return getResources().getColor(R.color.colorPrimary);
+            case OUT:
+                return getResources().getColor(R.color.colorAccent);
+            default:
+                return getResources().getColor(android.R.color.white);
         }
     }
 
@@ -120,8 +268,8 @@ public class AnalyticActivity extends BaseActivity implements LoaderManager.Load
         LineDataSet setDelta = new LineDataSet(entriesDelta, "Delta");
         LineDataSet setCash = new LineDataSet(entriesCash, getString(R.string.cashflow));
 
-        setIn.setColor(getResources().getColor(R.color.colorPrimary));
-        setOut.setColor(getResources().getColor(R.color.colorAccent));
+        setIn.setColor(getColor(OperationType.IN));
+        setOut.setColor(getColor(OperationType.OUT));
 
         setIn.setLineWidth(3);
         setOut.setLineWidth(3);
@@ -134,10 +282,10 @@ public class AnalyticActivity extends BaseActivity implements LoaderManager.Load
         setCash.setCircleRadius(1f);
 
         List<ILineDataSet> set = new ArrayList<ILineDataSet>();
-        set.add(setIn);
-        set.add(setOut);
-        set.add(setDelta);
-        set.add(setCash);
+        if (Prefs.AnalyticChartPrefs.showInGrafic(this)) set.add(setIn);
+        if (Prefs.AnalyticChartPrefs.showOutGrafic(this)) set.add(setOut);
+        if (Prefs.AnalyticChartPrefs.showDeltaGrafic(this)) set.add(setDelta);
+        if (Prefs.AnalyticChartPrefs.showCashflowGrafic(this)) set.add(setCash);
 
         LineData data = new LineData(set);
         //data.setBarWidth(0.9f); // set custom bar width
