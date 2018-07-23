@@ -1,22 +1,21 @@
 package com.epipasha.cashflow;
 
-import static com.epipasha.cashflow.data.CashFlowContract.*;
-
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.DialogInterface;
 import android.database.Cursor;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.epipasha.cashflow.activities.BaseActivity;
+import com.epipasha.cashflow.data.AppDatabase;
+import com.epipasha.cashflow.data.AppExecutors;
+import com.epipasha.cashflow.data.dao.AnalyticDao.MonthCashflow;
 import com.epipasha.cashflow.objects.OperationType;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -34,14 +33,15 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
-public class AnalyticActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class AnalyticActivity extends BaseActivity {
 
-    private static final int ID_CHART_LOADER = 789;
-    private static final int ID_CATEGORY_LOADER_IN = 234;
-    private static final int ID_CATEGORY_LOADER_OUT = 475;
+    private AppDatabase mDb;
+
     private LineChart mChartIn;
 
     @Override
@@ -56,13 +56,19 @@ public class AnalyticActivity extends BaseActivity implements LoaderManager.Load
 
         mChartIn = findViewById(R.id.chart_in);
 
-        startLoadingChart();
-    }
-
-    private void startLoadingChart() {
-        getSupportLoaderManager().initLoader(ID_CHART_LOADER, null, this);
-        getSupportLoaderManager().initLoader(ID_CATEGORY_LOADER_IN, null, this);
-        getSupportLoaderManager().initLoader(ID_CATEGORY_LOADER_OUT, null, this);
+        mDb = AppDatabase.getInstance(getApplicationContext());
+        AppExecutors.getInstance().discIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                LiveData<List<MonthCashflow>> list = mDb.analyticDao().loadAllMonthCashflow();
+                list.observe(AnalyticActivity.this, new Observer<List<MonthCashflow>>() {
+                    @Override
+                    public void onChanged(@Nullable List<MonthCashflow> monthCashflows) {
+                        loadChart(monthCashflows);
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -114,7 +120,8 @@ public class AnalyticActivity extends BaseActivity implements LoaderManager.Load
                                 YAxis yAxis = mChartIn.getAxisLeft();
                                 yAxis.getLimitLines().clear();
 
-                                startLoadingChart();
+                                // todo restart loading chart
+                                //startLoadingChart();
                             }
                         })
                         .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -131,57 +138,6 @@ public class AnalyticActivity extends BaseActivity implements LoaderManager.Load
         }
     }
 
-    @NonNull
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
-        switch (id){
-            case ID_CHART_LOADER:
-                return new CursorLoader(this,
-                        CategoryCostEntry.buildCategoryCostUriWithOperationType(),
-                        null,
-                        null,
-                        null,
-                        null);
-            case ID_CATEGORY_LOADER_IN:
-                return new CursorLoader(this,
-                        CategoryEntry.CONTENT_URI,
-                        new String[]{CategoryEntry.COLUMN_TYPE,
-                        "SUM("+ CategoryEntry.COLUMN_BUDGET + ")"},
-                        CategoryEntry.COLUMN_TYPE + "=?",
-                        new String[]{String.valueOf(OperationType.IN.toDbValue())},
-                        null);
-            case ID_CATEGORY_LOADER_OUT:
-                return new CursorLoader(this,
-                        CategoryEntry.CONTENT_URI,
-                        new String[]{CategoryEntry.COLUMN_TYPE,
-                        "SUM("+ CategoryEntry.COLUMN_BUDGET + ")"},
-                        CategoryEntry.COLUMN_TYPE + "=?",
-                        new String[]{String.valueOf(OperationType.OUT.toDbValue())},
-                        null);
-            default:
-                    throw new UnsupportedOperationException();
-        }
-
-    }
-
-    @Override
-    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
-
-        switch (loader.getId()){
-            case ID_CHART_LOADER:{
-                if(data != null && data.moveToFirst()){
-                    loadChart(data);
-                }
-                break;
-            }
-            case ID_CATEGORY_LOADER_IN: case ID_CATEGORY_LOADER_OUT:{
-                if(data != null && data.moveToFirst()){
-                    addBudgetLines(data);
-                }
-                break;
-            }
-        }
-    }
 
     private void addBudgetLines(Cursor cursor) {
         YAxis yAxis = mChartIn.getAxisLeft();
@@ -214,12 +170,38 @@ public class AnalyticActivity extends BaseActivity implements LoaderManager.Load
         }
     }
 
-    @Override
-    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+    private void loadChart(List<MonthCashflow> list){
 
-    }
+        DateFormat df = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
+        Calendar cal = Calendar.getInstance();
 
-    private void loadChart(Cursor cursor){
+        //todo rewrite
+        Map<String, ChartData> map = new HashMap<>();
+        for (MonthCashflow monthCashflow:list) {
+            cal.set(monthCashflow.getYear(), monthCashflow.getMonth(), 1);
+            String key = df.format(cal.getTime());
+
+            ChartData chartData = map.get(key);
+            if (chartData == null){
+                chartData = new ChartData();
+            }
+
+            switch (monthCashflow.getType()){
+                case IN:{
+                    chartData.setIn(monthCashflow.getSum());
+                    break;
+                }
+                case OUT:{
+                    chartData.setOut(monthCashflow.getSum());
+                    break;
+                }
+                default:
+                    continue;
+            }
+
+            map.put(key, chartData);
+        }
+
 
         List<Entry> entriesIn = new ArrayList<>();
         List<Entry> entriesOut = new ArrayList<>();
@@ -230,9 +212,12 @@ public class AnalyticActivity extends BaseActivity implements LoaderManager.Load
         int column = 0;
         int cash = 0;
 
-        do {
-            int in  = cursor.getInt(2);
-            int out  = cursor.getInt(3);
+        for(Map.Entry<String, ChartData> entry : map.entrySet()) {
+
+            ChartData chartData = entry.getValue();
+
+            int in  = chartData.getIn();
+            int out  = chartData.getOut();
             cash += (in - out);
 
             entriesIn.add(new Entry(column, in));
@@ -240,18 +225,10 @@ public class AnalyticActivity extends BaseActivity implements LoaderManager.Load
             entriesDelta.add(new Entry(column, in - out));
             entriesCash.add(new Entry(column, cash));
 
-            int month = cursor.getInt(1);
-            int year = cursor.getInt(0);
-
-            Calendar cal = Calendar.getInstance();
-            cal.set(year, month, 1);
-
-            DateFormat df = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
-
-            labels.add(df.format(cal.getTime()));
+            labels.add(entry.getKey());
 
             column++;
-        }while(cursor.moveToNext());
+        }
 
         LineDataSet setIn = new LineDataSet(entriesIn, getString(R.string.in));
         LineDataSet setOut = new LineDataSet(entriesOut, getString(R.string.out));
@@ -289,8 +266,8 @@ public class AnalyticActivity extends BaseActivity implements LoaderManager.Load
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                if(value - (int)(value) == 0){
-                    return labels.get((int)value);
+                if(value - (int)(value) == 0 && value > 0){
+                    return labels.get((int)value - 1);
                 }else{
                     return "";
                 }
@@ -315,4 +292,27 @@ public class AnalyticActivity extends BaseActivity implements LoaderManager.Load
         mChartIn.moveViewToX(column);
         mChartIn.invalidate(); // refresh
     }
+
+    class ChartData{
+
+        private int in;
+        private int out;
+
+        public int getIn() {
+            return in;
+        }
+
+        public void setIn(int in) {
+            this.in = in;
+        }
+
+        public int getOut() {
+            return out;
+        }
+
+        public void setOut(int out) {
+            this.out = out;
+        }
+    }
+
 }

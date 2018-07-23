@@ -1,26 +1,29 @@
 package com.epipasha.cashflow.activities;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.net.Uri;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.Toolbar;
 import android.widget.EditText;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.data.CashFlowContract.AccountEntry;
+import com.epipasha.cashflow.data.AppDatabase;
+import com.epipasha.cashflow.data.AppExecutors;
+import com.epipasha.cashflow.data.entites.Account;
 
-public class DetailAccountActivity extends DetailActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class DetailAccountActivity extends DetailActivity {
 
-    private static final int ID_DETAIL_LOADER = 353;
+    public static final String EXTRA_ACCOUNT_ID = "extraAccountId";
 
-    private Uri mUri;
+    private static final int DEFAULT_ACCOUNT_ID = -1;
+
+    private int mAccountId = DEFAULT_ACCOUNT_ID;
+
+    private AppDatabase mDb;
+
     private EditText etTitle;
-    private boolean isNew;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,75 +32,57 @@ public class DetailAccountActivity extends DetailActivity implements LoaderManag
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         etTitle = (EditText)findViewById(R.id.account_detail_name);
 
-        mUri = getIntent().getData();
-        isNew = mUri == null;
+        mDb = AppDatabase.getInstance(getApplicationContext());
 
-        if (!isNew) {
-            getSupportLoaderManager().initLoader(ID_DETAIL_LOADER, null, this);
-        }
-
-        if(isNew) {
-            setTitle(getString(R.string.new_account));
-        }else{
+        Intent i = getIntent();
+        if(i != null && i.hasExtra(EXTRA_ACCOUNT_ID)){
             setTitle(getString(R.string.account));
-        }
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
-        switch (loaderId) {
-
-            case ID_DETAIL_LOADER:
-
-                return new CursorLoader(this,
-                        mUri,
-                        null,
-                        null,
-                        null,
-                        null);
-
-            default:
-                throw new RuntimeException("Loader Not Implemented: " + loaderId);
-        }
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if(data != null && data.moveToFirst()){
-            etTitle.setText(data.getString(data.getColumnIndex(AccountEntry.COLUMN_TITLE)));
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
+            mAccountId = i.getIntExtra(EXTRA_ACCOUNT_ID, DEFAULT_ACCOUNT_ID);
+            AppExecutors.getInstance().discIO().execute(new Runnable() {
+                @Override
+                public void run() {
+                    final LiveData<Account> account = mDb.accountDao().loadAccountById(mAccountId);
+                    account.observe(DetailAccountActivity.this, new Observer<Account>() {
+                        @Override
+                        public void onChanged(@Nullable Account account) {
+                            populateUI(account);
+                        }
+                    });
+                }
+            });
+        }else
+            setTitle(getString(R.string.new_account));
     }
 
     @Override
     public void saveObject() {
         String title = etTitle.getText().toString();
 
-        if(title.isEmpty()){
-            etTitle.setError(getString(R.string.error_fill_title));
+        final Account account = new Account(title);
+        AppExecutors.getInstance().discIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                if(mAccountId == DEFAULT_ACCOUNT_ID){
+                    mDb.accountDao().insertAccount(account);
+                }else{
+                    account.setId(mAccountId);
+                    mDb.accountDao().updateAccount(account);
+                }
+                finish();
+            }
+        });
+    }
+
+    private void populateUI(Account account) {
+        if (account == null) {
             return;
         }
 
-        ContentValues values = new ContentValues();
-        values.put(AccountEntry.COLUMN_TITLE, title);
-
-        if (isNew){
-            mUri = getContentResolver().insert(AccountEntry.CONTENT_URI, values);
-            isNew = false;
-        } else {
-            getContentResolver().update(mUri, values, null, null);
-        }
-
-        finish();
+        etTitle.setText(account.getTitle());
     }
 
 }

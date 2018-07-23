@@ -1,13 +1,10 @@
 package com.epipasha.cashflow.activities;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.net.Uri;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,8 +12,10 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.data.CashFlowContract;
-import com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
+import com.epipasha.cashflow.data.AppDatabase;
+import com.epipasha.cashflow.data.AppExecutors;
+import com.epipasha.cashflow.data.dao.AnalyticDao.MonthCashflow;
+import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.objects.OperationType;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -35,15 +34,18 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class DetailCategoryActivity extends DetailActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class DetailCategoryActivity extends DetailActivity{
 
-    private static final int ID_DETAIL_LOADER = 353;
-    private static final int ID_CHART_LOADER = 789;
+    public static final String EXTRA_CATEGORY_ID = "extraCategoryId";
 
-    private Uri mUri;
+    private static final int DEFAULT_CATEGORY_ID = -1;
+
+    private int mCategoryId = DEFAULT_CATEGORY_ID;
+
+    private AppDatabase mDb;
+
     private EditText etTitle, etBudget;
     private RadioGroup rgType;
-    private boolean isNew;
     private BarChart mChart;
 
     @Override
@@ -53,7 +55,6 @@ public class DetailCategoryActivity extends DetailActivity implements LoaderMana
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         etTitle = (EditText)findViewById(R.id.category_detail_name);
@@ -61,74 +62,34 @@ public class DetailCategoryActivity extends DetailActivity implements LoaderMana
         rgType = (RadioGroup)findViewById(R.id.type_group);
         mChart = (BarChart)findViewById(R.id.chart);
 
-        mUri = getIntent().getData();
-        isNew = mUri == null;
+        mDb = AppDatabase.getInstance(getApplicationContext());
 
-        if (!isNew) {
-            getSupportLoaderManager().initLoader(ID_DETAIL_LOADER, null, this);
-            getSupportLoaderManager().initLoader(ID_CHART_LOADER, null, this);
-        }
-
-        if(isNew) {
-            setTitle(getString(R.string.new_category));
-        }else{
+        Intent i = getIntent();
+        if(i != null && i.hasExtra(EXTRA_CATEGORY_ID)){
             setTitle(getString(R.string.category));
-        }
-    }
+            mCategoryId = i.getIntExtra(EXTRA_CATEGORY_ID, DEFAULT_CATEGORY_ID);
+            AppExecutors.getInstance().discIO().execute(new Runnable() {
+                @Override
+                public void run() {
+                    final LiveData<Category> category = mDb.categoryDao().loadCategoryById(mCategoryId);
+                    category.observe(DetailCategoryActivity.this, new Observer<Category>() {
+                        @Override
+                        public void onChanged(@Nullable Category category) {
+                            populateUI(category);
+                        }
+                    });
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
-        switch (loaderId) {
-
-            case ID_DETAIL_LOADER:
-
-                return new CursorLoader(this,
-                        mUri,
-                        null,
-                        null,
-                        null,
-                        null);
-
-            case ID_CHART_LOADER:
-
-                return new CursorLoader(this,
-                        CashFlowContract.CategoryCostEntry.buildCategoryCostUriWithId(Long.valueOf(mUri.getLastPathSegment())),
-                        null,
-                        null,
-                        null,
-                        null);
-
-            default:
-                throw new RuntimeException("Loader Not Implemented: " + loaderId);
-        }
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-        switch (loader.getId()){
-            case ID_DETAIL_LOADER:{
-                if(data != null && data.moveToFirst()){
-                    etTitle.setText(data.getString(data.getColumnIndex(CategoryEntry.COLUMN_TITLE)));
-                    etBudget.setText(String.valueOf(data.getInt(data.getColumnIndex(CategoryEntry.COLUMN_BUDGET))));
-                    setCheckedType(OperationType.toEnum(data.getInt(data.getColumnIndex(CategoryEntry.COLUMN_TYPE))));
+                    final LiveData<List<MonthCashflow>> monthCashflow = mDb.analyticDao().loadMonthCashflow(mCategoryId);
+                    monthCashflow.observe(DetailCategoryActivity.this, new Observer<List<MonthCashflow>>() {
+                        @Override
+                        public void onChanged(@Nullable List<MonthCashflow> monthCashflows) {
+                            loadChart(monthCashflows);
+                        }
+                    });
                 }
-                break;
-            }
-            case ID_CHART_LOADER:{
-                if(data != null && data.moveToFirst()){
-                    loadChart(data);
-                }
-
-                break;
-            }
-        }
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
+            });
+        }else
+            setTitle(getString(R.string.new_category));
     }
 
     private OperationType getSelectedType(){
@@ -152,26 +113,70 @@ public class DetailCategoryActivity extends DetailActivity implements LoaderMana
         }
     }
 
-    private void loadChart(Cursor cursor){
+    @Override
+    public void saveObject(){
+        String title = etTitle.getText().toString();
+
+        if(title.isEmpty()){
+            etTitle.setError(getString(R.string.error_fill_title));
+            return;
+        }
+
+        int budget = 0;
+        try {
+            budget = Integer.valueOf(etBudget.getText().toString());
+        }catch (Exception e){
+            etBudget.setError(getString(R.string.error_fill_budget));
+            return;
+        }
+
+        OperationType type = getSelectedType();
+
+        if (type == null){
+            return;
+        }
+
+        final Category category = new Category(title, type, budget);
+        AppExecutors.getInstance().discIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                if(mCategoryId == DEFAULT_CATEGORY_ID){
+                    mDb.categoryDao().insertCategory(category);
+                }else{
+                    category.setId(mCategoryId);
+                    mDb.categoryDao().updateCategory(category);
+                }
+                finish();
+            }
+        });
+
+    }
+
+    private void populateUI(Category category) {
+        if (category == null) {
+            return;
+        }
+
+        etTitle.setText(category.getTitle());
+        etBudget.setText(String.valueOf(category.getBudget()));
+        setCheckedType(category.getType());
+    }
+
+    private void loadChart(List<MonthCashflow> monthCashflows){
 
         List<BarEntry> entries = new ArrayList<>();
         final List<String> labels = new ArrayList<>();
-        int column = 0;
-        do {
-            entries.add(new BarEntry(column, cursor.getInt(2)));
-
-            int month = cursor.getInt(1);
-            int year = cursor.getInt(0);
+        int column = monthCashflows.size();
+        for (MonthCashflow monthCashflow:monthCashflows) {
+            entries.add(new BarEntry(column, monthCashflow.getSum()));
 
             Calendar cal = Calendar.getInstance();
-            cal.set(year, month, 1);
+            cal.set(monthCashflow.getYear(), monthCashflow.getMonth(), 1);
 
             DateFormat df = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
 
             labels.add(df.format(cal.getTime()));
-
-            column++;
-        }while(cursor.moveToNext());
+        }
 
         BarDataSet set = new BarDataSet(entries, "BarDataSet");
         set.setColor(getResources().getColor(R.color.colorPrimary));
@@ -188,7 +193,7 @@ public class DetailCategoryActivity extends DetailActivity implements LoaderMana
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
                 if(value - (int)(value) == 0){
-                    return labels.get((int)value);
+                    return labels.get((int)value - 1);
                 }else{
                     return "";
                 }
@@ -225,44 +230,6 @@ public class DetailCategoryActivity extends DetailActivity implements LoaderMana
         mChart.setVisibleXRangeMaximum(3);
         mChart.moveViewToX(column);
         mChart.invalidate(); // refresh
-    }
-
-    @Override
-    public void saveObject(){
-        String title = etTitle.getText().toString();
-
-        if(title.isEmpty()){
-            etTitle.setError(getString(R.string.error_fill_title));
-            return;
-        }
-
-        int budget = 0;
-        try {
-            budget = Integer.valueOf(etBudget.getText().toString());
-        }catch (Exception e){
-            etBudget.setError(getString(R.string.error_fill_budget));
-            return;
-        }
-
-        OperationType type = getSelectedType();
-
-        if (type == null){
-            return;
-        }
-
-        ContentValues values = new ContentValues();
-        values.put(CategoryEntry.COLUMN_TITLE, title);
-        values.put(CategoryEntry.COLUMN_TYPE, type.toDbValue());
-        values.put(CategoryEntry.COLUMN_BUDGET, budget);
-
-        if (isNew){
-            mUri = getContentResolver().insert(CategoryEntry.CONTENT_URI, values);
-            isNew = false;
-        } else {
-            getContentResolver().update(mUri, values, null, null);
-        }
-
-        finish();
     }
 
     private void addBudgetLineToChart(){

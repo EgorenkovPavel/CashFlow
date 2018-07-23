@@ -1,8 +1,6 @@
 package com.epipasha.cashflow.adapters;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,69 +8,115 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.data.CashFlowContract;
-import com.epipasha.cashflow.activities.DetailAccountActivity;
+import com.epipasha.cashflow.data.entites.AccountWithBalance;
 
+import java.util.List;
 import java.util.Locale;
 
-public class AccountAdapter extends HeaderAdapter<AccountAdapter.HeaderHolder, AccountAdapter.AccountHolder> {
+public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    public AccountAdapter(Context mContext) {
-        super(mContext);
+    protected static final int HEADER_ITEM = 234;
+    protected static final int LIST_ITEM = 897;
+
+    private List<AccountWithBalance> mAccounts;
+    private ItemClickListener mItemClickListener;
+
+    public AccountAdapter(ItemClickListener itemClickListener) {
+        mItemClickListener = itemClickListener;
     }
 
+    public interface ItemClickListener {
+        void onItemClickListener(int itemId);
+    }
+
+    @NonNull
     @Override
-    protected AccountHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext)
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+        switch (viewType) {
+
+            case HEADER_ITEM: {
+                return onCreateHeaderViewHolder(parent, viewType);
+            }
+
+            case LIST_ITEM: {
+                return onCreateItemViewHolder(parent, viewType);
+            }
+
+            default:
+                throw new IllegalArgumentException("Invalid view type, value of " + viewType);
+        }
+
+    }
+
+    private RecyclerView.ViewHolder onCreateHeaderViewHolder(@NonNull ViewGroup parent, int viewType){
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.list_item_account_header, parent, false);
+
+        return new AccountAdapter.HeaderHolder(view);
+    }
+
+    private RecyclerView.ViewHolder onCreateItemViewHolder(@NonNull ViewGroup parent, int viewType){
+        View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_account, parent, false);
 
         return new AccountAdapter.AccountHolder(view);
     }
 
     @Override
-    protected HeaderHolder onCreateHeaderViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext)
-                .inflate(R.layout.list_item_account_header, parent, false);
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
-        return new AccountAdapter.HeaderHolder(view);
-    }
+        if (position == 0) {
 
-    @Override
-    protected void onBindItemViewHolder(AccountHolder holder, int position) {
-        int idIndex = mCursor.getColumnIndex(CashFlowContract.AccountEntry._ID);
-        int titleIndex = mCursor.getColumnIndex(CashFlowContract.AccountEntry.COLUMN_TITLE);
-        int sumIndex = mCursor.getColumnIndex(CashFlowContract.AccountEntry.SERVICE_COLUMN_SUM);
+            onBindHeaderViewHolder((HeaderHolder) holder);
 
-        mCursor.moveToPosition(position); // get to the right location in the cursor
-
-        // Determine the values of the wanted data
-        final int id = mCursor.getInt(idIndex);
-        String title = mCursor.getString(titleIndex);
-        int sum = mCursor.getInt(sumIndex);
-
-        //Set values
-        holder.itemView.setTag(id);
-        ((AccountAdapter.AccountHolder)holder).accountTitleView.setText(title);
-        ((AccountAdapter.AccountHolder)holder).accountSumView.setText(String.format(Locale.getDefault(), "%,d", sum));
-
-    }
-
-    @Override
-    protected void onBindHeaderViewHolder(HeaderHolder holder) {
-        int sumIndex = mCursor.getColumnIndex(CashFlowContract.AccountEntry.SERVICE_COLUMN_SUM);
-
-        mCursor.moveToFirst();
-        int sum = 0;
-        while (!mCursor.isAfterLast()){
-            sum += mCursor.getInt(sumIndex);
-            mCursor.moveToNext();
+        } else {
+            onBindItemViewHolder((AccountHolder) holder, position - 1);
         }
 
-        holder.accountSumView.setText(String.format(Locale.getDefault(), "%,d", sum));
 
     }
 
-    class AccountHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    private void onBindHeaderViewHolder(HeaderHolder holder){
+        int sum = 0;
+        for (AccountWithBalance account:mAccounts) {
+            sum += account.getSum();
+        }
+        holder.accountSumView.setText(String.format(Locale.getDefault(), "%,d", sum));
+    }
+
+    private void onBindItemViewHolder(AccountHolder holder, int position){
+        AccountWithBalance mAccount = mAccounts.get(position);
+
+        //Set values
+        holder.itemView.setTag(mAccount.getId());
+        holder.accountTitleView.setText(mAccount.getTitle());
+        holder.accountSumView.setText(String.format(Locale.getDefault(), "%,d", mAccount.getSum()));
+    }
+
+    public void setAccounts(List<AccountWithBalance> accounts){
+        this.mAccounts = accounts;
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public int getItemCount() {
+        if (mAccounts == null || mAccounts.size() == 0)
+            return 0;
+        else
+            return mAccounts.size() + 1;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0){
+            return HEADER_ITEM;
+        } else {
+            return LIST_ITEM;
+        }
+    }
+
+    class AccountHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView accountTitleView;
         TextView accountSumView;
 
@@ -86,18 +130,10 @@ public class AccountAdapter extends HeaderAdapter<AccountAdapter.HeaderHolder, A
 
         @Override
         public void onClick(View view) {
-            int adapterPosition = getAdapterPosition()-1;
-            mCursor.moveToPosition(adapterPosition);
-
-            int idIndex = mCursor.getColumnIndex(CashFlowContract.AccountEntry._ID);
-            int id = mCursor.getInt(idIndex);
-
-            Intent i = new Intent(mContext, DetailAccountActivity.class);
-
-            Uri uri = CashFlowContract.AccountEntry.buildAccountUriWithId(id);
-            i.setData(uri);
-            mContext.startActivity(i);
+            int elementId = mAccounts.get(getAdapterPosition() - 1).getId();
+            mItemClickListener.onItemClickListener(elementId);
         }
+
     }
 
     class HeaderHolder extends RecyclerView.ViewHolder{

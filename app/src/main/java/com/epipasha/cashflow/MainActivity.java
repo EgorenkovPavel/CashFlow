@@ -17,11 +17,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.epipasha.cashflow.activities.RoomDetailAccountActivity;
-import com.epipasha.cashflow.activities.RoomDetailCategoryActivity;
-import com.epipasha.cashflow.fragments.RoomAccountListFragment;
-import com.epipasha.cashflow.fragments.RoomCategoryListFragment;
-import com.epipasha.cashflow.fragments.RoomOperationListFragment;
+import com.epipasha.cashflow.activities.DetailAccountActivity;
+import com.epipasha.cashflow.activities.DetailCategoryActivity;
+import com.epipasha.cashflow.fragments.AccountListFragment;
+import com.epipasha.cashflow.fragments.CategoryListFragment;
+import com.epipasha.cashflow.fragments.OperationListFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,19 +50,19 @@ public class MainActivity extends AppCompatActivity {
                 switch (tabs.getSelectedTabPosition()){
                     case 0: {
                         //Intent i = new Intent(MainActivity.this, DetailAccountActivity.class);
-                        Intent i = new Intent(MainActivity.this, RoomDetailAccountActivity.class);
+                        Intent i = new Intent(MainActivity.this, DetailAccountActivity.class);
                         startActivity(i);
                         break;
                     }
                     case 1:{
                         //Intent i = new Intent(MainActivity.this, DetailCategoryActivity.class);
-                        Intent i = new Intent(MainActivity.this, RoomDetailCategoryActivity.class);
+                        Intent i = new Intent(MainActivity.this, DetailCategoryActivity.class);
                         startActivity(i);
                         break;
                     }
                     case 2:{
 //                        Intent i = new Intent(MainActivity.this, OperationMasterActivity.class);
-                        Intent i = new Intent(MainActivity.this, RoomOperationMasterActivity.class);
+                        Intent i = new Intent(MainActivity.this, OperationMasterActivity.class);
                         startActivity(i);
                         break;
                     }
@@ -123,13 +123,13 @@ public class MainActivity extends AppCompatActivity {
             switch (position){
                 case 0:
                     //return new AccountListFragment();
-                    return new RoomAccountListFragment();
+                    return new AccountListFragment();
                 case 1:
                     //return new CategoryListFragment();
-                    return new RoomCategoryListFragment();
+                    return new CategoryListFragment();
                 case 2:
                     //return new OperationListFragment();
-                    return new RoomOperationListFragment();
+                    return new OperationListFragment();
                 default:
                     return null;
             }

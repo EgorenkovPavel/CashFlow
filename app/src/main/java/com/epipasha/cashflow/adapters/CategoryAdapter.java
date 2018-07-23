@@ -1,8 +1,6 @@
 package com.epipasha.cashflow.adapters;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,37 +8,94 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.epipasha.cashflow.AnalyticActivity;
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.data.CashFlowContract;
-import com.epipasha.cashflow.activities.DetailCategoryActivity;
+import com.epipasha.cashflow.data.entites.CategoryWithCashflow;
 import com.epipasha.cashflow.objects.OperationType;
 
+import java.util.List;
 import java.util.Locale;
 
-public class CategoryAdapter extends HeaderAdapter<CategoryAdapter.HeaderHolder, CategoryAdapter.CategoryHolder>{
+public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
-    public CategoryAdapter(Context mContext) {
-        super(mContext);
+    protected static final int HEADER_ITEM = 234;
+    protected static final int LIST_ITEM = 897;
+
+    private List<CategoryWithCashflow> mCategories;
+    private ItemClickListener mItemClickListener;
+    private HeaderClickListener mHeaderClickListener;
+
+    public CategoryAdapter(HeaderClickListener headerClickListener, ItemClickListener itemClickListener) {
+        mItemClickListener = itemClickListener;
+        mHeaderClickListener = headerClickListener;
+    }
+
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        switch (viewType) {
+
+            case HEADER_ITEM: {
+                return onCreateHeaderViewHolder(parent);
+            }
+
+            case LIST_ITEM: {
+                return onCreateItemViewHolder(parent);
+            }
+
+            default:
+                throw new IllegalArgumentException("Invalid view type, value of " + viewType);
+        }
     }
 
     @Override
-    protected void onBindItemViewHolder(CategoryHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        if (position == 0) {
+            onBindHeaderViewHolder((HeaderHolder) holder);
+        } else {
+            onBindItemViewHolder((CategoryHolder) holder, position - 1);
+        }
+    }
 
-        int idIndex = mCursor.getColumnIndex(CashFlowContract.CategoryEntry._ID);
-        int titleIndex = mCursor.getColumnIndex(CashFlowContract.CategoryEntry.COLUMN_TITLE);
-        int typeIndex = mCursor.getColumnIndex(CashFlowContract.CategoryEntry.COLUMN_TYPE);
-        int budgetIndex = mCursor.getColumnIndex(CashFlowContract.CategoryEntry.COLUMN_BUDGET);
-        int factIndex = mCursor.getColumnIndex(CashFlowContract.CategoryCostEntry.COLUMN_SUM);
+    @Override
+    public int getItemCount() {
+        if (mCategories == null || mCategories.size() == 0)
+            return 0;
+        else
+            return mCategories.size() + 1;
+    }
 
-        mCursor.moveToPosition(position); // get to the right location in the cursor
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0){
+            return HEADER_ITEM;
+        } else {
+            return LIST_ITEM;
+        }
+    }
+
+    public interface ItemClickListener {
+        void onItemClickListener(int itemId);
+    }
+
+    public interface HeaderClickListener {
+        void onHeaderClickListener();
+    }
+
+    public void setCategories(List<CategoryWithCashflow> categories){
+        this.mCategories = categories;
+        notifyDataSetChanged();
+    }
+
+    private void onBindItemViewHolder(CategoryHolder holder, int position) {
+
+        CategoryWithCashflow category = mCategories.get(position);
 
         // Determine the values of the wanted data
-        final int id = mCursor.getInt(idIndex);
-        String title = mCursor.getString(titleIndex);
-        OperationType type = OperationType.toEnum(mCursor.getInt(typeIndex));
-        int budget = mCursor.getInt(budgetIndex);
-        int fact = mCursor.getInt(factIndex);
+        final int id = category.getId();
+        String title = category.getTitle();
+        OperationType type = category.getType();
+        int budget = category.getBudget();
+        int fact = category.getCashflow();
 
         int delta = 0;
         if (type.equals(OperationType.IN)) {
@@ -54,70 +109,55 @@ public class CategoryAdapter extends HeaderAdapter<CategoryAdapter.HeaderHolder,
         holder.categoryTitleView.setText(title);
         holder.pbBudget.setMax(budget);
         holder.pbBudget.setProgress(fact);
-        holder.tvProgressLabel.setText(String.format(Locale.getDefault(), "%,d", fact) + " / " + String.format(Locale.getDefault(), "%,d", budget));
+        holder.tvProgressLabel.setText(String.format(Locale.getDefault(), "%,d / %,d", fact, budget));
         holder.categoryDeltaView.setText(String.format(Locale.getDefault(), "%,d", delta));
-
     }
 
-    @Override
-    protected void onBindHeaderViewHolder(HeaderHolder holder) {
-
-        int idIndex = mCursor.getColumnIndex(CashFlowContract.CategoryEntry._ID);
-        int titleIndex = mCursor.getColumnIndex(CashFlowContract.CategoryEntry.COLUMN_TITLE);
-        int typeIndex = mCursor.getColumnIndex(CashFlowContract.CategoryEntry.COLUMN_TYPE);
-        int budgetIndex = mCursor.getColumnIndex(CashFlowContract.CategoryEntry.COLUMN_BUDGET);
-        int factIndex = mCursor.getColumnIndex(CashFlowContract.CategoryCostEntry.COLUMN_SUM);
+    private void onBindHeaderViewHolder(HeaderHolder holder) {
 
         int inBudget = 0;
         int inFact = 0;
         int outBudget = 0;
         int outFact = 0;
 
-        mCursor.moveToFirst();
-        while (!mCursor.isAfterLast()){
-            OperationType type = OperationType.toEnum(mCursor.getInt(typeIndex));
+        for (CategoryWithCashflow category: mCategories) {
+
+            OperationType type = category.getType();
             switch (type){
                 case IN:{
-                    inBudget += mCursor.getInt(budgetIndex);
-                    inFact += mCursor.getInt(factIndex);
+                    inBudget += category.getBudget();
+                    inFact += category.getCashflow();
                     break;
                 }
                 case OUT:{
-                    outBudget += mCursor.getInt(budgetIndex);
-                    outFact += mCursor.getInt(factIndex);
+                    outBudget += category.getBudget();
+                    outFact += category.getCashflow();
                     break;
                 }
             }
-            mCursor.moveToNext();
         }
 
         holder.pbIn.setMax(inBudget);
         holder.pbIn.setProgress(inFact);
-        holder.lblIn.setText(String.format(Locale.getDefault(), "%,d", inFact)
-                + " / "
-                + String.format(Locale.getDefault(), "%,d", inBudget));
+        holder.lblIn.setText(String.format(Locale.getDefault(), "%,d / %,d", inFact, inBudget));
 
         holder.pbOut.setMax(outBudget);
         holder.pbOut.setProgress(outFact);
-        holder.lblOut.setText(String.format(Locale.getDefault(), "%,d", outFact)
-                + " / "
-                + String.format(Locale.getDefault(), "%,d", outBudget));
+        holder.lblOut.setText(String.format(Locale.getDefault(), "%,d / %,d", outFact, outBudget));
 
         holder.tvCashflow.setText(String.format(Locale.getDefault(), "%,d", inFact - outFact));
 
     }
 
-    @Override
-    protected CategoryHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext)
+    private CategoryHolder onCreateItemViewHolder(ViewGroup parent) {
+        View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_category, parent, false);
 
         return new CategoryAdapter.CategoryHolder(view);
     }
 
-    @Override
-    protected HeaderHolder onCreateHeaderViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext)
+    private HeaderHolder onCreateHeaderViewHolder(ViewGroup parent) {
+        View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_category_header, parent, false);
 
         return new CategoryAdapter.HeaderHolder(view);
@@ -145,8 +185,7 @@ public class CategoryAdapter extends HeaderAdapter<CategoryAdapter.HeaderHolder,
 
         @Override
         public void onClick(View view) {
-            Intent i = new Intent(mContext, AnalyticActivity.class);
-            mContext.startActivity(i);
+            mHeaderClickListener.onHeaderClickListener();
         }
     }
 
@@ -168,17 +207,8 @@ public class CategoryAdapter extends HeaderAdapter<CategoryAdapter.HeaderHolder,
 
         @Override
         public void onClick(View view) {
-            int adapterPosition = getAdapterPosition()-1;
-            mCursor.moveToPosition(adapterPosition);
-
-            int idIndex = mCursor.getColumnIndex(CashFlowContract.CategoryEntry._ID);
-            int id = mCursor.getInt(idIndex);
-
-            Intent i = new Intent(mContext, DetailCategoryActivity.class);
-
-            Uri uri = CashFlowContract.CategoryEntry.buildCategoryUriWithId(id);
-            i.setData(uri);
-            mContext.startActivity(i);
+            int elementId = mCategories.get(getAdapterPosition() - 1).getId();
+            mItemClickListener.onItemClickListener(elementId);
         }
     }
 }

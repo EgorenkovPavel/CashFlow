@@ -1,25 +1,19 @@
 package com.epipasha.cashflow;
 
-import static com.epipasha.cashflow.data.CashFlowContract.AccountEntry;
-import static com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
-import static com.epipasha.cashflow.data.CashFlowContract.OperationEntry;
-
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -27,20 +21,26 @@ import android.widget.TextView;
 
 import com.epipasha.cashflow.Prefs.OperationMasterPrefs;
 import com.epipasha.cashflow.activities.BaseActivity;
-import com.epipasha.cashflow.data.CashFlowContract;
+import com.epipasha.cashflow.data.AppDatabase;
+import com.epipasha.cashflow.data.AppExecutors;
+import com.epipasha.cashflow.data.entites.Account;
+import com.epipasha.cashflow.data.entites.Category;
+import com.epipasha.cashflow.data.entites.Operation;
 import com.epipasha.cashflow.objects.OperationType;
 
-import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
-public class OperationMasterActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class OperationMasterActivity extends BaseActivity{
 
-    private static final int ACCOUNT_LOADER_ID = 432;
-    private static final int CATEGORY_LOADER_ID = 879;
-    private static final int REP_ACCOUNT_LOADER_ID = 654;
+    private static final int OPERATION_SAVED = 23;
+    private static final int OPERATION_DELETED = 54;
 
+    private Handler mHandler;
     private int sum = 0;
+
+    AppDatabase mDb;
 
     private ViewGroup parentContainer;
     private RadioGroup groupType;
@@ -52,73 +52,44 @@ public class OperationMasterActivity extends BaseActivity implements LoaderManag
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_operation_master);
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar myToolbar = findViewById(R.id.toolbar);
         myToolbar.setTitle(getString(R.string.operation_master));
         setSupportActionBar(myToolbar);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         findViews();
 
+        mDb = AppDatabase.getInstance(getApplicationContext());
+
+        initAccountSpinner();
+
         setCheckedOperationType(OperationMasterPrefs.getOperationType(this));
         setSum(0);
 
-        getSupportLoaderManager().initLoader(ACCOUNT_LOADER_ID, null, this);
-        initAnalyticSpinner();
     }
 
-    private OperationType getCheckedOperationType(){
-        switch (groupType.getCheckedRadioButtonId()){
-            case R.id.btnIn :
-                return OperationType.IN;
-            case R.id.btnOut:
-                return OperationType.OUT;
-            case R.id.btnTransfer:
-                return OperationType.TRANSFER;
-            default:
-                return OperationType.IN;
-        }
-    }
+    private void initAccountSpinner(){
+        AppExecutors.getInstance().discIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                final LiveData<List<Account>> accounts = mDb.accountDao().loadAllAccounts();
 
-    private void setCheckedOperationType(OperationType type){
+                accounts.observe(OperationMasterActivity.this, new Observer<List<Account>>() {
+                    @Override
+                    public void onChanged(@Nullable List<Account> accounts) {
+                        ArrayAdapter<Account> adapter = new ArrayAdapter<>(
+                                OperationMasterActivity.this,
+                                R.layout.list_item_account,
+                                R.id.account_list_item_name,
+                                accounts);
+                        spinAccount.setAdapter(adapter);
 
-        if (type == null){
-            return;
-        }
-
-        switch (type){
-            case IN:
-                groupType.check(R.id.btnIn);
-                break;
-            case OUT:
-                groupType.check(R.id.btnOut);
-                break;
-            case TRANSFER:
-                groupType.check(R.id.btnTransfer);
-                break;
-            default:
-                groupType.check(R.id.btnIn);
-        }
-    }
-
-    private void initAnalyticSpinner() {
-        switch (groupType.getCheckedRadioButtonId()){
-            case R.id.btnIn: case R.id.btnOut:{
-                lblAnalytic.setText(getString(R.string.category));
-                getSupportLoaderManager().restartLoader(CATEGORY_LOADER_ID, null, OperationMasterActivity.this);
-                break;
+                        int accountId = OperationMasterPrefs.getAccountId(OperationMasterActivity.this);
+                        Utils.setPositionById(spinAccount, accountId);
+                    }
+                });
             }
-            case R.id.btnTransfer:{
-                lblAnalytic.setText(getString(R.string.account));
-                getSupportLoaderManager().restartLoader(REP_ACCOUNT_LOADER_ID, null, OperationMasterActivity.this);
-                break;
-            }
-        }
-    }
-
-    private void setSum(int s){
-        sum = s;
-        lblSum.setText(String.format(Locale.getDefault(),"%,d",sum));
+        });
     }
 
     private void findViews() {
@@ -129,7 +100,7 @@ public class OperationMasterActivity extends BaseActivity implements LoaderManag
         groupType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                initAnalyticSpinner();
+                onOperationTypeChanged();
             }
         });
 
@@ -218,17 +189,168 @@ public class OperationMasterActivity extends BaseActivity implements LoaderManag
 
     }
 
-    private void createOperation(){
-        int accountId = Utils.getSelectedId(spinAccount);
-        if(accountId <= 0){
-            Snackbar.make(parentContainer, R.string.no_account_selected, Snackbar.LENGTH_LONG).show();
+    private OperationType getCheckedOperationType(){
+        switch (groupType.getCheckedRadioButtonId()){
+            case R.id.btnIn :
+                return OperationType.IN;
+            case R.id.btnOut:
+                return OperationType.OUT;
+            case R.id.btnTransfer:
+                return OperationType.TRANSFER;
+            default:
+                return OperationType.IN;
+        }
+    }
+
+    private void setCheckedOperationType(OperationType type){
+
+        if (type == null){
             return;
         }
 
-        int analyticId = Utils.getSelectedId(spinAnalytic);
-        if (analyticId <= 0) {
-            Snackbar.make(parentContainer, R.string.no_analytic_selected, Snackbar.LENGTH_LONG).show();
+        switch (type){
+            case IN:
+                groupType.check(R.id.btnIn);
+                break;
+            case OUT:
+                groupType.check(R.id.btnOut);
+                break;
+            case TRANSFER:
+                groupType.check(R.id.btnTransfer);
+                break;
+            default:
+                groupType.check(R.id.btnIn);
+        }
+    }
+
+    private void onOperationTypeChanged(){
+        setSpinnersLabels();
+        initAnalyticSpinner();
+    }
+
+    private void setSpinnersLabels(){
+        final OperationType type = getCheckedOperationType();
+
+        switch (type){
+            case IN: case OUT:{
+                lblAnalytic.setText(getString(R.string.category));
+                break;
+            }
+            case TRANSFER:{
+                lblAnalytic.setText(getString(R.string.account));
+                break;
+            }
+        }
+
+    }
+
+    private void initAnalyticSpinner() {
+
+        final OperationType type = getCheckedOperationType();
+
+        switch (type){
+            case IN: case OUT:{
+                AppExecutors.getInstance().discIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        LiveData<List<Category>> categories = mDb.categoryDao().loadAllCategoriesByType(type);
+
+                        categories.observe(OperationMasterActivity.this, new Observer<List<Category>>() {
+                            @Override
+                            public void onChanged(@Nullable List<Category> categories) {
+                                ArrayAdapter<Category> adapter = new ArrayAdapter<>(
+                                        OperationMasterActivity.this,
+                                        android.R.layout.simple_spinner_item,
+                                        android.R.id.text1,
+                                        categories);
+
+                                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                spinAnalytic.setAdapter(adapter);
+                                Utils.setPositionById(spinAnalytic,
+                                        OperationMasterPrefs.getAnalyticId(
+                                                OperationMasterActivity.this, type));
+                            }
+                        });
+
+                    }
+                });
+                break;
+            }
+            case TRANSFER: {
+                AppExecutors.getInstance().discIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        LiveData<List<Account>> accounts = null;
+                        Account operationAccount = (Account) spinAccount.getSelectedItem();
+                        if (operationAccount == null)
+                            accounts = mDb.accountDao().loadAllAccounts();
+                        else
+                            accounts = mDb.accountDao().loadAllAccountsExceptId(operationAccount.getId());
+
+                        accounts.observe(OperationMasterActivity.this, new Observer<List<Account>>() {
+                            @Override
+                            public void onChanged(@Nullable List<Account> accounts) {
+
+                                ArrayAdapter<Account> adapter = new ArrayAdapter<>(
+                                        OperationMasterActivity.this,
+                                        android.R.layout.simple_spinner_item,
+                                        android.R.id.text1,
+                                        accounts);
+
+                                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                spinAnalytic.setAdapter(adapter);
+
+                                Utils.setPositionById(spinAnalytic,
+                                        OperationMasterPrefs.getAnalyticId(
+                                                OperationMasterActivity.this, type));
+                            }
+                        });
+                    }
+                });
+                break;
+            }
+        }
+
+    }
+
+    private void setSum(int s){
+        sum = s;
+        lblSum.setText(String.format(Locale.getDefault(),"%,d",sum));
+    }
+
+    private void createOperation(){
+
+        Account account = (Account) spinAccount.getSelectedItem();
+        if(account == null){
+            Snackbar.make(parentContainer, R.string.no_account_selected, Snackbar.LENGTH_LONG).show();
             return;
+        }
+        int accountId = account.getId();
+        Integer categoryId = null;
+        Integer repAccountId = null;
+
+        OperationType type = getCheckedOperationType();
+
+        switch (type){
+            case IN: case OUT: {
+                Category category = (Category) spinAnalytic.getSelectedItem();
+                if (category == null) {
+                    Snackbar.make(parentContainer, R.string.no_analytic_selected, Snackbar.LENGTH_LONG).show();
+                    return;
+                }
+                categoryId = category.getId();
+                break;
+            }
+            case TRANSFER:{
+                Account repAccount = (Account)spinAnalytic.getSelectedItem();
+                if (repAccount == null) {
+                    Snackbar.make(parentContainer, R.string.no_analytic_selected, Snackbar.LENGTH_LONG).show();
+                    return;
+                }
+                repAccountId = repAccount.getId();
+                break;
+            }
         }
 
         if(sum == 0){
@@ -236,47 +358,51 @@ public class OperationMasterActivity extends BaseActivity implements LoaderManag
             return;
         }
 
-        ContentValues values = new ContentValues();
-        values.put(OperationEntry.COLUMN_DATE, (new Date()).getTime());
-        values.put(OperationEntry.COLUMN_ACCOUNT_ID, accountId);
-        values.put(OperationEntry.COLUMN_SUM, sum);
+        final Operation operation = new Operation(new Date(), type, accountId, categoryId, repAccountId, sum);
 
-        switch (groupType.getCheckedRadioButtonId()){
-            case R.id.btnIn :{
-                values.put(OperationEntry.COLUMN_TYPE, OperationType.IN.toDbValue());
-                values.put(OperationEntry.COLUMN_CATEGORY_ID, analyticId);
-                break;
+        mHandler = new Handler(Looper.getMainLooper()){
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what){
+                    case OPERATION_SAVED:{
+                        Operation operation = (Operation)msg.obj;
+                        onOperationSaved(operation);
+                        break;
+                    }
+                    case OPERATION_DELETED:{
+                        int numRowsDeleted = (int) msg.obj;
+                        onOperationDeleted(numRowsDeleted);
+                        break;
+                    }
+                }
             }
-            case R.id.btnOut: {
-                values.put(OperationEntry.COLUMN_TYPE, OperationType.OUT.toDbValue());
-                values.put(OperationEntry.COLUMN_CATEGORY_ID, analyticId);
-                break;
-            }
-            case R.id.btnTransfer: {
-                values.put(OperationEntry.COLUMN_TYPE, OperationType.TRANSFER.toDbValue());
-                values.put(OperationEntry.COLUMN_RECIPIENT_ACCOUNT_ID, analyticId);
-                break;
-            }
-        }
+        };
 
-        OperationMasterPrefs.saveOperationType(OperationMasterActivity.this, getCheckedOperationType());
-        OperationMasterPrefs.saveAccountId(OperationMasterActivity.this, accountId);
-        OperationMasterPrefs.saveAnalyticId(OperationMasterActivity.this, analyticId, getCheckedOperationType());
+       AppExecutors.getInstance().discIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                int operationId = (int) mDb.operationDao().insertOperationWihtAnalytic(operation);
+                operation.setId(operationId);
+                mHandler.obtainMessage(OPERATION_SAVED, operation).sendToTarget();
+            }
+       });
+    }
 
-        final Uri uri = getContentResolver().insert(OperationEntry.CONTENT_URI, values);
-        if (uri == null){
+    private void onOperationSaved(final Operation operation){
+        if (operation.getId() == -1) {
             Snackbar.make(parentContainer, R.string.error, Snackbar.LENGTH_LONG).show();
         } else {
             Snackbar snackbar = Snackbar.make(parentContainer, R.string.operation_created, Snackbar.LENGTH_LONG);
             snackbar.setAction(R.string.undo, new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    int numRowsDeleted = getContentResolver().delete(uri, null, null);
-                    if (numRowsDeleted > 0){
-                        Snackbar.make(view, R.string.operation_deleted, Snackbar.LENGTH_LONG).show();
-                    } else {
-                        Snackbar.make(parentContainer, R.string.error, Snackbar.LENGTH_LONG).show();
-                    }
+                    AppExecutors.getInstance().discIO().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            int numRowsDeleted = mDb.operationDao().deleteOperation(operation);
+                            mHandler.obtainMessage(OPERATION_DELETED, numRowsDeleted).sendToTarget();
+                        }
+                    });
                 }
             });
             snackbar.show();
@@ -284,161 +410,140 @@ public class OperationMasterActivity extends BaseActivity implements LoaderManag
         }
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
-        switch (id){
-            case ACCOUNT_LOADER_ID:{
-                return new CursorLoader(
-                        this,
-                        AccountEntry.CONTENT_URI,
-                        null,
-                        null,
-                        null,
-                        null);
-            }
-            case CATEGORY_LOADER_ID:{
-                Calendar cal = Calendar.getInstance();
-                int year = cal.get(Calendar.YEAR);
-                int month = cal.get(Calendar.MONTH);
-
-                return new CursorLoader(
-                        this,
-                        CashFlowContract.CategoryEntry.buildCategoryCostUri(year, month),
-                        null,
-                        CategoryEntry.COLUMN_TYPE + " = " + getCheckedOperationType().toDbValue(),
-                        null,
-                        CategoryEntry.TABLE_NAME +"."+CategoryEntry.COLUMN_TITLE);
-
-            }
-            case REP_ACCOUNT_LOADER_ID:{
-                return new CursorLoader(
-                        this,
-                        AccountEntry.CONTENT_URI,
-                        null,
-                        AccountEntry._ID + " != " + Utils.getSelectedId(spinAccount),
-                        null,
-                        null);
-            }
-            default:
-                throw new RuntimeException("Loader Not Implemented: " + id);
+    private void onOperationDeleted(int numRowsDeleted){
+        if (numRowsDeleted > 0) {
+            Snackbar.make(parentContainer, R.string.operation_deleted, Snackbar.LENGTH_LONG).show();
+        } else {
+            Snackbar.make(parentContainer, R.string.error, Snackbar.LENGTH_LONG).show();
         }
+    }
+
+    private Integer getAccountId(){
+        Account account = (Account) spinAccount.getSelectedItem();
+        if (account == null)
+            return null;
+        else
+            return account.getId();
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+    protected void onStop() {
+        super.onStop();
 
-        switch (loader.getId()){
-            case ACCOUNT_LOADER_ID:{
-                AccountAdapter adapter = new AccountAdapter(this, cursor, CursorAdapter.NO_SELECTION);
-                spinAccount.setAdapter(adapter);
+        OperationMasterPrefs.saveOperationType(OperationMasterActivity.this, getCheckedOperationType());
 
-                Utils.setPositionById(spinAccount, OperationMasterPrefs.getAccountId(this));
+        Integer accountId = getAccountId();
+        if (accountId != null)
+            OperationMasterPrefs.saveAccountId(OperationMasterActivity.this, accountId);
+
+        OperationType type = getCheckedOperationType();
+        Integer analyticId = null;
+
+        switch (type){
+            case IN: case OUT: {
+                Category category = (Category) spinAnalytic.getSelectedItem();
+                if (category != null) {
+                    analyticId = category.getId();
+                }
                 break;
             }
-            case CATEGORY_LOADER_ID:{
-                CategoryAdapter adapter = new CategoryAdapter(this, cursor, CursorAdapter.NO_SELECTION);
-                spinAnalytic.setAdapter(adapter);
-
-                Utils.setPositionById(spinAnalytic, OperationMasterPrefs.getAnalyticId(this, getCheckedOperationType()));
+            case TRANSFER:{
+                Account repAccount = (Account)spinAnalytic.getSelectedItem();
+                if (repAccount != null) {
+                    analyticId = repAccount.getId();
+                }
                 break;
             }
-            case REP_ACCOUNT_LOADER_ID:{
-                AccountAdapter adapter = new AccountAdapter(this, cursor, CursorAdapter.NO_SELECTION);
-                spinAnalytic.setAdapter(adapter);
+        }
 
-                Utils.setPositionById(spinAnalytic, OperationMasterPrefs.getAnalyticId(this, getCheckedOperationType()));
-                break;
-            }
-         }
+        if (analyticId != null)
+            OperationMasterPrefs.saveAnalyticId(OperationMasterActivity.this, analyticId, getCheckedOperationType());
     }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
-    }
-
-    class AccountAdapter extends CursorAdapter{
-
-        public AccountAdapter(Context context, Cursor c, int flags) {
-            super(context, c, flags);
-        }
-
-        @Override
-        public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
-            return LayoutInflater.from(context)
-                    .inflate(R.layout.list_item_account, viewGroup, false);
-        }
-
-        @Override
-        public void bindView(View view, Context context, Cursor cursor) {
-
-            int idIndex = cursor.getColumnIndex(AccountEntry._ID);
-            int titleIndex = cursor.getColumnIndex(AccountEntry.COLUMN_TITLE);
-            int sumIndex = cursor.getColumnIndex(AccountEntry.SERVICE_COLUMN_SUM);
-
-            // Determine the values of the wanted data
-            final int id = cursor.getInt(idIndex);
-            String title = cursor.getString(titleIndex);
-            int sum = cursor.getInt(sumIndex);
-
-            //Set values
-            ((TextView)view.findViewById(R.id.account_list_item_name)).setText(title);
-            ((TextView)view.findViewById(R.id.account_list_item_sum)).setText(String.format(Locale.getDefault(), "%,d", sum));
-
-        }
-    }
-
-    class CategoryAdapter extends CursorAdapter{
-
-        public CategoryAdapter(Context context, Cursor c, int flags) {
-            super(context, c, flags);
-        }
-
-        @Override
-        public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
-            return LayoutInflater.from(context)
-                    .inflate(R.layout.list_item_master_category, viewGroup, false);
-        }
-
-        @Override
-        public void bindView(View view, Context context, Cursor cursor) {
-
-            int idIndex = cursor.getColumnIndex(CashFlowContract.CategoryEntry._ID);
-            int titleIndex = cursor.getColumnIndex(CashFlowContract.CategoryEntry.COLUMN_TITLE);
-            int typeIndex = cursor.getColumnIndex(CashFlowContract.CategoryEntry.COLUMN_TYPE);
-            int budgetIndex = cursor.getColumnIndex(CashFlowContract.CategoryEntry.COLUMN_BUDGET);
-            int factIndex = cursor.getColumnIndex(CashFlowContract.CategoryCostEntry.COLUMN_SUM);
-
-            // Determine the values of the wanted data
-            final int id = cursor.getInt(idIndex);
-            String title = cursor.getString(titleIndex);
-            OperationType type = OperationType.toEnum(cursor.getInt(typeIndex));
-            int budget = cursor.getInt(budgetIndex);
-            int fact = cursor.getInt(factIndex);
-
-            int delta = 0;
-            if(type.equals(OperationType.IN)) {
-                delta = fact - budget;
-            }else if (type.equals(OperationType.OUT)) {
-                delta = budget - fact;
-            }
-
-            ((TextView)view.findViewById(R.id.lbl_in)).setText(title);
-//            ((TextView)view.findViewById(R.id.tvInBudget)).setText(String.format(Locale.getDefault(),"%,d",budget));
-//            ((TextView)view.findViewById(R.id.tvFact)).setText(String.format(Locale.getDefault(),"%,d",fact));
-//            ((TextView)view.findViewById(R.id.tvInDelta)).setText(String.format(Locale.getDefault(),"%,d",delta));
-
-//            int deltaColor = R.color.primaryTextColor;
-//            if(type.equals(OperationType.IN)){
-//                deltaColor = delta >=0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
-//            }else if (type.equals(OperationType.OUT)){
-//                deltaColor = delta >=0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
+//Adaptors
+    //todo use adapters
+//
+//    class AccountAdapter extends CursorAdapter{
+//
+//        public AccountAdapter(Context context, Cursor c, int flags) {
+//            super(context, c, flags);
+//        }
+//
+//        @Override
+//        public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
+//            return LayoutInflater.from(context)
+//                    .inflate(R.layout.list_item_account, viewGroup, false);
+//        }
+//
+//        @Override
+//        public void bindView(View view, Context context, Cursor cursor) {
+//
+//            int idIndex = cursor.getColumnIndex(AccountEntry._ID);
+//            int titleIndex = cursor.getColumnIndex(AccountEntry.COLUMN_TITLE);
+//            int sumIndex = cursor.getColumnIndex(AccountEntry.SERVICE_COLUMN_SUM);
+//
+//            // Determine the values of the wanted data
+//            final int id = cursor.getInt(idIndex);
+//            String title = cursor.getString(titleIndex);
+//            int sum = cursor.getInt(sumIndex);
+//
+//            //Set values
+//            ((TextView)view.findViewById(R.id.account_list_item_name)).setText(title);
+//            ((TextView)view.findViewById(R.id.account_list_item_sum)).setText(String.format(Locale.getDefault(), "%,d", sum));
+//
+//        }
+//    }
+//
+//    class CategoryAdapter extends CursorAdapter{
+//
+//        public CategoryAdapter(Context context, Cursor c, int flags) {
+//            super(context, c, flags);
+//        }
+//
+//        @Override
+//        public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
+//            return LayoutInflater.from(context)
+//                    .inflate(R.layout.list_item_master_category, viewGroup, false);
+//        }
+//
+//        @Override
+//        public void bindView(View view, Context context, Cursor cursor) {
+//
+//            int idIndex = cursor.getColumnIndex(CategoryEntry._ID);
+//            int titleIndex = cursor.getColumnIndex(CategoryEntry.COLUMN_TITLE);
+//            int typeIndex = cursor.getColumnIndex(CategoryEntry.COLUMN_TYPE);
+//            int budgetIndex = cursor.getColumnIndex(CategoryEntry.COLUMN_BUDGET);
+//            int factIndex = cursor.getColumnIndex(CashFlowContract.CategoryCostEntry.COLUMN_SUM);
+//
+//            // Determine the values of the wanted data
+//            final int id = cursor.getInt(idIndex);
+//            String title = cursor.getString(titleIndex);
+//            OperationType type = OperationType.toEnum(cursor.getInt(typeIndex));
+//            int budget = cursor.getInt(budgetIndex);
+//            int fact = cursor.getInt(factIndex);
+//
+//            int delta = 0;
+//            if(type.equals(OperationType.IN)) {
+//                delta = fact - budget;
+//            }else if (type.equals(OperationType.OUT)) {
+//                delta = budget - fact;
 //            }
 //
-//            ((TextView)view.findViewById(R.id.tvInDelta)).setTextColor(getResources().getColor(deltaColor));
-
-        }
-    }
+//            ((TextView)view.findViewById(R.id.lbl_in)).setText(title);
+////            ((TextView)view.findViewById(R.id.tvInBudget)).setText(String.format(Locale.getDefault(),"%,d",budget));
+////            ((TextView)view.findViewById(R.id.tvFact)).setText(String.format(Locale.getDefault(),"%,d",fact));
+////            ((TextView)view.findViewById(R.id.tvInDelta)).setText(String.format(Locale.getDefault(),"%,d",delta));
+//
+////            int deltaColor = R.color.primaryTextColor;
+////            if(type.equals(OperationType.IN)){
+////                deltaColor = delta >=0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
+////            }else if (type.equals(OperationType.OUT)){
+////                deltaColor = delta >=0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
+////            }
+////
+////            ((TextView)view.findViewById(R.id.tvInDelta)).setTextColor(getResources().getColor(deltaColor));
+//
+//        }
+//    }
 
 }

@@ -1,34 +1,85 @@
 package com.epipasha.cashflow.fragments;
 
-import android.database.Cursor;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-import com.epipasha.cashflow.adapters.Adapter;
+import com.epipasha.cashflow.R;
+import com.epipasha.cashflow.AnalyticActivity;
+import com.epipasha.cashflow.activities.DetailCategoryActivity;
 import com.epipasha.cashflow.adapters.CategoryAdapter;
-import com.epipasha.cashflow.data.CashFlowContract;
+import com.epipasha.cashflow.data.entites.CategoryWithCashflow;
+import com.epipasha.cashflow.data.viewmodel.CategoryListViewModel;
 
-import java.util.Calendar;
+import java.util.List;
 
-public class CategoryListFragment extends ListFragment {
+public class CategoryListFragment extends Fragment implements CategoryAdapter.HeaderClickListener, CategoryAdapter.ItemClickListener {
+
+    private RecyclerView rvList;
+    private CategoryAdapter mAdapter;
+
+    @Nullable
     @Override
-    public Adapter createAdapter() {
-        return new CategoryAdapter(getActivity());
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_list, container, false);
+
+        rvList = v.findViewById(R.id.rvList);
+
+        initRecycledView();
+
+        retrieveItems();
+
+        return v;
+    }
+
+    private void initRecycledView(){
+
+        rvList.setHasFixedSize(true);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        rvList.setLayoutManager(layoutManager);
+
+        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(rvList.getContext(),
+                layoutManager.getOrientation());
+        rvList.addItemDecoration(mDividerItemDecoration);
+
+        mAdapter = new CategoryAdapter(this, this);
+        rvList.setAdapter(mAdapter);
+
+    }
+
+    private void retrieveItems() {
+
+        CategoryListViewModel viewModel = ViewModelProviders.of(this).get(CategoryListViewModel.class);
+        viewModel.getCategories().observe(this, new Observer<List<CategoryWithCashflow>>() {
+            @Override
+            public void onChanged(@Nullable List<CategoryWithCashflow> categories) {
+                mAdapter.setCategories(categories);
+            }
+        });
     }
 
     @Override
-    public Loader<Cursor> createLoader() {
-        Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH);
-
-        return new CursorLoader(
-                getActivity(),
-                CashFlowContract.CategoryEntry.buildCategoryCostUri(year, month),
-                null,
-                null,
-                null,
-                CashFlowContract.CategoryEntry.TABLE_NAME +"."+ CashFlowContract.CategoryEntry.COLUMN_TYPE + "," + CashFlowContract.CategoryEntry.TABLE_NAME +"."+ CashFlowContract.CategoryEntry.COLUMN_TITLE);
+    public void onItemClickListener(int itemId) {
+        // Launch AddTaskActivity adding the itemId as an extra in the intent
+        Intent intent = new Intent(getActivity(), DetailCategoryActivity.class);
+        intent.putExtra(DetailCategoryActivity.EXTRA_CATEGORY_ID, itemId);
+        startActivity(intent);
     }
 
+    @Override
+    public void onHeaderClickListener() {
+        Intent i = new Intent(getActivity(), AnalyticActivity.class);
+        startActivity(i);
+    }
 }

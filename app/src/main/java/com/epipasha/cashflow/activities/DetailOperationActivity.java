@@ -2,18 +2,15 @@ package com.epipasha.cashflow.activities;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.net.Uri;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioGroup;
@@ -24,30 +21,35 @@ import android.widget.Toast;
 
 import com.epipasha.cashflow.NumberTextWatcherForThousand;
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.Utils;
-import com.epipasha.cashflow.data.CashFlowContract.AccountEntry;
-import com.epipasha.cashflow.data.CashFlowContract.CategoryEntry;
-import com.epipasha.cashflow.data.CashFlowContract.OperationEntry;
+import com.epipasha.cashflow.data.AppDatabase;
+import com.epipasha.cashflow.data.AppExecutors;
+import com.epipasha.cashflow.data.entites.Account;
+import com.epipasha.cashflow.data.entites.Category;
+import com.epipasha.cashflow.data.entites.Operation;
+import com.epipasha.cashflow.data.entites.OperationWithData;
 import com.epipasha.cashflow.objects.OperationType;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 
-public class DetailOperationActivity extends DetailActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class DetailOperationActivity extends DetailActivity {
 
-    private static final int ID_OPERATION_LOADER = 353;
-    private static final int ID_ACCOUNT_LOADER = 438;
-    private static final int ID_CATEGORY_LOADER = 543;
-    private static final int ID_RECIPIENT_ACCOUNT_LOADER = 879;
+    public static final String EXTRA_OPERATION_ID = "extraOperationId";
 
-    private Uri mUri;
-    private boolean isNew;
+    private static final int DEFAULT_OPERATION_ID = -1;
+
+    private int mOperationId = DEFAULT_OPERATION_ID;
+
+    private AppDatabase mDb;
 
     private Date operationDate;
-    private int accountId, categoryId, recAccountId;
+    private Account operationAccount;
+    private Category operationCategory;
+    private Account operationRecipientAccount;
     private NumberTextWatcherForThousand sumWatcher;
 
     private Spinner analyticSpinner;
@@ -62,9 +64,8 @@ public class DetailOperationActivity extends DetailActivity implements LoaderMan
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_operation);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         edtDate = (TextView)findViewById(R.id.operation_detail_date);
@@ -86,7 +87,7 @@ public class DetailOperationActivity extends DetailActivity implements LoaderMan
         rgType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                setSelectedType(getSelectedType());
+                 onOperationTypeChanged(getSelectedType(i));
             }
         });
 
@@ -98,8 +99,8 @@ public class DetailOperationActivity extends DetailActivity implements LoaderMan
 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (getSelectedType() == OperationType.TRANSFER){
-                    getSupportLoaderManager().restartLoader(ID_RECIPIENT_ACCOUNT_LOADER, null, DetailOperationActivity.this);
+                if (getSelectedType(rgType.getCheckedRadioButtonId()) == OperationType.TRANSFER){
+                    setAnalyticAdapter(OperationType.TRANSFER);
                 }
             }
 
@@ -114,142 +115,134 @@ public class DetailOperationActivity extends DetailActivity implements LoaderMan
         sumWatcher = new NumberTextWatcherForThousand(edtSum);
         edtSum.addTextChangedListener(sumWatcher);
 
-        mUri = getIntent().getData();
-        isNew = mUri == null;
+        operationDate = Calendar.getInstance().getTime();
+        setSelectedDate();
 
-        if (!isNew) {
-            getSupportLoaderManager().initLoader(ID_OPERATION_LOADER, null, this);
-        }else{
-            operationDate = new Date();
-            setSelectedDate();
-            setSelectedType(OperationType.IN);
-            getSupportLoaderManager().initLoader(ID_ACCOUNT_LOADER, null, this);
-        }
+        mDb = AppDatabase.getInstance(getApplicationContext());
 
-        if(isNew) {
-            setTitle(getString(R.string.new_operation));
-        }else{
+        Intent i = getIntent();
+        if(i != null && i.hasExtra(EXTRA_OPERATION_ID)){
             setTitle(getString(R.string.operation));
-        }
-    }
+            mOperationId = i.getIntExtra(EXTRA_OPERATION_ID, DEFAULT_OPERATION_ID);
+            AppExecutors.getInstance().discIO().execute(new Runnable() {
+                @Override
+                public void run() {
+                    final LiveData<OperationWithData> operation = mDb.operationDao().loadOperationWithDataById(mOperationId);
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
-        switch (loaderId) {
-
-            case ID_OPERATION_LOADER:
-                return new CursorLoader(this,
-                        mUri,
-                        null,
-                        null,
-                        null,
-                        null);
-
-            case ID_ACCOUNT_LOADER:
-                return new CursorLoader(this,
-                        AccountEntry.CONTENT_URI,
-                        null,
-                        null,
-                        null,
-                        null);
-
-            case ID_CATEGORY_LOADER:
-                return new CursorLoader(this,
-                        CategoryEntry.CONTENT_URI,
-                        null,
-                        CategoryEntry.COLUMN_TYPE + " = ?",
-                        new String[]{String.valueOf(getSelectedType().toDbValue())},
-                        null);
-
-            case ID_RECIPIENT_ACCOUNT_LOADER:
-                return new CursorLoader(this,
-                        AccountEntry.CONTENT_URI,
-                        null,
-                        AccountEntry._ID + " <> ?",
-                        new String[]{String.valueOf(Utils.getSelectedId(accountSpinner))},
-                        null);
-
-            default:
-                throw new RuntimeException("Loader Not Implemented: " + loaderId);
-        }
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-        switch (loader.getId()){
-            case ID_OPERATION_LOADER:{
-                if(data != null && data.moveToFirst()){
-
-                    operationDate = new Date(data.getLong(data.getColumnIndex(OperationEntry.COLUMN_DATE)));
-                    setSelectedDate();
-                    edtSum.setText(String.valueOf(data.getInt(data.getColumnIndex(OperationEntry.COLUMN_SUM))));
-
-                    OperationType type = OperationType.toEnum(data.getInt(data.getColumnIndex(OperationEntry.COLUMN_TYPE)));
-                    setSelectedType(type);
-
-                    accountId = data.getInt(data.getColumnIndex(OperationEntry.COLUMN_ACCOUNT_ID));
-                    categoryId = data.getInt(data.getColumnIndex(OperationEntry.COLUMN_CATEGORY_ID));
-                    recAccountId = data.getInt(data.getColumnIndex(OperationEntry.COLUMN_RECIPIENT_ACCOUNT_ID));
-
-                    getSupportLoaderManager().initLoader(ID_ACCOUNT_LOADER, null, this);
+                    operation.observe(DetailOperationActivity.this, new Observer<OperationWithData>() {
+                        @Override
+                        public void onChanged(@Nullable OperationWithData operation) {
+                            populateUI(operation);
+                        }
+                    });
                 }
+            });
+        }else {
+            setTitle(getString(R.string.new_operation));
+            initAccountSpinner();
+            setSelectedType(OperationType.IN);
+        }
+    }
 
+    private void initAccountSpinner(){
+        AppExecutors.getInstance().discIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                final LiveData<List<Account>> accounts = mDb.accountDao().loadAllAccounts();
+
+                accounts.observe(DetailOperationActivity.this, new Observer<List<Account>>() {
+                    @Override
+                    public void onChanged(@Nullable List<Account> accounts) {
+                        ArrayAdapter<Account> adapter = new ArrayAdapter<>(DetailOperationActivity.this,
+                                android.R.layout.simple_spinner_item,
+                                android.R.id.text1,
+                                accounts);
+
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        accountSpinner.setAdapter(adapter);
+                        accountSpinner.setSelection(accounts.indexOf(operationAccount));
+                    }
+                });
+            }
+        });
+    }
+
+    private void populateUI(OperationWithData operationWithData) {
+
+        if (operationWithData == null) {
+            return;
+        }
+
+        operationDate = operationWithData.getDate();
+        setSelectedDate();
+        edtSum.setText(String.valueOf(operationWithData.getSum()));
+
+        operationAccount = operationWithData.getAccount();
+        operationCategory = operationWithData.getCategory();
+        operationRecipientAccount = operationWithData.getRepAccount();
+
+        initAccountSpinner();
+
+        setSelectedType(operationWithData.getType());
+    }
+
+    private void setAnalyticAdapter(final OperationType type){
+        switch (type){
+            case IN: case OUT:{
+                AppExecutors.getInstance().discIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        LiveData<List<Category>> categories = mDb.categoryDao().loadAllCategoriesByType(type);
+
+                           categories.observe(DetailOperationActivity.this, new Observer<List<Category>>() {
+                            @Override
+                            public void onChanged(@Nullable List<Category> categories) {
+                                ArrayAdapter<Category> adapter = new ArrayAdapter<>(DetailOperationActivity.this,
+                                        android.R.layout.simple_spinner_item,
+                                        android.R.id.text1,
+                                        categories);
+
+                                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                analyticSpinner.setAdapter(adapter);
+                                analyticSpinner.setSelection(categories.indexOf(operationCategory));
+                            }
+                        });
+
+                      }
+                });
                 break;
             }
-            case ID_ACCOUNT_LOADER:{
-                SimpleCursorAdapter adapter = new SimpleCursorAdapter(
-                        this,
-                        android.R.layout.simple_spinner_item,
-                        data,
-                        new String[]{AccountEntry.COLUMN_TITLE},
-                        new int[]{android.R.id.text1}
-                        ,0);
+            case TRANSFER: {
+                AppExecutors.getInstance().discIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
 
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                accountSpinner.setAdapter(adapter);
+                        LiveData<List<Account>> accounts = null;
+                        operationAccount = (Account) accountSpinner.getSelectedItem();
+                        if (operationAccount == null)
+                            accounts = mDb.accountDao().loadAllAccounts();
+                        else
+                            accounts = mDb.accountDao().loadAllAccountsExceptId(operationAccount.getId());
 
-                Utils.setPositionById(accountSpinner, accountId);
-                break;
-            }
-            case ID_CATEGORY_LOADER:{
-                SimpleCursorAdapter adapter = new SimpleCursorAdapter(
-                        this,
-                        android.R.layout.simple_spinner_item,
-                        data,
-                        new String[]{CategoryEntry.COLUMN_TITLE},
-                        new int[]{android.R.id.text1}
-                        ,0);
+                        accounts.observe(DetailOperationActivity.this, new Observer<List<Account>>() {
+                            @Override
+                            public void onChanged(@Nullable List<Account> accounts) {
 
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                analyticSpinner.setAdapter(adapter);
+                                ArrayAdapter<Account> adapter = new ArrayAdapter<>(DetailOperationActivity.this,
+                                        android.R.layout.simple_spinner_item,
+                                        android.R.id.text1,
+                                        accounts);
 
-                Utils.setPositionById(analyticSpinner, categoryId);
-                break;
-            }
-
-            case ID_RECIPIENT_ACCOUNT_LOADER:{
-                SimpleCursorAdapter adapter = new SimpleCursorAdapter(
-                        this,
-                        android.R.layout.simple_spinner_item,
-                        data,
-                        new String[]{AccountEntry.COLUMN_TITLE},
-                        new int[]{android.R.id.text1}
-                        ,0);
-
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                analyticSpinner.setAdapter(adapter);
-
-                Utils.setPositionById(analyticSpinner, recAccountId);
+                                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                analyticSpinner.setAdapter(adapter);
+                                analyticSpinner.setSelection(accounts.indexOf(operationRecipientAccount));
+                            }
+                        });
+                     }
+                });
                 break;
             }
         }
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 
     private void setSelectedDate(){
@@ -264,20 +257,21 @@ public class DetailOperationActivity extends DetailActivity implements LoaderMan
         switch (type){
             case IN: {
                 rgType.check(R.id.operation_detail_btnIn);
-                getSupportLoaderManager().restartLoader(ID_CATEGORY_LOADER, null, this);
                 break;
             }
             case OUT: {
                 rgType.check(R.id.operation_detail_btnOut);
-                getSupportLoaderManager().restartLoader(ID_CATEGORY_LOADER, null, this);
-                break;
+               break;
             }
             case TRANSFER: {
                 rgType.check(R.id.operation_detail_btnTransfer);
-                getSupportLoaderManager().restartLoader(ID_RECIPIENT_ACCOUNT_LOADER, null, this);
                 break;
             }
         }
+    }
+
+    private void onOperationTypeChanged(final OperationType type){
+        setAnalyticAdapter(type);
 
         if(type == OperationType.TRANSFER){
             lblAccount.setText(getString(R.string.from));
@@ -289,8 +283,8 @@ public class DetailOperationActivity extends DetailActivity implements LoaderMan
 
     }
 
-    private OperationType getSelectedType(){
-        switch (rgType.getCheckedRadioButtonId()){
+    private OperationType getSelectedType(int id){
+        switch (id){
             case R.id.operation_detail_btnIn: return OperationType.IN;
             case R.id.operation_detail_btnOut: return OperationType.OUT;
             case R.id.operation_detail_btnTransfer: return OperationType.TRANSFER;
@@ -354,50 +348,52 @@ public class DetailOperationActivity extends DetailActivity implements LoaderMan
             return;
         }
 
-        ContentValues values = new ContentValues();
-        values.put(OperationEntry.COLUMN_DATE, operationDate.getTime());
-        values.put(OperationEntry.COLUMN_SUM, sum);
+        operationAccount = (Account) accountSpinner.getSelectedItem();
 
-        int accountId = Utils.getSelectedId(accountSpinner);
+        int accountId = operationAccount == null ? 0 : operationAccount.getId();
         if(accountId <=0){
             Toast.makeText(this, getString(R.string.error_choose_account), Toast.LENGTH_SHORT).show();
             return;
-        }else {
-            values.put(OperationEntry.COLUMN_ACCOUNT_ID, accountId);
         }
 
-        OperationType type = getSelectedType();
-        values.put(OperationEntry.COLUMN_TYPE, getSelectedType().toDbValue());
+        Integer categoryId = null;
+        Integer recAccountId = null;
+
+        OperationType type = getSelectedType(rgType.getCheckedRadioButtonId());
         switch (type){
             case IN: case OUT:{
-                int categoryId = Utils.getSelectedId(analyticSpinner);
+                operationCategory = (Category) analyticSpinner.getSelectedItem();
+                categoryId = operationCategory == null ? 0 : operationCategory.getId();
                 if (categoryId <= 0){
                     Toast.makeText(this, getString(R.string.error_choose_category), Toast.LENGTH_SHORT).show();
                     return;
-                }else {
-                    values.put(OperationEntry.COLUMN_CATEGORY_ID, categoryId);
                 }
                 break;
             }
             case TRANSFER:{
-                int repAccountId = Utils.getSelectedId(analyticSpinner);
-                if(repAccountId <= 0){
+                operationRecipientAccount = (Account) analyticSpinner.getSelectedItem();
+                recAccountId = operationRecipientAccount == null ? 0 : operationRecipientAccount.getId();
+                if(recAccountId <= 0){
                     Toast.makeText(this, getString(R.string.error_choose_rep_account), Toast.LENGTH_SHORT).show();
                     return;
-                }else {
-                    values.put(OperationEntry.COLUMN_RECIPIENT_ACCOUNT_ID, repAccountId);
                 }
                 break;
             }
         }
 
-        if (isNew){
-            mUri = getContentResolver().insert(OperationEntry.CONTENT_URI, values);
-            isNew = false;
-        } else {
-            getContentResolver().update(mUri, values, null, null);
-        }
-
-        finish();
+        final Operation operation = new Operation(operationDate, type, accountId, categoryId, recAccountId, sum);
+        AppExecutors.getInstance().discIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                if(mOperationId == DEFAULT_OPERATION_ID){
+                    mDb.operationDao().insertOperationWihtAnalytic(operation);
+                }else{
+                    operation.setId(mOperationId);
+                    mDb.operationDao().updateOperationWihtAnalytic(operation);
+                }
+                finish();
+            }
+        });
     }
+
 }
