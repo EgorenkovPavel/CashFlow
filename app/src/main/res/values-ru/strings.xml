@@ -51,4 +51,6 @@
     <string name="connect">Подключить</string>
     <string name="dialog_delete_operation">Удалить операцию?</string>
     <string name="chart">Диаграмма</string>
+    <string name="delete">Удалить</string>
+    <string name="time">Время</string>
 </resources>

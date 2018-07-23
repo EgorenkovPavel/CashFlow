@@ -3,8 +3,6 @@ package com.epipasha.cashflow.data;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-import com.epipasha.cashflow.objects.OperationType;
-
 public class CashFlowContract {
 
     public static final String AUTHORITY = "com.epipasha.cashflow";

@@ -19,7 +19,6 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
-            android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
@@ -172,7 +171,7 @@
         <RadioButton
             android:id="@+id/operation_detail_btnIn"
             style="@style/TypeButton"
-            android:checked="true"
+            tools:checked="true"
             android:text="@string/in" />
 
         <RadioButton

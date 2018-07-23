@@ -17,9 +17,7 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import com.epipasha.cashflow.MainActivity;
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.data.CashFlowContract;
 import com.epipasha.cashflow.activities.DetailOperationActivity;
 import com.epipasha.cashflow.data.CashFlowContract.OperationEntry;
 import com.epipasha.cashflow.objects.OperationType;

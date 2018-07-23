@@ -5,11 +5,8 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 
 import com.epipasha.cashflow.adapters.Adapter;
-import com.epipasha.cashflow.adapters.CategoryAdapter;
 import com.epipasha.cashflow.adapters.OperationAdapter;
 import com.epipasha.cashflow.data.CashFlowContract;
-
-import java.util.Calendar;
 
 public class OperationListFragment extends ListFragment {
     @Override
