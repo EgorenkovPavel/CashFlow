@@ -112,11 +112,11 @@ public class OperationAdapter extends RecyclerView.Adapter<OperationAdapter.Oper
 
         public OperationHolder(View itemView) {
             super(itemView);
-            operationDateView = (TextView) itemView.findViewById(R.id.operation_list_item_date);
-            operationAccountView = (TextView) itemView.findViewById(R.id.operation_list_item_account);
-            operationCategoryView = (TextView) itemView.findViewById(R.id.operation_list_item_category);
-            operationSumView = (TextView) itemView.findViewById(R.id.operation_list_item_sum);
-            operationTypeImageView = (ImageView) itemView.findViewById(R.id.operation_list_item_type);
+            operationDateView = itemView.findViewById(R.id.operation_list_item_date);
+            operationAccountView = itemView.findViewById(R.id.operation_list_item_account);
+            operationCategoryView = itemView.findViewById(R.id.operation_list_item_category);
+            operationSumView = itemView.findViewById(R.id.operation_list_item_sum);
+            operationTypeImageView = itemView.findViewById(R.id.operation_list_item_type);
             tvDateDay = itemView.findViewById(R.id.tv_date_day);
             tvDayOfWeek = itemView.findViewById(R.id.tv_day_of_week);
 

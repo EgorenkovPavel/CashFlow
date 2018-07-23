@@ -58,7 +58,7 @@ public abstract class OperationDao {
     public abstract LiveData<OperationWithData> loadOperationWithDataById(int id);
 
     @Transaction
-    public long insertOperationWihtAnalytic(final Operation operation){
+    public long insertOperationWithAnalytic(final Operation operation){
         long id = insertOperation(operation);
         if(id != -1){
             operation.setId((int)id);
@@ -69,10 +69,10 @@ public abstract class OperationDao {
     }
 
     @Transaction
-    public int updateOperationWihtAnalytic(Operation operation){
+    public int updateOperationWithAnalytic(Operation operation){
         int numDeletedCol = deleteOperation(operation);
         if(numDeletedCol > 0){
-            insertOperationWihtAnalytic(operation);
+            insertOperationWithAnalytic(operation);
         }
         return numDeletedCol;
     }
@@ -80,7 +80,7 @@ public abstract class OperationDao {
     @Transaction
     public void deleteAll(){
         deleteAllOperations();
-        deleteAllBalanses();
+        deleteAllBalances();
         deleteAllCashflow();
     }
 
@@ -94,7 +94,7 @@ public abstract class OperationDao {
     public abstract void deleteAllOperations();
 
     @Query("DELETE FROM balance")
-    public abstract void deleteAllBalanses();
+    public abstract void deleteAllBalances();
 
     @Query("DELETE FROM cashflow")
     public abstract void deleteAllCashflow();

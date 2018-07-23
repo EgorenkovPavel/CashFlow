@@ -73,11 +73,11 @@ public class BackupFragment extends Fragment {
             Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_backup, container, false);
 
-        Button bthFileShare = (Button) v.findViewById(R.id.btnFileShare);
-        Button bthFileRestore = (Button) v.findViewById(R.id.btnFileRestore);
-        btnDriveShare = (Button)v.findViewById(R.id.btnDriveShare);
-        btnDriveRestore = (Button)v.findViewById(R.id.btnDriveRestore);
-        btnConnect = (Button)v.findViewById(R.id.btnConnect);
+        Button bthFileShare = v.findViewById(R.id.btnFileShare);
+        Button bthFileRestore = v.findViewById(R.id.btnFileRestore);
+        btnDriveShare = v.findViewById(R.id.btnDriveShare);
+        btnDriveRestore = v.findViewById(R.id.btnDriveRestore);
+        btnConnect = v.findViewById(R.id.btnConnect);
 
         bthFileShare.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -204,8 +204,7 @@ public class BackupFragment extends Fragment {
         createContentsTask
                 .continueWithTask(new Continuation<DriveContents, Task<IntentSender>>() {
                     @Override
-                    public Task<IntentSender> then(@NonNull Task<DriveContents> task)
-                            throws Exception {
+                    public Task<IntentSender> then(@NonNull Task<DriveContents> task) {
                         DriveContents contents = task.getResult();
                         OutputStream outputStream = contents.getOutputStream();
 
@@ -284,7 +283,7 @@ public class BackupFragment extends Fragment {
         openFileTask
                 .continueWithTask(new Continuation<DriveContents, Task<Void>>() {
                     @Override
-                    public Task<Void> then(@NonNull Task<DriveContents> task) throws Exception {
+                    public Task<Void> then(@NonNull Task<DriveContents> task) {
                         DriveContents contents = task.getResult();
                         // Process contents...
                         // [START_EXCLUDE]

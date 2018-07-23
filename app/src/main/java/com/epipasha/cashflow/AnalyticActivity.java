@@ -49,7 +49,7 @@ public class AnalyticActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_analytic);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -92,12 +92,12 @@ public class AnalyticActivity extends BaseActivity {
                 titles[5] = "Cashflow";
 
                 final boolean[] values = new boolean[6];
-                values[0] = Prefs.AnalyticChartPrefs.showInGrafic(this);
-                values[1] = Prefs.AnalyticChartPrefs.showOutGrafic(this);
-                values[2] = Prefs.AnalyticChartPrefs.showInBudgetGrafic(this);
-                values[3] = Prefs.AnalyticChartPrefs.showOutBudgetGrafic(this);
-                values[4] = Prefs.AnalyticChartPrefs.showDeltaGrafic(this);
-                values[5] = Prefs.AnalyticChartPrefs.showCashflowGrafic(this);
+                values[0] = Prefs.AnalyticChartPrefs.showInGraphic(this);
+                values[1] = Prefs.AnalyticChartPrefs.showOutGraphic(this);
+                values[2] = Prefs.AnalyticChartPrefs.showInBudgetGraphic(this);
+                values[3] = Prefs.AnalyticChartPrefs.showOutBudgetGraphic(this);
+                values[4] = Prefs.AnalyticChartPrefs.showDeltaGraphic(this);
+                values[5] = Prefs.AnalyticChartPrefs.showCashflowGraphic(this);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Choose grafics")
@@ -110,12 +110,12 @@ public class AnalyticActivity extends BaseActivity {
                         .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
-                                Prefs.AnalyticChartPrefs.saveShowInGrafic(AnalyticActivity.this, values[0]);
-                                Prefs.AnalyticChartPrefs.saveShowOutGrafic(AnalyticActivity.this, values[1]);
-                                Prefs.AnalyticChartPrefs.saveShowInBudgetGrafic(AnalyticActivity.this, values[2]);
-                                Prefs.AnalyticChartPrefs.saveShowOutBudgetGrafic(AnalyticActivity.this, values[3]);
-                                Prefs.AnalyticChartPrefs.saveShowDeltaGrafic(AnalyticActivity.this, values[4]);
-                                Prefs.AnalyticChartPrefs.saveShowCashflowGrafic(AnalyticActivity.this, values[5]);
+                                Prefs.AnalyticChartPrefs.saveShowInGraphic(AnalyticActivity.this, values[0]);
+                                Prefs.AnalyticChartPrefs.saveShowOutGraphic(AnalyticActivity.this, values[1]);
+                                Prefs.AnalyticChartPrefs.saveShowInBudgetGraphic(AnalyticActivity.this, values[2]);
+                                Prefs.AnalyticChartPrefs.saveShowOutBudgetGraphic(AnalyticActivity.this, values[3]);
+                                Prefs.AnalyticChartPrefs.saveShowDeltaGraphic(AnalyticActivity.this, values[4]);
+                                Prefs.AnalyticChartPrefs.saveShowCashflowGraphic(AnalyticActivity.this, values[5]);
 
                                 YAxis yAxis = mChartIn.getAxisLeft();
                                 yAxis.getLimitLines().clear();
@@ -143,9 +143,9 @@ public class AnalyticActivity extends BaseActivity {
         YAxis yAxis = mChartIn.getAxisLeft();
         do{
             OperationType type = OperationType.toEnum(cursor.getInt(0));
-            if(type == OperationType.IN && !Prefs.AnalyticChartPrefs.showInBudgetGrafic(this))
+            if(type == OperationType.IN && !Prefs.AnalyticChartPrefs.showInBudgetGraphic(this))
                 continue;
-            else if (type == OperationType.OUT && !Prefs.AnalyticChartPrefs.showOutBudgetGrafic(this))
+            else if (type == OperationType.OUT && !Prefs.AnalyticChartPrefs.showOutBudgetGraphic(this))
                 continue;
 
             LimitLine line = new LimitLine(cursor.getInt(1));
@@ -249,10 +249,10 @@ public class AnalyticActivity extends BaseActivity {
         setCash.setCircleRadius(1f);
 
         List<ILineDataSet> set = new ArrayList<>();
-        if (Prefs.AnalyticChartPrefs.showInGrafic(this)) set.add(setIn);
-        if (Prefs.AnalyticChartPrefs.showOutGrafic(this)) set.add(setOut);
-        if (Prefs.AnalyticChartPrefs.showDeltaGrafic(this)) set.add(setDelta);
-        if (Prefs.AnalyticChartPrefs.showCashflowGrafic(this)) set.add(setCash);
+        if (Prefs.AnalyticChartPrefs.showInGraphic(this)) set.add(setIn);
+        if (Prefs.AnalyticChartPrefs.showOutGraphic(this)) set.add(setOut);
+        if (Prefs.AnalyticChartPrefs.showDeltaGraphic(this)) set.add(setDelta);
+        if (Prefs.AnalyticChartPrefs.showCashflowGraphic(this)) set.add(setCash);
 
         LineData data = new LineData(set);
         //data.setBarWidth(0.9f); // set custom bar width

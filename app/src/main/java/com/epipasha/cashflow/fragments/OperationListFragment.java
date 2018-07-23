@@ -106,6 +106,7 @@ public class OperationListFragment extends Fragment implements OperationAdapter.
 
     @Override
     public void onItemLongClickListener(final Operation operation, View view) {
+
         PopupMenu popupMenu = new PopupMenu(getActivity(), view);
         popupMenu.inflate(R.menu.popup_list_item_operation);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {

@@ -64,52 +64,52 @@ public final class Prefs {
 
     public static class AnalyticChartPrefs{
 
-        public static boolean showInGrafic(Context context){
-            return getBooleanPref(context, R.string.pref_analytic_chart_show_in_grafic, true);
+        public static boolean showInGraphic(Context context){
+            return getBooleanPref(context, R.string.pref_analytic_chart_show_in_graphic, true);
         }
 
-        public static boolean showOutGrafic(Context context){
-            return getBooleanPref(context, R.string.pref_analytic_chart_show_out_grafic, true);
+        public static boolean showOutGraphic(Context context){
+            return getBooleanPref(context, R.string.pref_analytic_chart_show_out_graphic, true);
         }
 
-        public static boolean showInBudgetGrafic(Context context){
-            return getBooleanPref(context, R.string.pref_analytic_chart_show_in_budget_grafic, true);
+        public static boolean showInBudgetGraphic(Context context){
+            return getBooleanPref(context, R.string.pref_analytic_chart_show_in_budget_graphic, true);
         }
 
-        public static boolean showOutBudgetGrafic(Context context){
-            return getBooleanPref(context, R.string.pref_analytic_chart_show_out_budget_grafic, true);
+        public static boolean showOutBudgetGraphic(Context context){
+            return getBooleanPref(context, R.string.pref_analytic_chart_show_out_budget_graphic, true);
         }
 
-        public static boolean showCashflowGrafic(Context context){
-            return getBooleanPref(context, R.string.pref_analytic_chart_show_cashflow_grafic, true);
+        public static boolean showCashflowGraphic(Context context){
+            return getBooleanPref(context, R.string.pref_analytic_chart_show_cashflow_graphic, true);
         }
 
-        public static boolean showDeltaGrafic(Context context){
-            return getBooleanPref(context, R.string.pref_analytic_chart_show_delta_grafic, true);
+        public static boolean showDeltaGraphic(Context context){
+            return getBooleanPref(context, R.string.pref_analytic_chart_show_delta_graphic, true);
         }
 
-        public static void saveShowInGrafic(Context context, Boolean value){
-            saveBooleanPref(context, R.string.pref_analytic_chart_show_in_grafic, value);
+        public static void saveShowInGraphic(Context context, Boolean value){
+            saveBooleanPref(context, R.string.pref_analytic_chart_show_in_graphic, value);
         }
 
-        public static void saveShowOutGrafic(Context context, Boolean value){
-            saveBooleanPref(context, R.string.pref_analytic_chart_show_out_grafic, value);
+        public static void saveShowOutGraphic(Context context, Boolean value){
+            saveBooleanPref(context, R.string.pref_analytic_chart_show_out_graphic, value);
         }
 
-        public static void saveShowInBudgetGrafic(Context context, Boolean value){
-            saveBooleanPref(context, R.string.pref_analytic_chart_show_in_budget_grafic, value);
+        public static void saveShowInBudgetGraphic(Context context, Boolean value){
+            saveBooleanPref(context, R.string.pref_analytic_chart_show_in_budget_graphic, value);
         }
 
-        public static void saveShowOutBudgetGrafic(Context context, Boolean value){
-            saveBooleanPref(context, R.string.pref_analytic_chart_show_out_budget_grafic, value);
+        public static void saveShowOutBudgetGraphic(Context context, Boolean value){
+            saveBooleanPref(context, R.string.pref_analytic_chart_show_out_budget_graphic, value);
         }
 
-        public static void saveShowCashflowGrafic(Context context, Boolean value){
-            saveBooleanPref(context, R.string.pref_analytic_chart_show_cashflow_grafic, value);
+        public static void saveShowCashflowGraphic(Context context, Boolean value){
+            saveBooleanPref(context, R.string.pref_analytic_chart_show_cashflow_graphic, value);
         }
 
-        public static void saveShowDeltaGrafic(Context context, Boolean value){
-            saveBooleanPref(context, R.string.pref_analytic_chart_show_delta_grafic, value);
+        public static void saveShowDeltaGraphic(Context context, Boolean value){
+            saveBooleanPref(context, R.string.pref_analytic_chart_show_delta_graphic, value);
         }
 
     }

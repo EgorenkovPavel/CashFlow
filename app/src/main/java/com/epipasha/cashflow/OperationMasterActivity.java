@@ -94,9 +94,9 @@ public class OperationMasterActivity extends BaseActivity{
 
     private void findViews() {
 
-        parentContainer = (ViewGroup) findViewById(R.id.master_container);
+        parentContainer = findViewById(R.id.master_container);
 
-        groupType = (RadioGroup)findViewById(R.id.type_group);
+        groupType = findViewById(R.id.type_group);
         groupType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -104,7 +104,7 @@ public class OperationMasterActivity extends BaseActivity{
             }
         });
 
-        spinAccount = (Spinner)findViewById(R.id.spinner_account);
+        spinAccount = findViewById(R.id.spinner_account);
         spinAccount.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -117,24 +117,24 @@ public class OperationMasterActivity extends BaseActivity{
             }
         });
 
-        spinAnalytic = (Spinner)findViewById(R.id.spinner_analytic);
+        spinAnalytic = findViewById(R.id.spinner_analytic);
 
         lblAnalytic = findViewById(R.id.lblAnalytic);
-        lblSum = (TextView) findViewById(R.id.operation_master_sum);
+        lblSum = findViewById(R.id.operation_master_sum);
 
-        Button btn0 = (Button) findViewById(R.id.digit_0);
-        Button btn1 = (Button) findViewById(R.id.digit_1);
-        Button btn2 = (Button) findViewById(R.id.digit_2);
-        Button btn3 = (Button) findViewById(R.id.digit_3);
-        Button btn4 = (Button) findViewById(R.id.digit_4);
-        Button btn5 = (Button) findViewById(R.id.digit_5);
-        Button btn6 = (Button) findViewById(R.id.digit_6);
-        Button btn7 = (Button) findViewById(R.id.digit_7);
-        Button btn8 = (Button) findViewById(R.id.digit_8);
-        Button btn9 = (Button) findViewById(R.id.digit_9);
-        ImageButton btnBack = (ImageButton) findViewById(R.id.digit_back);
-        Button btnMore = (Button) findViewById(R.id.operation_master_more);
-        Button btnNext = (Button) findViewById(R.id.operation_master_next);
+        Button btn0 = findViewById(R.id.digit_0);
+        Button btn1 = findViewById(R.id.digit_1);
+        Button btn2 = findViewById(R.id.digit_2);
+        Button btn3 = findViewById(R.id.digit_3);
+        Button btn4 = findViewById(R.id.digit_4);
+        Button btn5 = findViewById(R.id.digit_5);
+        Button btn6 = findViewById(R.id.digit_6);
+        Button btn7 = findViewById(R.id.digit_7);
+        Button btn8 = findViewById(R.id.digit_8);
+        Button btn9 = findViewById(R.id.digit_9);
+        ImageButton btnBack = findViewById(R.id.digit_back);
+        Button btnMore = findViewById(R.id.operation_master_more);
+        Button btnNext = findViewById(R.id.operation_master_next);
 
         View.OnClickListener onDigitClick = new View.OnClickListener() {
             @Override
@@ -381,7 +381,7 @@ public class OperationMasterActivity extends BaseActivity{
        AppExecutors.getInstance().discIO().execute(new Runnable() {
             @Override
             public void run() {
-                int operationId = (int) mDb.operationDao().insertOperationWihtAnalytic(operation);
+                int operationId = (int) mDb.operationDao().insertOperationWithAnalytic(operation);
                 operation.setId(operationId);
                 mHandler.obtainMessage(OPERATION_SAVED, operation).sendToTarget();
             }

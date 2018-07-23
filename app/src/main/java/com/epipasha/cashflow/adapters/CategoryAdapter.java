@@ -197,8 +197,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         public CategoryHolder(View itemView) {
             super(itemView);
-            categoryTitleView = (TextView) itemView.findViewById(R.id.lbl_in);
-            categoryDeltaView = (TextView) itemView.findViewById(R.id.tvInDelta);
+            categoryTitleView = itemView.findViewById(R.id.lbl_in);
+            categoryDeltaView = itemView.findViewById(R.id.tvInDelta);
             pbBudget = itemView.findViewById(R.id.pb_budget);
             tvProgressLabel = itemView.findViewById(R.id.tv_progress_lbl);
 

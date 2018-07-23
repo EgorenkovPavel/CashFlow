@@ -45,7 +45,7 @@ public class Backuper {
         mDb.accountDao().insertAccounts(accounts);
         mDb.categoryDao().insertCategories(categories);
         for (Operation operation:operations) {
-            mDb.operationDao().insertOperationWihtAnalytic(operation);
+            mDb.operationDao().insertOperationWithAnalytic(operation);
         }
 
         mDb.setTransactionSuccessful();

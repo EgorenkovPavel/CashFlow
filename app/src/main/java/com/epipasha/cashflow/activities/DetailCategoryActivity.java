@@ -53,14 +53,14 @@ public class DetailCategoryActivity extends DetailActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_category);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        etTitle = (EditText)findViewById(R.id.category_detail_name);
-        etBudget = (EditText)findViewById(R.id.category_detail_budget);
-        rgType = (RadioGroup)findViewById(R.id.type_group);
-        mChart = (BarChart)findViewById(R.id.chart);
+        etTitle = findViewById(R.id.category_detail_name);
+        etBudget = findViewById(R.id.category_detail_budget);
+        rgType = findViewById(R.id.type_group);
+        mChart = findViewById(R.id.chart);
 
         mDb = AppDatabase.getInstance(getApplicationContext());
 

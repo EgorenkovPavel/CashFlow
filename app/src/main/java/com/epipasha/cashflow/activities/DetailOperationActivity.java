@@ -68,8 +68,8 @@ public class DetailOperationActivity extends DetailActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        edtDate = (TextView)findViewById(R.id.operation_detail_date);
-        edtTime = (TextView)findViewById(R.id.operation_detail_time);
+        edtDate = findViewById(R.id.operation_detail_date);
+        edtTime = findViewById(R.id.operation_detail_time);
         edtDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,7 +83,7 @@ public class DetailOperationActivity extends DetailActivity {
             }
         });
 
-        rgType = (RadioGroup) findViewById(R.id.operation_detail_type_group);
+        rgType = findViewById(R.id.operation_detail_type_group);
         rgType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
@@ -91,10 +91,10 @@ public class DetailOperationActivity extends DetailActivity {
             }
         });
 
-        lblAccount = (TextView) findViewById(R.id.operation_detail_label_account);
-        lblAnalytic = (TextView) findViewById(R.id.operation_detail_label_category);
+        lblAccount = findViewById(R.id.operation_detail_label_account);
+        lblAnalytic = findViewById(R.id.operation_detail_label_category);
 
-        accountSpinner = (Spinner) findViewById(R.id.operation_detail_account);
+        accountSpinner = findViewById(R.id.operation_detail_account);
         accountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
@@ -109,9 +109,9 @@ public class DetailOperationActivity extends DetailActivity {
 
             }
         });
-        analyticSpinner = (Spinner) findViewById(R.id.operation_detail_category);
+        analyticSpinner = findViewById(R.id.operation_detail_category);
 
-        edtSum = (EditText) findViewById(R.id.operation_detail_sum);
+        edtSum = findViewById(R.id.operation_detail_sum);
         sumWatcher = new NumberTextWatcherForThousand(edtSum);
         edtSum.addTextChangedListener(sumWatcher);
 
@@ -386,10 +386,10 @@ public class DetailOperationActivity extends DetailActivity {
             @Override
             public void run() {
                 if(mOperationId == DEFAULT_OPERATION_ID){
-                    mDb.operationDao().insertOperationWihtAnalytic(operation);
+                    mDb.operationDao().insertOperationWithAnalytic(operation);
                 }else{
                     operation.setId(mOperationId);
-                    mDb.operationDao().updateOperationWihtAnalytic(operation);
+                    mDb.operationDao().updateOperationWithAnalytic(operation);
                 }
                 finish();
             }

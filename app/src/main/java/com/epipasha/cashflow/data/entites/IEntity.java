@@ -2,7 +2,7 @@ package com.epipasha.cashflow.data.entites;
 
 public interface IEntity {
 
-    public int getId();
+    int getId();
 
-    public void setId(int id);
+    void setId(int id);
 }

@@ -30,11 +30,11 @@ public class DetailAccountActivity extends DetailActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_account);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        etTitle = (EditText)findViewById(R.id.account_detail_name);
+        etTitle = findViewById(R.id.account_detail_name);
 
         mDb = AppDatabase.getInstance(getApplicationContext());
 

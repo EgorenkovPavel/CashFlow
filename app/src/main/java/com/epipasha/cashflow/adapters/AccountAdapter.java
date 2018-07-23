@@ -122,8 +122,8 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         public AccountHolder(View itemView) {
             super(itemView);
-            accountTitleView = (TextView) itemView.findViewById(R.id.account_list_item_name);
-            accountSumView = (TextView) itemView.findViewById(R.id.account_list_item_sum);
+            accountTitleView = itemView.findViewById(R.id.account_list_item_name);
+            accountSumView = itemView.findViewById(R.id.account_list_item_sum);
 
             itemView.setOnClickListener(this);
         }
@@ -142,8 +142,8 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         public HeaderHolder(View itemView) {
             super(itemView);
-            accountTitleView = (TextView) itemView.findViewById(R.id.account_list_item_name);
-            accountSumView = (TextView) itemView.findViewById(R.id.account_list_item_sum);
+            accountTitleView = itemView.findViewById(R.id.account_list_item_name);
+            accountSumView = itemView.findViewById(R.id.account_list_item_sum);
         }
 
     }

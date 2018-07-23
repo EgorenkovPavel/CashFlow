@@ -32,36 +32,33 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         ViewPager viewPager = findViewById(R.id.viewPager);
         FixesTabsPagerAdapter adapter = new FixesTabsPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
 
-        tabs = (TabLayout)findViewById(R.id.tabs);
+        tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 switch (tabs.getSelectedTabPosition()){
                     case 0: {
-                        //Intent i = new Intent(MainActivity.this, DetailAccountActivity.class);
                         Intent i = new Intent(MainActivity.this, DetailAccountActivity.class);
                         startActivity(i);
                         break;
                     }
                     case 1:{
-                        //Intent i = new Intent(MainActivity.this, DetailCategoryActivity.class);
                         Intent i = new Intent(MainActivity.this, DetailCategoryActivity.class);
                         startActivity(i);
                         break;
                     }
                     case 2:{
-//                        Intent i = new Intent(MainActivity.this, OperationMasterActivity.class);
                         Intent i = new Intent(MainActivity.this, OperationMasterActivity.class);
                         startActivity(i);
                         break;
@@ -71,7 +68,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         TabLayout.Tab tab = tabs.getTabAt(Prefs.getSelectedTab(this));
-        tab.select();
+        if(tab != null)
+            tab.select();
 
         if (Prefs.isShowOperationMasterOnStart(this)){
             Intent i = new Intent(MainActivity.this, OperationMasterActivity.class);
@@ -114,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
 
     public class FixesTabsPagerAdapter extends FragmentPagerAdapter {
 
-        public FixesTabsPagerAdapter(FragmentManager fm) {
+        FixesTabsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
