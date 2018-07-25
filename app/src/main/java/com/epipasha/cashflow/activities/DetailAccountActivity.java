@@ -1,17 +1,18 @@
 package com.epipasha.cashflow.activities;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.widget.EditText;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.data.AppDatabase;
-import com.epipasha.cashflow.data.AppExecutors;
 import com.epipasha.cashflow.data.entites.Account;
+import com.epipasha.cashflow.data.viewmodel.AccountDetailViewModel;
+import com.epipasha.cashflow.data.viewmodel.ModelFactory;
 
 public class DetailAccountActivity extends DetailActivity {
 
@@ -19,15 +20,19 @@ public class DetailAccountActivity extends DetailActivity {
 
     private static final int DEFAULT_ACCOUNT_ID = -1;
 
-    private int mAccountId = DEFAULT_ACCOUNT_ID;
-
-    private AppDatabase mDb;
+    private AccountDetailViewModel model;
 
     private EditText etTitle;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //todo binding
+        //DetailAccountActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_detail_account);
+//        User user = new User("Test", "User");
+//        binding.setUser(user);
+
         setContentView(R.layout.activity_detail_account);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -36,45 +41,31 @@ public class DetailAccountActivity extends DetailActivity {
 
         etTitle = findViewById(R.id.account_detail_name);
 
-        mDb = AppDatabase.getInstance(getApplicationContext());
+        int accountId = DEFAULT_ACCOUNT_ID;
 
         Intent i = getIntent();
         if(i != null && i.hasExtra(EXTRA_ACCOUNT_ID)){
             setTitle(getString(R.string.account));
-            mAccountId = i.getIntExtra(EXTRA_ACCOUNT_ID, DEFAULT_ACCOUNT_ID);
-            AppExecutors.getInstance().discIO().execute(new Runnable() {
-                @Override
-                public void run() {
-                    final LiveData<Account> account = mDb.accountDao().loadAccountById(mAccountId);
-                    account.observe(DetailAccountActivity.this, new Observer<Account>() {
-                        @Override
-                        public void onChanged(@Nullable Account account) {
-                            populateUI(account);
-                        }
-                    });
-                }
-            });
+            accountId = i.getIntExtra(EXTRA_ACCOUNT_ID, DEFAULT_ACCOUNT_ID);
         }else
             setTitle(getString(R.string.new_account));
+
+        model = ViewModelProviders.of(this, new ModelFactory(getApplication(), accountId)).get(AccountDetailViewModel.class);
+        model.getAccount().observe(this, new Observer<Account>() {
+            @Override
+            public void onChanged(@Nullable Account account) {
+                populateUI(account);
+            }
+        });
+
     }
 
     @Override
     public void saveObject() {
         String title = etTitle.getText().toString();
-
-        final Account account = new Account(title);
-        AppExecutors.getInstance().discIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                if(mAccountId == DEFAULT_ACCOUNT_ID){
-                    mDb.accountDao().insertAccount(account);
-                }else{
-                    account.setId(mAccountId);
-                    mDb.accountDao().updateAccount(account);
-                }
-                finish();
-            }
-        });
+        Account account = new Account(title);
+        model.saveAccount(account);
+        finish();
     }
 
     private void populateUI(Account account) {

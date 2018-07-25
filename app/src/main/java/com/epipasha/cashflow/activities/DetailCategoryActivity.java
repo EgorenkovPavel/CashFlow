@@ -2,6 +2,8 @@ package com.epipasha.cashflow.activities;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,8 +16,11 @@ import android.widget.RadioGroup;
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.AppDatabase;
 import com.epipasha.cashflow.data.AppExecutors;
+import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.dao.AnalyticDao.MonthCashflow;
 import com.epipasha.cashflow.data.entites.Category;
+import com.epipasha.cashflow.data.viewmodel.CategoryDetailViewModel;
+import com.epipasha.cashflow.data.viewmodel.ModelFactory;
 import com.epipasha.cashflow.objects.OperationType;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -39,10 +44,8 @@ public class DetailCategoryActivity extends DetailActivity{
     public static final String EXTRA_CATEGORY_ID = "extraCategoryId";
 
     private static final int DEFAULT_CATEGORY_ID = -1;
-
     private int mCategoryId = DEFAULT_CATEGORY_ID;
-
-    private AppDatabase mDb;
+    private CategoryDetailViewModel model;
 
     private EditText etTitle, etBudget;
     private RadioGroup rgType;
@@ -62,34 +65,27 @@ public class DetailCategoryActivity extends DetailActivity{
         rgType = findViewById(R.id.type_group);
         mChart = findViewById(R.id.chart);
 
-        mDb = AppDatabase.getInstance(getApplicationContext());
-
         Intent i = getIntent();
         if(i != null && i.hasExtra(EXTRA_CATEGORY_ID)){
             setTitle(getString(R.string.category));
             mCategoryId = i.getIntExtra(EXTRA_CATEGORY_ID, DEFAULT_CATEGORY_ID);
-            AppExecutors.getInstance().discIO().execute(new Runnable() {
-                @Override
-                public void run() {
-                    final LiveData<Category> category = mDb.categoryDao().loadCategoryById(mCategoryId);
-                    category.observe(DetailCategoryActivity.this, new Observer<Category>() {
-                        @Override
-                        public void onChanged(@Nullable Category category) {
-                            populateUI(category);
-                        }
-                    });
-
-                    final LiveData<List<MonthCashflow>> monthCashflow = mDb.analyticDao().loadMonthCashflow(mCategoryId);
-                    monthCashflow.observe(DetailCategoryActivity.this, new Observer<List<MonthCashflow>>() {
-                        @Override
-                        public void onChanged(@Nullable List<MonthCashflow> monthCashflows) {
-                            loadChart(monthCashflows);
-                        }
-                    });
-                }
-            });
         }else
             setTitle(getString(R.string.new_category));
+
+        model = ViewModelProviders.of(this, new ModelFactory(getApplication(), mCategoryId)).get(CategoryDetailViewModel.class);
+        model.getCategory().observe(this, new Observer<Category>() {
+            @Override
+            public void onChanged(@Nullable Category category) {
+                populateUI(category);
+            }
+        });
+        model.getMonthCashflow().observe(this, new Observer<List<MonthCashflow>>() {
+            @Override
+            public void onChanged(@Nullable List<MonthCashflow> monthCashflows) {
+                loadChart(monthCashflows);
+            }
+        });
+
     }
 
     private OperationType getSelectedType(){
@@ -136,19 +132,10 @@ public class DetailCategoryActivity extends DetailActivity{
             return;
         }
 
-        final Category category = new Category(title, type, budget);
-        AppExecutors.getInstance().discIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                if(mCategoryId == DEFAULT_CATEGORY_ID){
-                    mDb.categoryDao().insertCategory(category);
-                }else{
-                    category.setId(mCategoryId);
-                    mDb.categoryDao().updateCategory(category);
-                }
-                finish();
-            }
-        });
+        Category category = new Category(title, type, budget);
+
+        model.saveObject(category);
+        finish();
 
     }
 

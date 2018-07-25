@@ -39,6 +39,10 @@ android {
         unitTests.returnDefaultValues = true
         unitTests.includeAndroidResources = true
     }
+    dataBinding {
+        enabled = true
+    }
+
 }
 
 
@@ -80,7 +84,6 @@ dependencies {
 }
 
 apply plugin: 'com.google.gms.google-services'
-
 
 allprojects {
     repositories {

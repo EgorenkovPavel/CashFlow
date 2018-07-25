@@ -4,8 +4,11 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -15,6 +18,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -27,10 +31,13 @@ import com.epipasha.cashflow.data.entites.Account;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.entites.Operation;
 import com.epipasha.cashflow.data.entites.OperationWithData;
+import com.epipasha.cashflow.data.viewmodel.ModelFactory;
+import com.epipasha.cashflow.data.viewmodel.OperationDetailViewModel;
 import com.epipasha.cashflow.objects.OperationType;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -44,12 +51,13 @@ public class DetailOperationActivity extends DetailActivity {
 
     private int mOperationId = DEFAULT_OPERATION_ID;
 
-    private AppDatabase mDb;
+    private OperationDetailViewModel model;
+    private Adapter<Account> mAccountAdapter;
+    private Adapter<Category> mCategoryInAdapter;
+    private Adapter<Category> mCategoryOutAdapter;
+    private Adapter<Account> mRecAccountAdapter;
 
     private Date operationDate;
-    private Account operationAccount;
-    private Category operationCategory;
-    private Account operationRecipientAccount;
     private NumberTextWatcherForThousand sumWatcher;
 
     private Spinner analyticSpinner;
@@ -94,14 +102,15 @@ public class DetailOperationActivity extends DetailActivity {
         lblAccount = findViewById(R.id.operation_detail_label_account);
         lblAnalytic = findViewById(R.id.operation_detail_label_category);
 
+        createAdapters();
+
         accountSpinner = findViewById(R.id.operation_detail_account);
+        accountSpinner.setAdapter(mAccountAdapter);
         accountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (getSelectedType(rgType.getCheckedRadioButtonId()) == OperationType.TRANSFER){
-                    setAnalyticAdapter(OperationType.TRANSFER);
-                }
+                model.setSelectedAccount(mAccountAdapter.getItem(i));
             }
 
             @Override
@@ -118,53 +127,58 @@ public class DetailOperationActivity extends DetailActivity {
         operationDate = Calendar.getInstance().getTime();
         setSelectedDate();
 
-        mDb = AppDatabase.getInstance(getApplicationContext());
-
         Intent i = getIntent();
         if(i != null && i.hasExtra(EXTRA_OPERATION_ID)){
             setTitle(getString(R.string.operation));
             mOperationId = i.getIntExtra(EXTRA_OPERATION_ID, DEFAULT_OPERATION_ID);
-            AppExecutors.getInstance().discIO().execute(new Runnable() {
-                @Override
-                public void run() {
-                    final LiveData<OperationWithData> operation = mDb.operationDao().loadOperationWithDataById(mOperationId);
-
-                    operation.observe(DetailOperationActivity.this, new Observer<OperationWithData>() {
-                        @Override
-                        public void onChanged(@Nullable OperationWithData operation) {
-                            populateUI(operation);
-                        }
-                    });
-                }
-            });
-        }else {
+          }else {
             setTitle(getString(R.string.new_operation));
-            initAccountSpinner();
             setSelectedType(OperationType.IN);
         }
-    }
 
-    private void initAccountSpinner(){
-        AppExecutors.getInstance().discIO().execute(new Runnable() {
+        model = ViewModelProviders.of(this, new ModelFactory(getApplication(), mOperationId)).get(OperationDetailViewModel.class);
+
+        model.getAccounts().observe(this, new Observer<List<Account>>() {
             @Override
-            public void run() {
-                final LiveData<List<Account>> accounts = mDb.accountDao().loadAllAccounts();
-
-                accounts.observe(DetailOperationActivity.this, new Observer<List<Account>>() {
-                    @Override
-                    public void onChanged(@Nullable List<Account> accounts) {
-                        ArrayAdapter<Account> adapter = new ArrayAdapter<>(DetailOperationActivity.this,
-                                android.R.layout.simple_spinner_item,
-                                android.R.id.text1,
-                                accounts);
-
-                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        accountSpinner.setAdapter(adapter);
-                        accountSpinner.setSelection(accounts.indexOf(operationAccount));
-                    }
-                });
+            public void onChanged(@Nullable List<Account> accounts) {
+                mAccountAdapter.addAll(accounts);
             }
         });
+
+        model.getCategoriesIn().observe(this, new Observer<List<Category>>() {
+            @Override
+            public void onChanged(@Nullable List<Category> categories) {
+                mCategoryInAdapter.addAll(categories);
+            }
+        });
+
+        model.getCategoriesOut().observe(this, new Observer<List<Category>>() {
+            @Override
+            public void onChanged(@Nullable List<Category> categories) {
+                mCategoryOutAdapter.addAll(categories);
+            }
+        });
+
+        model.getRecAccounts().observe(this, new Observer<List<Account>>() {
+            @Override
+            public void onChanged(@Nullable List<Account> accounts) {
+                mRecAccountAdapter.addAll(accounts);
+            }
+        });
+
+        model.getOperationWithData().observe(this, new Observer<OperationWithData>() {
+            @Override
+            public void onChanged(@Nullable OperationWithData operationWithData) {
+                populateUI(operationWithData);
+            }
+        });
+    }
+
+    private void createAdapters(){
+        mAccountAdapter = new Adapter<>(this);
+        mCategoryInAdapter = new Adapter<>(this);
+        mCategoryOutAdapter = new Adapter<>(this);
+        mRecAccountAdapter = new Adapter<>(this);
     }
 
     private void populateUI(OperationWithData operationWithData) {
@@ -177,69 +191,37 @@ public class DetailOperationActivity extends DetailActivity {
         setSelectedDate();
         edtSum.setText(String.valueOf(operationWithData.getSum()));
 
-        operationAccount = operationWithData.getAccount();
-        operationCategory = operationWithData.getCategory();
-        operationRecipientAccount = operationWithData.getRepAccount();
-
-        initAccountSpinner();
+        Account operationAccount = operationWithData.getAccount();
+        Category operationCategory = operationWithData.getCategory();
+        Account operationRecipientAccount = operationWithData.getRepAccount();
 
         setSelectedType(operationWithData.getType());
+
+        //todo fix seting current value - loop
+        accountSpinner.setSelection(((Adapter)accountSpinner.getAdapter()).getPositionById(operationAccount.getId()));
+
+        switch (operationWithData.getType()){
+            case IN:case OUT: {
+                analyticSpinner.setSelection(((Adapter) analyticSpinner.getAdapter()).getPositionById(operationCategory.getId()));
+                break;
+            }
+            case TRANSFER:{
+                analyticSpinner.setSelection(((Adapter) analyticSpinner.getAdapter()).getPositionById(operationRecipientAccount.getId()));
+                break;
+            }
+        }
     }
 
     private void setAnalyticAdapter(final OperationType type){
         switch (type){
-            case IN: case OUT:{
-                AppExecutors.getInstance().discIO().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        LiveData<List<Category>> categories = mDb.categoryDao().loadAllCategoriesByType(type);
-
-                           categories.observe(DetailOperationActivity.this, new Observer<List<Category>>() {
-                            @Override
-                            public void onChanged(@Nullable List<Category> categories) {
-                                ArrayAdapter<Category> adapter = new ArrayAdapter<>(DetailOperationActivity.this,
-                                        android.R.layout.simple_spinner_item,
-                                        android.R.id.text1,
-                                        categories);
-
-                                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                                analyticSpinner.setAdapter(adapter);
-                                analyticSpinner.setSelection(categories.indexOf(operationCategory));
-                            }
-                        });
-
-                      }
-                });
+            case IN: {
+                analyticSpinner.setAdapter(mCategoryInAdapter);
                 break;
-            }
-            case TRANSFER: {
-                AppExecutors.getInstance().discIO().execute(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        LiveData<List<Account>> accounts = null;
-                        operationAccount = (Account) accountSpinner.getSelectedItem();
-                        if (operationAccount == null)
-                            accounts = mDb.accountDao().loadAllAccounts();
-                        else
-                            accounts = mDb.accountDao().loadAllAccountsExceptId(operationAccount.getId());
-
-                        accounts.observe(DetailOperationActivity.this, new Observer<List<Account>>() {
-                            @Override
-                            public void onChanged(@Nullable List<Account> accounts) {
-
-                                ArrayAdapter<Account> adapter = new ArrayAdapter<>(DetailOperationActivity.this,
-                                        android.R.layout.simple_spinner_item,
-                                        android.R.id.text1,
-                                        accounts);
-
-                                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                                analyticSpinner.setAdapter(adapter);
-                                analyticSpinner.setSelection(accounts.indexOf(operationRecipientAccount));
-                            }
-                        });
-                     }
-                });
+            }case OUT:{
+                analyticSpinner.setAdapter(mCategoryOutAdapter);
+                break;
+            }case TRANSFER: {
+                analyticSpinner.setAdapter(mRecAccountAdapter);
                 break;
             }
         }
@@ -348,7 +330,7 @@ public class DetailOperationActivity extends DetailActivity {
             return;
         }
 
-        operationAccount = (Account) accountSpinner.getSelectedItem();
+        Account operationAccount = (Account) accountSpinner.getSelectedItem();
 
         int accountId = operationAccount == null ? 0 : operationAccount.getId();
         if(accountId <=0){
@@ -362,8 +344,8 @@ public class DetailOperationActivity extends DetailActivity {
         OperationType type = getSelectedType(rgType.getCheckedRadioButtonId());
         switch (type){
             case IN: case OUT:{
-                operationCategory = (Category) analyticSpinner.getSelectedItem();
-                categoryId = operationCategory == null ? 0 : operationCategory.getId();
+                Category operationCategory = (Category) analyticSpinner.getSelectedItem();
+                categoryId = operationCategory == null ? -1 : operationCategory.getId();
                 if (categoryId <= 0){
                     Toast.makeText(this, getString(R.string.error_choose_category), Toast.LENGTH_SHORT).show();
                     return;
@@ -371,8 +353,8 @@ public class DetailOperationActivity extends DetailActivity {
                 break;
             }
             case TRANSFER:{
-                operationRecipientAccount = (Account) analyticSpinner.getSelectedItem();
-                recAccountId = operationRecipientAccount == null ? 0 : operationRecipientAccount.getId();
+                Account operationRecipientAccount = (Account) analyticSpinner.getSelectedItem();
+                recAccountId = operationRecipientAccount == null ? -1 : operationRecipientAccount.getId();
                 if(recAccountId <= 0){
                     Toast.makeText(this, getString(R.string.error_choose_rep_account), Toast.LENGTH_SHORT).show();
                     return;
@@ -382,18 +364,40 @@ public class DetailOperationActivity extends DetailActivity {
         }
 
         final Operation operation = new Operation(operationDate, type, accountId, categoryId, recAccountId, sum);
-        AppExecutors.getInstance().discIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                if(mOperationId == DEFAULT_OPERATION_ID){
-                    mDb.operationDao().insertOperationWithAnalytic(operation);
-                }else{
-                    operation.setId(mOperationId);
-                    mDb.operationDao().updateOperationWithAnalytic(operation);
+        model.saveObject(operation);
+        finish();
+    }
+
+    private class Adapter<T> extends ArrayAdapter<T>{
+
+        public Adapter(@NonNull Context context) {
+            super(context,
+                    android.R.layout.simple_spinner_item,
+                    android.R.id.text1);
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        }
+
+        public int getPositionById(int id){
+
+            int i = 0;
+            for (i=0; i<getCount();i++){
+                T object = getItem(i);
+
+                if(object instanceof Account && ((Account) object).getId() == id){
+                    break;
+                }else if(object instanceof Category && ((Category) object).getId() == id) {
+                    break;
                 }
-                finish();
             }
-        });
+            return i;
+        }
+
+        @Override
+        public void addAll(@NonNull Collection<? extends T> collection) {
+            super.clear();
+            super.addAll(collection);
+            super.notifyDataSetChanged();
+        }
     }
 
 }
