@@ -81,6 +81,7 @@
     <string name="pref_analytic_chart_show_out_budget_graphic" translatable="false">pref_analytic_chart_show_out_budget_grafic</string>
     <string name="pref_analytic_chart_show_cashflow_graphic" translatable="false">pref_analytic_chart_show_cashflow_grafic</string>
     <string name="pref_analytic_chart_show_delta_graphic" translatable="false">pref_analytic_chart_show_delta_grafic</string>
+    <string name="no_type">Select type</string>
 
 
 </resources>

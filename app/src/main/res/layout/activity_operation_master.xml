@@ -47,8 +47,7 @@
                 android:text="@string/in"
                 android:textAllCaps="true"
                 android:textColor="@android:color/background_light"
-                android:textStyle="bold"
-                tools:checked="true" />
+                android:textStyle="bold" />
 
             <RadioButton
                 android:id="@+id/btnOut"

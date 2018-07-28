@@ -36,6 +36,21 @@ public interface AccountDao {
             + "ORDER BY title")
     LiveData<List<AccountWithBalance>> loadAllAccountsWithBalance();
 
+    @Query("SELECT accounts.id as id, "
+            + "accounts.title as title, "
+            + "balance.sum as sum "
+            + "FROM accounts as accounts "
+            + "LEFT OUTER JOIN "
+            + "(SELECT "
+            + "balance.account_id as account_id, "
+            + "SUM(balance.sum) as sum "
+            + "FROM balance "
+            + "GROUP BY balance.account_id) as balance "
+            + "ON accounts.id = balance.account_id "
+            + "WHERE accounts.id != :id "
+            + "ORDER BY title")
+    LiveData<List<AccountWithBalance>> loadAllAccountsWithBalanceExceptId(int id);
+
     @Insert
     void insertAccount(Account account);
 

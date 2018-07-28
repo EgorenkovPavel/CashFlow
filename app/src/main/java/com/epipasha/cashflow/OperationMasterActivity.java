@@ -1,51 +1,49 @@
 package com.epipasha.cashflow;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.epipasha.cashflow.Prefs.OperationMasterPrefs;
 import com.epipasha.cashflow.activities.BaseActivity;
-import com.epipasha.cashflow.data.AppDatabase;
 import com.epipasha.cashflow.data.AppExecutors;
 import com.epipasha.cashflow.data.entites.Account;
+import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
-import com.epipasha.cashflow.data.entites.Operation;
+import com.epipasha.cashflow.data.viewmodel.OperationMasterViewModel;
 import com.epipasha.cashflow.objects.OperationType;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 public class OperationMasterActivity extends BaseActivity{
 
-    private static final int OPERATION_SAVED = 23;
-    private static final int OPERATION_DELETED = 54;
+    private OperationMasterViewModel model;
 
-    private Handler mHandler;
-    private int sum = 0;
-
-    AppDatabase mDb;
+    private AccountAdapter mAccountAdapter;
+    private ArrayAdapter<Category> mCategoryInAdapter;
+    private ArrayAdapter<Category> mCategoryOutAdapter;
+    private AccountAdapter mRecAccountAdapter;
 
     private ViewGroup parentContainer;
-    private RadioGroup groupType;
     private Spinner spinAccount, spinAnalytic;
     private TextView lblSum, lblAnalytic;
+    private RadioButton rbIn, rbOut, rbTransfer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,65 +57,228 @@ public class OperationMasterActivity extends BaseActivity{
 
         findViews();
 
-        mDb = AppDatabase.getInstance(getApplicationContext());
+        initAdapters();
 
-        initAccountSpinner();
+        spinAccount.setAdapter(mAccountAdapter);
 
-        setCheckedOperationType(OperationMasterPrefs.getOperationType(this));
-        setSum(0);
+        model = ViewModelProviders.of(this).get(OperationMasterViewModel.class);
+
+        model.getAccounts().observe(this, new Observer<List<AccountWithBalance>>() {
+            @Override
+            public void onChanged(@Nullable List<AccountWithBalance> accounts) {
+                mAccountAdapter.clear();
+                if (accounts != null) mAccountAdapter.addAll(accounts);
+                mAccountAdapter.notifyDataSetChanged();
+            }
+        });
+
+        model.getCategoriesIn().observe(this, new Observer<List<Category>>() {
+            @Override
+            public void onChanged(@Nullable List<Category> categories) {
+                mCategoryInAdapter.clear();
+                if (categories != null) mCategoryInAdapter.addAll(categories);
+                mCategoryInAdapter.notifyDataSetChanged();
+            }
+        });
+
+        model.getCategoriesOut().observe(this, new Observer<List<Category>>() {
+            @Override
+            public void onChanged(@Nullable List<Category> categories) {
+                mCategoryOutAdapter.clear();
+                if (categories != null) mCategoryOutAdapter.addAll(categories);
+                mCategoryOutAdapter.notifyDataSetChanged();
+            }
+        });
+
+        model.getRecAccounts().observe(this, new Observer<List<AccountWithBalance>>() {
+            @Override
+            public void onChanged(@Nullable List<AccountWithBalance> accounts) {
+                mRecAccountAdapter.clear();
+                if (accounts != null) mRecAccountAdapter.addAll(accounts);
+                mRecAccountAdapter.notifyDataSetChanged();
+            }
+        });
+
+        model.getOperationType().observe(this, new Observer<OperationType>() {
+            @Override
+            public void onChanged(@Nullable OperationType type) {
+                if(type == null) return;
+
+                rbIn.setChecked(type == OperationType.IN);
+                rbOut.setChecked(type == OperationType.OUT);
+                rbTransfer.setChecked(type == OperationType.TRANSFER);
+
+                switch (type){
+                    case IN: case OUT:{
+                        lblAnalytic.setText(getString(R.string.category));
+                        break;
+                    }
+                    case TRANSFER:{
+                        lblAnalytic.setText(getString(R.string.account));
+                        break;
+                    }
+                }
+
+                switch (type){
+                    case IN:{
+                        spinAnalytic.setAdapter(mCategoryInAdapter);
+                        break;
+                    }
+                    case OUT:{
+                        spinAnalytic.setAdapter(mCategoryOutAdapter);
+                        break;
+                    }
+                    case TRANSFER: {
+                        spinAnalytic.setAdapter(mRecAccountAdapter);
+                        break;
+                    }
+                }
+            }
+        });
+
+        model.getOperationSum().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer sum) {
+                lblSum.setText(String.format(Locale.getDefault(),"%,d",sum));
+            }
+        });
+
+        model.getOperationAccount().observe(this, new Observer<AccountWithBalance>() {
+            @Override
+            public void onChanged(@Nullable AccountWithBalance account) {
+                spinAccount.setSelection(mAccountAdapter.getPosition(account));
+            }
+        });
+
+        model.getStatus().observe(this, new Observer<OperationMasterViewModel.Status>() {
+            @Override
+            public void onChanged(@Nullable OperationMasterViewModel.Status status) {
+                if(status == null) return;
+                switch (status){
+                    case EMPTY_SUM:{
+                        Snackbar.make(parentContainer, R.string.no_sum, Snackbar.LENGTH_LONG).show();
+                        break;
+                    }
+                    case EMPTY_TYPE:{
+                        Snackbar.make(parentContainer, R.string.no_type, Snackbar.LENGTH_LONG).show();
+                        break;
+                    }
+                    case EMPTY_ANALYTIC:{
+                        Snackbar.make(parentContainer, R.string.no_analytic_selected, Snackbar.LENGTH_LONG).show();
+                        break;
+                    }
+                    case EMPTY_ACCOUNT:{
+                        Snackbar.make(parentContainer, R.string.no_account_selected, Snackbar.LENGTH_LONG).show();
+                        break;
+                    }
+                    case OPERATION_SAVED: {
+                        Snackbar snackbar = Snackbar.make(parentContainer, R.string.operation_created, Snackbar.LENGTH_LONG);
+                        snackbar.setAction(R.string.undo, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                AppExecutors.getInstance().discIO().execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        model.deleteOperation();
+                                    }
+                                });
+                            }
+                        });
+                        snackbar.show();
+                        break;
+                    }
+                    case OPERATION_DELETED:{
+                        Snackbar.make(parentContainer, R.string.operation_deleted, Snackbar.LENGTH_LONG).show();
+                        break;
+                    }
+                }
+            }
+        });
 
     }
 
-    private void initAccountSpinner(){
-        AppExecutors.getInstance().discIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                final LiveData<List<Account>> accounts = mDb.accountDao().loadAllAccounts();
+    @Override
+    protected void onStart() {
+        super.onStart();
+        model.loadPrefs();
+    }
 
-                accounts.observe(OperationMasterActivity.this, new Observer<List<Account>>() {
-                    @Override
-                    public void onChanged(@Nullable List<Account> accounts) {
-                        ArrayAdapter<Account> adapter = new ArrayAdapter<>(
-                                OperationMasterActivity.this,
-                                R.layout.list_item_account,
-                                R.id.account_list_item_name,
-                                accounts);
-                        spinAccount.setAdapter(adapter);
+    private void initAdapters(){
+        mAccountAdapter = new AccountAdapter(this);
 
-                        int accountId = OperationMasterPrefs.getAccountId(OperationMasterActivity.this);
-                        Utils.setPositionById(spinAccount, accountId);
-                    }
-                });
-            }
-        });
+        mCategoryInAdapter = new ArrayAdapter<>(
+                OperationMasterActivity.this,
+                R.layout.list_item_account,
+                R.id.account_list_item_name);
+
+        mCategoryOutAdapter = new ArrayAdapter<>(
+                OperationMasterActivity.this,
+                R.layout.list_item_account,
+                R.id.account_list_item_name);
+
+        mRecAccountAdapter = new AccountAdapter(this);
     }
 
     private void findViews() {
 
         parentContainer = findViewById(R.id.master_container);
 
-        groupType = findViewById(R.id.type_group);
+        rbIn = findViewById(R.id.btnIn);
+        rbOut = findViewById(R.id.btnOut);
+        rbTransfer = findViewById(R.id.btnTransfer);
+
+        RadioGroup groupType = findViewById(R.id.type_group);
         groupType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                onOperationTypeChanged();
+                switch (checkedId){
+                    case R.id.btnIn : {
+                        model.onOperationTypeChanged(OperationType.IN);
+                        break;
+                    }
+                    case R.id.btnOut: {
+                        model.onOperationTypeChanged(OperationType.OUT);
+                        break;
+                    }
+                    case R.id.btnTransfer: {
+                        model.onOperationTypeChanged(OperationType.TRANSFER);
+                        break;
+                    }
+                }
             }
         });
 
         spinAccount = findViewById(R.id.spinner_account);
         spinAccount.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                initAnalyticSpinner();
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                AccountWithBalance account = mAccountAdapter.getItem(position);
+                model.onOperationAccountChanged(account);
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
+            public void onNothingSelected(AdapterView<?> adapterView) {}
         });
 
         spinAnalytic = findViewById(R.id.spinner_analytic);
+        spinAnalytic.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(spinAnalytic.getAdapter().equals(mCategoryInAdapter)){
+                    Category category = mCategoryInAdapter.getItem(position);
+                    model.onOperationCategoryChanged(category);
+                }else if(spinAnalytic.getAdapter().equals(mCategoryOutAdapter)){
+                    Category category = mCategoryOutAdapter.getItem(position);
+                    model.onOperationCategoryChanged(category);
+                }else if(spinAnalytic.getAdapter().equals(mRecAccountAdapter)){
+                    AccountWithBalance account = mRecAccountAdapter.getItem(position);
+                    model.onOperationAccountRecChanged(account);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
         lblAnalytic = findViewById(R.id.lblAnalytic);
         lblSum = findViewById(R.id.operation_master_sum);
@@ -152,7 +313,7 @@ public class OperationMasterActivity extends BaseActivity{
                     case R.id.digit_8: digit = 8; break;
                     case R.id.digit_9: digit = 9; break;
                 }
-                setSum(sum* 10 + digit);
+                model.onDigitPressed(digit);
             }
         };
 
@@ -170,7 +331,7 @@ public class OperationMasterActivity extends BaseActivity{
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setSum(sum/10);
+                model.onDeleteDigit();
             }
         });
         btnMore.setOnClickListener(new View.OnClickListener() {
@@ -183,367 +344,49 @@ public class OperationMasterActivity extends BaseActivity{
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createOperation();
+                model.saveOperation();
             }
         });
 
     }
 
-    private OperationType getCheckedOperationType(){
-        switch (groupType.getCheckedRadioButtonId()){
-            case R.id.btnIn :
-                return OperationType.IN;
-            case R.id.btnOut:
-                return OperationType.OUT;
-            case R.id.btnTransfer:
-                return OperationType.TRANSFER;
-            default:
-                return OperationType.IN;
-        }
-    }
-
-    private void setCheckedOperationType(OperationType type){
-
-        if (type == null){
-            return;
-        }
-
-        switch (type){
-            case IN:
-                groupType.check(R.id.btnIn);
-                break;
-            case OUT:
-                groupType.check(R.id.btnOut);
-                break;
-            case TRANSFER:
-                groupType.check(R.id.btnTransfer);
-                break;
-            default:
-                groupType.check(R.id.btnIn);
-        }
-    }
-
-    private void onOperationTypeChanged(){
-        setSpinnersLabels();
-        initAnalyticSpinner();
-    }
-
-    private void setSpinnersLabels(){
-        final OperationType type = getCheckedOperationType();
-
-        switch (type){
-            case IN: case OUT:{
-                lblAnalytic.setText(getString(R.string.category));
-                break;
-            }
-            case TRANSFER:{
-                lblAnalytic.setText(getString(R.string.account));
-                break;
-            }
-        }
-
-    }
-
-    private void initAnalyticSpinner() {
-
-        final OperationType type = getCheckedOperationType();
-
-        switch (type){
-            case IN: case OUT:{
-                AppExecutors.getInstance().discIO().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        LiveData<List<Category>> categories = mDb.categoryDao().loadAllCategoriesByType(type);
-
-                        categories.observe(OperationMasterActivity.this, new Observer<List<Category>>() {
-                            @Override
-                            public void onChanged(@Nullable List<Category> categories) {
-                                ArrayAdapter<Category> adapter = new ArrayAdapter<>(
-                                        OperationMasterActivity.this,
-                                        android.R.layout.simple_spinner_item,
-                                        android.R.id.text1,
-                                        categories);
-
-                                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                                spinAnalytic.setAdapter(adapter);
-                                Utils.setPositionById(spinAnalytic,
-                                        OperationMasterPrefs.getAnalyticId(
-                                                OperationMasterActivity.this, type));
-                            }
-                        });
-
-                    }
-                });
-                break;
-            }
-            case TRANSFER: {
-                AppExecutors.getInstance().discIO().execute(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        LiveData<List<Account>> accounts = null;
-                        Account operationAccount = (Account) spinAccount.getSelectedItem();
-                        if (operationAccount == null)
-                            accounts = mDb.accountDao().loadAllAccounts();
-                        else
-                            accounts = mDb.accountDao().loadAllAccountsExceptId(operationAccount.getId());
-
-                        accounts.observe(OperationMasterActivity.this, new Observer<List<Account>>() {
-                            @Override
-                            public void onChanged(@Nullable List<Account> accounts) {
-
-                                ArrayAdapter<Account> adapter = new ArrayAdapter<>(
-                                        OperationMasterActivity.this,
-                                        android.R.layout.simple_spinner_item,
-                                        android.R.id.text1,
-                                        accounts);
-
-                                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                                spinAnalytic.setAdapter(adapter);
-
-                                Utils.setPositionById(spinAnalytic,
-                                        OperationMasterPrefs.getAnalyticId(
-                                                OperationMasterActivity.this, type));
-                            }
-                        });
-                    }
-                });
-                break;
-            }
-        }
-
-    }
-
-    private void setSum(int s){
-        sum = s;
-        lblSum.setText(String.format(Locale.getDefault(),"%,d",sum));
-    }
-
-    private void createOperation(){
-
-        Account account = (Account) spinAccount.getSelectedItem();
-        if(account == null){
-            Snackbar.make(parentContainer, R.string.no_account_selected, Snackbar.LENGTH_LONG).show();
-            return;
-        }
-        int accountId = account.getId();
-        Integer categoryId = null;
-        Integer repAccountId = null;
-
-        OperationType type = getCheckedOperationType();
-
-        switch (type){
-            case IN: case OUT: {
-                Category category = (Category) spinAnalytic.getSelectedItem();
-                if (category == null) {
-                    Snackbar.make(parentContainer, R.string.no_analytic_selected, Snackbar.LENGTH_LONG).show();
-                    return;
-                }
-                categoryId = category.getId();
-                break;
-            }
-            case TRANSFER:{
-                Account repAccount = (Account)spinAnalytic.getSelectedItem();
-                if (repAccount == null) {
-                    Snackbar.make(parentContainer, R.string.no_analytic_selected, Snackbar.LENGTH_LONG).show();
-                    return;
-                }
-                repAccountId = repAccount.getId();
-                break;
-            }
-        }
-
-        if(sum == 0){
-            Snackbar.make(parentContainer, R.string.no_sum, Snackbar.LENGTH_LONG).show();
-            return;
-        }
-
-        final Operation operation = new Operation(new Date(), type, accountId, categoryId, repAccountId, sum);
-
-        mHandler = new Handler(Looper.getMainLooper()){
-            @Override
-            public void handleMessage(Message msg) {
-                switch (msg.what){
-                    case OPERATION_SAVED:{
-                        Operation operation = (Operation)msg.obj;
-                        onOperationSaved(operation);
-                        break;
-                    }
-                    case OPERATION_DELETED:{
-                        int numRowsDeleted = (int) msg.obj;
-                        onOperationDeleted(numRowsDeleted);
-                        break;
-                    }
-                }
-            }
-        };
-
-       AppExecutors.getInstance().discIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                int operationId = (int) mDb.operationDao().insertOperationWithAnalytic(operation);
-                operation.setId(operationId);
-                mHandler.obtainMessage(OPERATION_SAVED, operation).sendToTarget();
-            }
-       });
-    }
-
-    private void onOperationSaved(final Operation operation){
-        if (operation.getId() == -1) {
-            Snackbar.make(parentContainer, R.string.error, Snackbar.LENGTH_LONG).show();
-        } else {
-            Snackbar snackbar = Snackbar.make(parentContainer, R.string.operation_created, Snackbar.LENGTH_LONG);
-            snackbar.setAction(R.string.undo, new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    AppExecutors.getInstance().discIO().execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            int numRowsDeleted = mDb.operationDao().deleteOperation(operation);
-                            mHandler.obtainMessage(OPERATION_DELETED, numRowsDeleted).sendToTarget();
-                        }
-                    });
-                }
-            });
-            snackbar.show();
-            setSum(0);
-        }
-    }
-
-    private void onOperationDeleted(int numRowsDeleted){
-        if (numRowsDeleted > 0) {
-            Snackbar.make(parentContainer, R.string.operation_deleted, Snackbar.LENGTH_LONG).show();
-        } else {
-            Snackbar.make(parentContainer, R.string.error, Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    private Integer getAccountId(){
-        Account account = (Account) spinAccount.getSelectedItem();
-        if (account == null)
-            return null;
-        else
-            return account.getId();
-    }
-
     @Override
     protected void onStop() {
         super.onStop();
-
-        OperationMasterPrefs.saveOperationType(OperationMasterActivity.this, getCheckedOperationType());
-
-        Integer accountId = getAccountId();
-        if (accountId != null)
-            OperationMasterPrefs.saveAccountId(OperationMasterActivity.this, accountId);
-
-        OperationType type = getCheckedOperationType();
-        Integer analyticId = null;
-
-        switch (type){
-            case IN: case OUT: {
-                Category category = (Category) spinAnalytic.getSelectedItem();
-                if (category != null) {
-                    analyticId = category.getId();
-                }
-                break;
-            }
-            case TRANSFER:{
-                Account repAccount = (Account)spinAnalytic.getSelectedItem();
-                if (repAccount != null) {
-                    analyticId = repAccount.getId();
-                }
-                break;
-            }
-        }
-
-        if (analyticId != null)
-            OperationMasterPrefs.saveAnalyticId(OperationMasterActivity.this, analyticId, getCheckedOperationType());
+        model.savePrefs();
     }
 
-//Adaptors
-    //todo use adapters
-//
-//    class AccountAdapter extends CursorAdapter{
-//
-//        public AccountAdapter(Context context, Cursor c, int flags) {
-//            super(context, c, flags);
-//        }
-//
-//        @Override
-//        public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
-//            return LayoutInflater.from(context)
-//                    .inflate(R.layout.list_item_account, viewGroup, false);
-//        }
-//
-//        @Override
-//        public void bindView(View view, Context context, Cursor cursor) {
-//
-//            int idIndex = cursor.getColumnIndex(AccountEntry._ID);
-//            int titleIndex = cursor.getColumnIndex(AccountEntry.COLUMN_TITLE);
-//            int sumIndex = cursor.getColumnIndex(AccountEntry.SERVICE_COLUMN_SUM);
-//
-//            // Determine the values of the wanted data
-//            final int id = cursor.getInt(idIndex);
-//            String title = cursor.getString(titleIndex);
-//            int sum = cursor.getInt(sumIndex);
-//
-//            //Set values
-//            ((TextView)view.findViewById(R.id.account_list_item_name)).setText(title);
-//            ((TextView)view.findViewById(R.id.account_list_item_sum)).setText(String.format(Locale.getDefault(), "%,d", sum));
-//
-//        }
-//    }
-//
-//    class CategoryAdapter extends CursorAdapter{
-//
-//        public CategoryAdapter(Context context, Cursor c, int flags) {
-//            super(context, c, flags);
-//        }
-//
-//        @Override
-//        public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
-//            return LayoutInflater.from(context)
-//                    .inflate(R.layout.list_item_master_category, viewGroup, false);
-//        }
-//
-//        @Override
-//        public void bindView(View view, Context context, Cursor cursor) {
-//
-//            int idIndex = cursor.getColumnIndex(CategoryEntry._ID);
-//            int titleIndex = cursor.getColumnIndex(CategoryEntry.COLUMN_TITLE);
-//            int typeIndex = cursor.getColumnIndex(CategoryEntry.COLUMN_TYPE);
-//            int budgetIndex = cursor.getColumnIndex(CategoryEntry.COLUMN_BUDGET);
-//            int factIndex = cursor.getColumnIndex(CashFlowContract.CategoryCostEntry.COLUMN_SUM);
-//
-//            // Determine the values of the wanted data
-//            final int id = cursor.getInt(idIndex);
-//            String title = cursor.getString(titleIndex);
-//            OperationType type = OperationType.toEnum(cursor.getInt(typeIndex));
-//            int budget = cursor.getInt(budgetIndex);
-//            int fact = cursor.getInt(factIndex);
-//
-//            int delta = 0;
-//            if(type.equals(OperationType.IN)) {
-//                delta = fact - budget;
-//            }else if (type.equals(OperationType.OUT)) {
-//                delta = budget - fact;
-//            }
-//
-//            ((TextView)view.findViewById(R.id.lbl_in)).setText(title);
-////            ((TextView)view.findViewById(R.id.tvInBudget)).setText(String.format(Locale.getDefault(),"%,d",budget));
-////            ((TextView)view.findViewById(R.id.tvFact)).setText(String.format(Locale.getDefault(),"%,d",fact));
-////            ((TextView)view.findViewById(R.id.tvInDelta)).setText(String.format(Locale.getDefault(),"%,d",delta));
-//
-////            int deltaColor = R.color.primaryTextColor;
-////            if(type.equals(OperationType.IN)){
-////                deltaColor = delta >=0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
-////            }else if (type.equals(OperationType.OUT)){
-////                deltaColor = delta >=0 ? R.color.colorPrimaryDark : R.color.colorAccentDark;
-////            }
-////
-////            ((TextView)view.findViewById(R.id.tvInDelta)).setTextColor(getResources().getColor(deltaColor));
-//
-//        }
-//    }
+    private class AccountAdapter extends ArrayAdapter<AccountWithBalance>{
+
+        public AccountAdapter(@NonNull Context context) {
+            super(context, R.layout.list_item_account);
+            setDropDownViewResource(R.layout.list_item_account);
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            return adapterView(position, convertView, parent);
+        }
+
+        @Override
+        public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            return adapterView(position, convertView, parent);
+        }
+
+        private View adapterView(int position, @Nullable View convertView, @NonNull ViewGroup parent){
+            View view = convertView;
+            if (view == null)
+                view = LayoutInflater.from(getContext())
+                        .inflate(R.layout.list_item_account, parent, false);
+
+            AccountWithBalance account = getItem(position);
+
+            ((TextView)view.findViewById(R.id.account_list_item_name)).setText(account.getTitle());
+            ((TextView)view.findViewById(R.id.account_list_item_sum)).setText(String.format(Locale.getDefault(), "%,d", account.getSum()));
+
+            return view;
+        }
+    }
 
 }
