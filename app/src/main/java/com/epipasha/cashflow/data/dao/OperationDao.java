@@ -31,10 +31,34 @@ public abstract class OperationDao {
     @Delete
     public abstract int deleteOperation(Operation operation);
 
+    @Query("DELETE FROM operations WHERE id == :id")
+    public abstract int deleteOperationById(int id);
+
     @Query("SELECT * FROM operations WHERE id = :id")
     public abstract LiveData<Operation> loadOperationById(int id);
 
-    @Transaction
+    @Query("SELECT operations.id as id, "
+            + "operations.date as date, "
+            + "operations.type as type, "
+            + "operations.sum as sum, "
+            + "accounts.id as account_id, "
+            + "accounts.title as account_title, "
+            + "categories.id as category_id, "
+            + "categories.title as category_title, "
+            + "categories.type as category_type, "
+            + "categories.budget as category_budget, "
+            + "recipient_accounts.id as recipient_account_id, "
+            + "recipient_accounts.title as recipient_account_title "
+            + "FROM operations as operations "
+            + "INNER JOIN accounts as accounts "
+            + "ON operations.account_id = accounts.id "
+            + "LEFT OUTER JOIN categories as categories "
+            + "ON operations.category_id = categories.id "
+            + "LEFT OUTER JOIN accounts as recipient_accounts "
+            + "ON operations.recipient_account_id = recipient_accounts.id "
+            + "ORDER BY operations.date DESC")
+    public abstract LiveData<List<OperationWithData>> loadOperationWithData();
+
     @Query("SELECT operations.id as id, "
             + "operations.date as date, "
             + "operations.type as type, "

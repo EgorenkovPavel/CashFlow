@@ -7,21 +7,22 @@ import android.support.annotation.NonNull;
 
 import com.epipasha.cashflow.data.AppDatabase;
 import com.epipasha.cashflow.data.entites.Operation;
+import com.epipasha.cashflow.data.entites.OperationWithData;
 
 import java.util.List;
 
 public class OperationListViewModel extends AndroidViewModel {
 
-    private LiveData<List<Operation>> operations;
+    private LiveData<List<OperationWithData>> operations;
 
     public OperationListViewModel(@NonNull Application application) {
         super(application);
 
         AppDatabase db = AppDatabase.getInstance(this.getApplication());
-        operations = db.operationDao().loadAllOperations();
+        operations = db.operationDao().loadOperationWithData();
     }
 
-    public LiveData<List<Operation>> getOperations() {
+    public LiveData<List<OperationWithData>> getOperations() {
         return operations;
     }
 }

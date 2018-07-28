@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.entites.Operation;
+import com.epipasha.cashflow.data.entites.OperationWithData;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -22,7 +23,7 @@ public class OperationAdapter extends RecyclerView.Adapter<OperationAdapter.Oper
 
     private final Drawable plus, minus, redo;
 
-    private List<Operation> mOperations;
+    private List<OperationWithData> mOperations;
     private ItemClickListener mItemClickListener;
     private ItemLongClickListener mItemLongClickListener;
 
@@ -40,7 +41,7 @@ public class OperationAdapter extends RecyclerView.Adapter<OperationAdapter.Oper
     }
 
     public interface ItemLongClickListener {
-        void onItemLongClickListener(Operation operation, View view);
+        void onItemLongClickListener(int operationId, View view);
     }
 
     @NonNull
@@ -60,7 +61,7 @@ public class OperationAdapter extends RecyclerView.Adapter<OperationAdapter.Oper
     @Override
     public void onBindViewHolder(OperationAdapter.OperationHolder holder, int position) {
 
-        Operation operation = mOperations.get(position);
+        OperationWithData operation = mOperations.get(position);
 
         //Set values
         holder.itemView.setTag(operation.getId());
@@ -74,29 +75,29 @@ public class OperationAdapter extends RecyclerView.Adapter<OperationAdapter.Oper
         format.applyPattern("EEEE");
         holder.tvDayOfWeek.setText(format.format(operation.getDate()));
 
-//        holder.operationAccountView.setText(account);
+        holder.operationAccountView.setText(operation.getAccount().getTitle());
         holder.operationSumView.setText(String.format(Locale.getDefault(),"%,d",operation.getSum()));
 
         switch (operation.getType()){
             case IN:{
-                //holder.operationCategoryView.setText(category);
+                holder.operationCategoryView.setText(operation.getCategory().getTitle());
                 holder.operationTypeImageView.setImageDrawable(plus);
                 break;
             }
             case OUT:{
-                //holder.operationCategoryView.setText(category);
+                holder.operationCategoryView.setText(operation.getCategory().getTitle());
                 holder.operationTypeImageView.setImageDrawable(minus);
                 break;
             }
             case TRANSFER:{
-                //holder.operationCategoryView.setText(repAccount);
+                holder.operationCategoryView.setText(operation.getRepAccount().getTitle());
                 holder.operationTypeImageView.setImageDrawable(redo);
                 break;
             }
         }
     }
 
-    public void setOperations(List<Operation> operations){
+    public void setOperations(List<OperationWithData> operations){
         this.mOperations = operations;
         notifyDataSetChanged();
     }
@@ -126,33 +127,15 @@ public class OperationAdapter extends RecyclerView.Adapter<OperationAdapter.Oper
 
         @Override
         public void onClick(View view) {
-            Operation operation = mOperations.get(getAdapterPosition());
+            OperationWithData operation = mOperations.get(getAdapterPosition());
             mItemClickListener.onItemClickListener(operation.getId());
-//
-//            int adapterPosition = getAdapterPosition();
-//            mCursor.moveToPosition(adapterPosition);
-//
-//            int idIndex = mCursor.getColumnIndex(OperationEntry._ID);
-//            int id = mCursor.getInt(idIndex);
-//
-//            Intent i = new Intent(mContext, DetailOperationActivity.class);
-//
-//            Uri uri = OperationEntry.buildOperationUriWithId(id);
-//            i.setData(uri);
-//            mContext.startActivity(i);
         }
 
         @Override
         public boolean onLongClick(View view) {
 
-            Operation operation = mOperations.get(getAdapterPosition());
-            mItemLongClickListener.onItemLongClickListener(operation, view);
-//
-//            PopupMenu popupMenu = new PopupMenu(mContext, view);
-//            popupMenu.inflate(R.menu.popup_list_item_operation);
-//            popupMenu.setOnMenuItemClickListener(this);
-//            popupMenu.show();
-//
+            OperationWithData operation = mOperations.get(getAdapterPosition());
+            mItemLongClickListener.onItemLongClickListener(operation.getId(), view);
             return true;
         }
 

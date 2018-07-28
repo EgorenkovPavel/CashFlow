@@ -82,4 +82,5 @@ public class OperationWithData {
     public void setRepAccount(Account repAccount) {
         this.repAccount = repAccount;
     }
+
 }

@@ -209,6 +209,9 @@ public class OperationMasterViewModel extends AndroidViewModel {
     }
 
     public void loadPrefs(){
+
+        //todo fix loading prefs
+
         int accountId = Prefs.OperationMasterPrefs.getAccountId(getApplication());
 
         List<AccountWithBalance> accountList = accounts.getValue();
