@@ -11,11 +11,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
@@ -57,7 +60,6 @@ public class DetailOperationActivity extends DetailActivity {
     private Adapter<Category> mCategoryOutAdapter;
     private Adapter<Account> mRecAccountAdapter;
 
-    private Date operationDate;
     private NumberTextWatcherForThousand sumWatcher;
 
     private Spinner analyticSpinner;
@@ -66,6 +68,7 @@ public class DetailOperationActivity extends DetailActivity {
     private EditText edtSum;
     private RadioGroup rgType;
     private TextView lblAccount, lblAnalytic;
+    private RadioButton rbIn, rbOut, rbTransfer;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -95,9 +98,26 @@ public class DetailOperationActivity extends DetailActivity {
         rgType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                 onOperationTypeChanged(getSelectedType(i));
+                switch (i){
+                    case R.id.operation_detail_btnIn: {
+                        model.setOperationType(OperationType.IN);
+                        break;
+                    }
+                    case R.id.operation_detail_btnOut: {
+                        model.setOperationType(OperationType.OUT);
+                        break;
+                    }
+                    case R.id.operation_detail_btnTransfer: {
+                        model.setOperationType(OperationType.TRANSFER);
+                        break;
+                    }
+                }
             }
         });
+
+        rbIn = findViewById(R.id.operation_detail_btnIn);
+        rbOut = findViewById(R.id.operation_detail_btnOut);
+        rbTransfer = findViewById(R.id.operation_detail_btnTransfer);
 
         lblAccount = findViewById(R.id.operation_detail_label_account);
         lblAnalytic = findViewById(R.id.operation_detail_label_category);
@@ -110,7 +130,7 @@ public class DetailOperationActivity extends DetailActivity {
 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                model.setSelectedAccount(mAccountAdapter.getItem(i));
+                model.setOperationAccount(mAccountAdapter.getItem(i));
             }
 
             @Override
@@ -119,13 +139,28 @@ public class DetailOperationActivity extends DetailActivity {
             }
         });
         analyticSpinner = findViewById(R.id.operation_detail_category);
+        analyticSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Adapter adapter = (Adapter) analyticSpinner.getAdapter();
+                if(adapter.equals(mCategoryInAdapter))
+                    model.setOperationCategory(mCategoryInAdapter.getItem(position));
+                else if(adapter.equals(mCategoryOutAdapter))
+                    model.setOperationCategory(mCategoryOutAdapter.getItem(position));
+                else if(adapter.equals(mRecAccountAdapter))
+                    model.setOperationRecAccount(mRecAccountAdapter.getItem(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         edtSum = findViewById(R.id.operation_detail_sum);
-        sumWatcher = new NumberTextWatcherForThousand(edtSum);
+        sumWatcher = new sumWather(edtSum);
         edtSum.addTextChangedListener(sumWatcher);
 
-        operationDate = Calendar.getInstance().getTime();
-        setSelectedDate();
 
         Intent i = getIntent();
         if(i != null && i.hasExtra(EXTRA_OPERATION_ID)){
@@ -133,7 +168,6 @@ public class DetailOperationActivity extends DetailActivity {
             mOperationId = i.getIntExtra(EXTRA_OPERATION_ID, DEFAULT_OPERATION_ID);
           }else {
             setTitle(getString(R.string.new_operation));
-            setSelectedType(OperationType.IN);
         }
 
         model = ViewModelProviders.of(this, new ModelFactory(getApplication(), mOperationId)).get(OperationDetailViewModel.class);
@@ -141,28 +175,36 @@ public class DetailOperationActivity extends DetailActivity {
         model.getAccounts().observe(this, new Observer<List<Account>>() {
             @Override
             public void onChanged(@Nullable List<Account> accounts) {
+                if (accounts == null) return;
                 mAccountAdapter.addAll(accounts);
+                setAccount(model.getOperationAccountId().getValue());
             }
         });
 
         model.getCategoriesIn().observe(this, new Observer<List<Category>>() {
             @Override
             public void onChanged(@Nullable List<Category> categories) {
-                mCategoryInAdapter.addAll(categories);
+                if(categories == null) return;
+                mCategoryOutAdapter.addAll(categories);
+                setCategory(model.getOperationCategoryId().getValue());
             }
         });
 
         model.getCategoriesOut().observe(this, new Observer<List<Category>>() {
             @Override
             public void onChanged(@Nullable List<Category> categories) {
+                if(categories == null) return;
                 mCategoryOutAdapter.addAll(categories);
+                setCategory(model.getOperationCategoryId().getValue());
             }
         });
 
         model.getRecAccounts().observe(this, new Observer<List<Account>>() {
             @Override
             public void onChanged(@Nullable List<Account> accounts) {
+                if(accounts == null) return;
                 mRecAccountAdapter.addAll(accounts);
+                setRecAccount(model.getOperationRecAccountId().getValue());
             }
         });
 
@@ -170,6 +212,99 @@ public class DetailOperationActivity extends DetailActivity {
             @Override
             public void onChanged(@Nullable OperationWithData operationWithData) {
                 populateUI(operationWithData);
+            }
+        });
+
+        model.getOperationAccountId().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer id) {
+                setAccount(id);
+            }
+        });
+
+        model.getOperationCategoryId().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer id) {
+                setCategory(id);
+            }
+        });
+
+        model.getOperationRecAccountId().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer id) {
+                setRecAccount(id);
+            }
+        });
+
+        model.getOperationDate().observe(this, new Observer<Date>() {
+            @Override
+            public void onChanged(@Nullable Date date) {
+                SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+                edtDate.setText(format.format(date));
+
+                format.applyPattern("HH:mm");
+                edtTime.setText(format.format(date));
+            }
+        });
+
+        model.getOperationType().observe(this, new Observer<OperationType>() {
+            @Override
+            public void onChanged(@Nullable OperationType type) {
+                if(type == null) return;
+
+                rbIn.setChecked(type == OperationType.IN);
+                rbOut.setChecked(type == OperationType.OUT);
+                rbTransfer.setChecked(type == OperationType.TRANSFER);
+
+                setAnalyticAdapter(type);
+
+                if(type == OperationType.TRANSFER){
+                    lblAccount.setText(getString(R.string.from));
+                    lblAnalytic.setText(getString(R.string.to));
+                }else{
+                    lblAccount.setText(getString(R.string.account));
+                    lblAnalytic.setText(getString(R.string.category));
+                }
+            }
+        });
+
+        model.getOperationSum().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer sum) {
+                edtSum.setText(String.valueOf(sum));
+            }
+        });
+
+        model.getStatus().observe(this, new Observer<OperationDetailViewModel.Status>() {
+            @Override
+            public void onChanged(@Nullable OperationDetailViewModel.Status status) {
+                if(status == null) return;
+
+                switch (status){
+                    case EMPTY_SUM: {
+                        edtSum.setError(getString(R.string.error_fill_sum));
+                        break;
+                    }
+                    case EMPTY_ACCOUNT:{
+                        Toast.makeText(DetailOperationActivity.this,
+                                getString(R.string.error_choose_account),
+                                Toast.LENGTH_SHORT)
+                                .show();
+                        break;
+                    }
+                    case EMPTY_ANALYTIC:{
+                        Toast.makeText(DetailOperationActivity.this,
+                                getString(R.string.no_analytic_selected),
+                                Toast.LENGTH_SHORT)
+                                .show();
+                        break;
+                    }
+                    case OPERATION_SAVED:{
+                        finish();
+                        break;
+                    }
+
+                }
             }
         });
     }
@@ -181,101 +316,61 @@ public class DetailOperationActivity extends DetailActivity {
         mRecAccountAdapter = new Adapter<>(this);
     }
 
+    private void setAccount(Integer id){
+        if(id == null) return;
+        accountSpinner.setSelection(((Adapter)accountSpinner.getAdapter()).getPositionById(id));
+    }
+
+    private void setCategory(Integer id){
+        if(id == null) return;
+        Adapter adapter = (Adapter) analyticSpinner.getAdapter();
+        if(adapter.equals(mCategoryInAdapter)||adapter.equals(mCategoryOutAdapter))
+            analyticSpinner.setSelection(((Adapter) analyticSpinner.getAdapter()).getPositionById(id));
+    }
+
+    private void setRecAccount(Integer id){
+        if(id == null) return;
+        Adapter adapter = (Adapter) analyticSpinner.getAdapter();
+        if(adapter.equals(mRecAccountAdapter))
+            analyticSpinner.setSelection(((Adapter) analyticSpinner.getAdapter()).getPositionById(id));
+    }
+
     private void populateUI(OperationWithData operationWithData) {
 
         if (operationWithData == null) {
             return;
         }
 
-        operationDate = operationWithData.getDate();
-        setSelectedDate();
-        edtSum.setText(String.valueOf(operationWithData.getSum()));
-
-        Account operationAccount = operationWithData.getAccount();
-        Category operationCategory = operationWithData.getCategory();
-        Account operationRecipientAccount = operationWithData.getRepAccount();
-
-        setSelectedType(operationWithData.getType());
-
-        //todo fix seting current value - loop
-        accountSpinner.setSelection(((Adapter)accountSpinner.getAdapter()).getPositionById(operationAccount.getId()));
-
-        switch (operationWithData.getType()){
-            case IN:case OUT: {
-                analyticSpinner.setSelection(((Adapter) analyticSpinner.getAdapter()).getPositionById(operationCategory.getId()));
-                break;
-            }
-            case TRANSFER:{
-                analyticSpinner.setSelection(((Adapter) analyticSpinner.getAdapter()).getPositionById(operationRecipientAccount.getId()));
-                break;
-            }
-        }
+        model.setOperationDate(operationWithData.getDate());
+        model.setOperationType(operationWithData.getType());
+        model.setOperationAccount(operationWithData.getAccount());
+        model.setOperationCategory(operationWithData.getCategory());
+        model.setOperationRecAccount(operationWithData.getRepAccount());
+        model.setOperationSum(operationWithData.getSum());
     }
 
     private void setAnalyticAdapter(final OperationType type){
         switch (type){
             case IN: {
                 analyticSpinner.setAdapter(mCategoryInAdapter);
+                setCategory(model.getOperationCategoryId().getValue());
                 break;
             }case OUT:{
                 analyticSpinner.setAdapter(mCategoryOutAdapter);
+                setCategory(model.getOperationCategoryId().getValue());
                 break;
             }case TRANSFER: {
                 analyticSpinner.setAdapter(mRecAccountAdapter);
+                setRecAccount(model.getOperationRecAccountId().getValue());
                 break;
             }
-        }
-    }
-
-    private void setSelectedDate(){
-        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
-        edtDate.setText(format.format(operationDate));
-
-        format.applyPattern("HH:mm");
-        edtTime.setText(format.format(operationDate));
-    }
-
-    private void setSelectedType(OperationType type){
-        switch (type){
-            case IN: {
-                rgType.check(R.id.operation_detail_btnIn);
-                break;
-            }
-            case OUT: {
-                rgType.check(R.id.operation_detail_btnOut);
-               break;
-            }
-            case TRANSFER: {
-                rgType.check(R.id.operation_detail_btnTransfer);
-                break;
-            }
-        }
-    }
-
-    private void onOperationTypeChanged(final OperationType type){
-        setAnalyticAdapter(type);
-
-        if(type == OperationType.TRANSFER){
-            lblAccount.setText(getString(R.string.from));
-            lblAnalytic.setText(getString(R.string.to));
-        }else{
-            lblAccount.setText(getString(R.string.account));
-            lblAnalytic.setText(getString(R.string.category));
-        }
-
-    }
-
-    private OperationType getSelectedType(int id){
-        switch (id){
-            case R.id.operation_detail_btnIn: return OperationType.IN;
-            case R.id.operation_detail_btnOut: return OperationType.OUT;
-            case R.id.operation_detail_btnTransfer: return OperationType.TRANSFER;
-            default: return null;
         }
     }
 
     private void chooseDate(){
-        Calendar calendar = new GregorianCalendar();
+
+        final Date operationDate = model.getOperationDate().getValue();
+        Calendar calendar = Calendar.getInstance();
         calendar.setTime(operationDate);
 
         DatePickerDialog dialog = new DatePickerDialog(
@@ -286,9 +381,7 @@ public class DetailOperationActivity extends DetailActivity {
                         Calendar c = new GregorianCalendar();
                         c.setTime(operationDate);
                         c.set(year, monthOfYear, dayOfMonth);
-                        operationDate = new Date(c.getTimeInMillis());
-
-                        setSelectedDate();
+                        model.setOperationDate(new Date(c.getTimeInMillis()));
                     }
                 },
                 calendar.get(Calendar.YEAR),
@@ -298,7 +391,8 @@ public class DetailOperationActivity extends DetailActivity {
     }
 
     private void chooseTime(){
-        Calendar calendar = new GregorianCalendar();
+        final Date operationDate = model.getOperationDate().getValue();
+        Calendar calendar = Calendar.getInstance();
         calendar.setTime(operationDate);
 
         TimePickerDialog dialog = new TimePickerDialog(
@@ -310,9 +404,7 @@ public class DetailOperationActivity extends DetailActivity {
                         c.setTime(operationDate);
                         c.set(Calendar.HOUR_OF_DAY, hours);
                         c.set(Calendar.MINUTE, minutes);
-                        operationDate = new Date(c.getTimeInMillis());
-
-                        setSelectedDate();
+                        model.setOperationDate(new Date(c.getTimeInMillis()));
                     }
                 },
                 calendar.get(Calendar.HOUR_OF_DAY),
@@ -323,49 +415,20 @@ public class DetailOperationActivity extends DetailActivity {
 
     @Override
     public void saveObject(){
-        int sum = (int) sumWatcher.getLong(edtSum.getText().toString());
+        model.saveObject();
+    }
 
-        if(sum==0){
-            edtSum.setError(getString(R.string.error_fill_sum));
-            return;
+    private class sumWather extends NumberTextWatcherForThousand{
+
+        public sumWather(EditText editText) {
+            super(editText);
         }
 
-        Account operationAccount = (Account) accountSpinner.getSelectedItem();
-
-        int accountId = operationAccount == null ? 0 : operationAccount.getId();
-        if(accountId <=0){
-            Toast.makeText(this, getString(R.string.error_choose_account), Toast.LENGTH_SHORT).show();
-            return;
+        @Override
+        public void afterTextChanged(Editable s) {
+            super.afterTextChanged(s);
+            model.setOperationSum((int)this.getLong(s.toString()));
         }
-
-        Integer categoryId = null;
-        Integer recAccountId = null;
-
-        OperationType type = getSelectedType(rgType.getCheckedRadioButtonId());
-        switch (type){
-            case IN: case OUT:{
-                Category operationCategory = (Category) analyticSpinner.getSelectedItem();
-                categoryId = operationCategory == null ? -1 : operationCategory.getId();
-                if (categoryId <= 0){
-                    Toast.makeText(this, getString(R.string.error_choose_category), Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                break;
-            }
-            case TRANSFER:{
-                Account operationRecipientAccount = (Account) analyticSpinner.getSelectedItem();
-                recAccountId = operationRecipientAccount == null ? -1 : operationRecipientAccount.getId();
-                if(recAccountId <= 0){
-                    Toast.makeText(this, getString(R.string.error_choose_rep_account), Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                break;
-            }
-        }
-
-        final Operation operation = new Operation(operationDate, type, accountId, categoryId, recAccountId, sum);
-        model.saveObject(operation);
-        finish();
     }
 
     private class Adapter<T> extends ArrayAdapter<T>{

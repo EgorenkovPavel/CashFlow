@@ -65,7 +65,7 @@ public class OperationMasterViewModel extends AndroidViewModel {
         recAccounts = Transformations.switchMap(mOperationAccount, new Function<AccountWithBalance, LiveData<List<AccountWithBalance>>>() {
             @Override
             public LiveData<List<AccountWithBalance>> apply(AccountWithBalance account) {
-                if (account == null) return new MutableLiveData<>();
+                if (account == null) return mDb.accountDao().loadAllAccountsWithBalance();
                 return mDb.accountDao().loadAllAccountsWithBalanceExceptId(account.getId());
             }
         });
