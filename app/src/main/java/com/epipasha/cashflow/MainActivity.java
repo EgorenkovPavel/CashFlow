@@ -17,8 +17,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.epipasha.cashflow.activities.BackupActivity;
 import com.epipasha.cashflow.activities.DetailAccountActivity;
 import com.epipasha.cashflow.activities.DetailCategoryActivity;
+import com.epipasha.cashflow.activities.OperationMasterActivity;
+import com.epipasha.cashflow.activities.PreferencesActivity;
 import com.epipasha.cashflow.fragments.AccountListFragment;
 import com.epipasha.cashflow.fragments.CategoryListFragment;
 import com.epipasha.cashflow.fragments.OperationListFragment;

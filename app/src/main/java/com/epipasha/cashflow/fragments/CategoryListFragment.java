@@ -15,7 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.AnalyticActivity;
+import com.epipasha.cashflow.activities.AnalyticActivity;
 import com.epipasha.cashflow.activities.DetailCategoryActivity;
 import com.epipasha.cashflow.adapters.CategoryAdapter;
 import com.epipasha.cashflow.data.entites.CategoryWithCashflow;

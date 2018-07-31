@@ -1,4 +1,4 @@
-package com.epipasha.cashflow;
+package com.epipasha.cashflow.fragments;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.Backuper;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;

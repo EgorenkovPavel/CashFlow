@@ -1,4 +1,4 @@
-package com.epipasha.cashflow;
+package com.epipasha.cashflow.activities;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
@@ -12,7 +12,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.epipasha.cashflow.activities.BaseActivity;
+import com.epipasha.cashflow.Prefs;
+import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.AppDatabase;
 import com.epipasha.cashflow.data.AppExecutors;
 import com.epipasha.cashflow.data.dao.AnalyticDao.MonthCashflow;

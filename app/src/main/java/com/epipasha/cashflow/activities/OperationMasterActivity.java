@@ -1,4 +1,4 @@
-package com.epipasha.cashflow;
+package com.epipasha.cashflow.activities;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -20,9 +20,8 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.epipasha.cashflow.activities.BaseActivity;
+import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.AppExecutors;
-import com.epipasha.cashflow.data.entites.Account;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.viewmodel.OperationMasterViewModel;

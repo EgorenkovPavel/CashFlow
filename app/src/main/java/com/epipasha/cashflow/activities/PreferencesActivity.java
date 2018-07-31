@@ -1,4 +1,4 @@
-package com.epipasha.cashflow;
+package com.epipasha.cashflow.activities;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.activities.BaseActivity;
 
 public class PreferencesActivity extends BaseActivity {

@@ -1,4 +1,4 @@
-package com.epipasha.cashflow;
+package com.epipasha.cashflow.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -6,7 +6,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 
+import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.activities.BaseActivity;
+import com.epipasha.cashflow.fragments.BackupFragment;
 
 public class BackupActivity extends BaseActivity {
 
