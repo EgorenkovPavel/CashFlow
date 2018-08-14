@@ -6,7 +6,7 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
 @Entity(tableName = "accounts")
-public class Account implements IEntity {
+public class Account {
 
     @PrimaryKey(autoGenerate = true)
     private int id;

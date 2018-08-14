@@ -11,6 +11,12 @@ public class AccountWithBalance {
     @ColumnInfo(name = "sum")
     private int sum;
 
+    public AccountWithBalance(int id, String title, int sum) {
+        this.id = id;
+        this.title = title;
+        this.sum = sum;
+    }
+
     public int getId() {
         return id;
     }

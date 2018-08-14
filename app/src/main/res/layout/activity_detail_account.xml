@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data class="com.epipasha.cashflow.activities.ActivityDetailAccountBinding">
+        <import type="android.view.View" />
+
+        <variable
+            name="viewmodel"
+            type="com.epipasha.cashflow.data.viewmodel.AccountDetailViewModel"/>
+
+    </data>
+<LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -15,7 +26,8 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/actionBarSize"
-                app:popupTheme="@style/AppTheme.PopupOverlay" />
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+                app:title="@{viewmodel.isNew ? @string/new_account : @string/account}" />
 
         </android.support.design.widget.AppBarLayout>
 
@@ -38,6 +50,8 @@
             android:background="@drawable/input_field"
             android:ems="10"
             android:inputType="textPersonName"
-            android:padding="8dp"/>
+            android:padding="8dp"
+            android:text="@={viewmodel.account.title}"/>
 
-    </LinearLayout>
+</LinearLayout>
+</layout>

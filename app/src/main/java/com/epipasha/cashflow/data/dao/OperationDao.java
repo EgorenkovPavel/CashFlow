@@ -37,6 +37,9 @@ public abstract class OperationDao {
     @Query("SELECT * FROM operations WHERE id = :id")
     public abstract LiveData<Operation> loadOperationById(int id);
 
+    @Query("SELECT * FROM operations WHERE id = :id")
+    public abstract Operation getOperationById(int id);
+
     @Query("SELECT operations.id as id, "
             + "operations.date as date, "
             + "operations.type as type, "

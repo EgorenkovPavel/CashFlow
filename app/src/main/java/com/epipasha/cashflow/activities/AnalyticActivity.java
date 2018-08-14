@@ -101,7 +101,7 @@ public class AnalyticActivity extends BaseActivity {
                 values[5] = Prefs.AnalyticChartPrefs.showCashflowGraphic(this);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Choose grafics")
+                builder.setTitle("Choose graphics")
                         .setMultiChoiceItems(titles, values, new DialogInterface.OnMultiChoiceClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i, boolean b) {

@@ -19,6 +19,9 @@ public interface AccountDao {
     @Query("SELECT * FROM accounts ORDER BY title")
     LiveData<List<Account>> loadAllAccounts();
 
+    @Query("SELECT * FROM accounts ORDER BY title")
+    List<Account> getAllAccounts();
+
     @Query("SELECT * FROM accounts WHERE id != :id ORDER BY title")
     LiveData<List<Account>> loadAllAccountsExceptId(int id);
 
@@ -35,6 +38,20 @@ public interface AccountDao {
             + "ON accounts.id = balance.account_id "
             + "ORDER BY title")
     LiveData<List<AccountWithBalance>> loadAllAccountsWithBalance();
+
+    @Query("SELECT accounts.id as id, "
+            + "accounts.title as title, "
+            + "balance.sum as sum "
+            + "FROM accounts as accounts "
+            + "LEFT OUTER JOIN "
+            + "(SELECT "
+            + "balance.account_id as account_id, "
+            + "SUM(balance.sum) as sum "
+            + "FROM balance "
+            + "GROUP BY balance.account_id) as balance "
+            + "ON accounts.id = balance.account_id "
+            + "ORDER BY title")
+    List<AccountWithBalance> getAllAccountsWithBalance();
 
     @Query("SELECT accounts.id as id, "
             + "accounts.title as title, "
@@ -68,5 +85,8 @@ public interface AccountDao {
 
     @Query("SELECT * FROM accounts WHERE id = :id")
     LiveData<Account> loadAccountById(int id);
+
+    @Query("SELECT * FROM accounts WHERE id = :id")
+    Account getAccountById(int id);
 
 }

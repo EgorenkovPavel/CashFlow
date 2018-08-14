@@ -8,7 +8,7 @@ import android.arch.persistence.room.PrimaryKey;
 import com.epipasha.cashflow.objects.OperationType;
 
 @Entity(tableName = "categories")
-public class Category implements IEntity{
+public class Category{
 
     @PrimaryKey(autoGenerate = true)
     private int id;

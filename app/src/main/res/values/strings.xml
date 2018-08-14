@@ -75,12 +75,12 @@
     <string name="chart">Chart</string>
     <string name="delete">Delete</string>
     <string name="time">Time</string>
-    <string name="pref_analytic_chart_show_in_graphic" translatable="false">pref_analytic_chart_show_in_grafic</string>
-    <string name="pref_analytic_chart_show_out_graphic" translatable="false">pref_analytic_chart_show_out_grafic</string>
-    <string name="pref_analytic_chart_show_in_budget_graphic" translatable="false">pref_analytic_chart_show_in_budget_grafic</string>
-    <string name="pref_analytic_chart_show_out_budget_graphic" translatable="false">pref_analytic_chart_show_out_budget_grafic</string>
-    <string name="pref_analytic_chart_show_cashflow_graphic" translatable="false">pref_analytic_chart_show_cashflow_grafic</string>
-    <string name="pref_analytic_chart_show_delta_graphic" translatable="false">pref_analytic_chart_show_delta_grafic</string>
+    <string name="pref_analytic_chart_show_in_graphic" translatable="false">pref_analytic_chart_show_in_graphic</string>
+    <string name="pref_analytic_chart_show_out_graphic" translatable="false">pref_analytic_chart_show_out_graphic</string>
+    <string name="pref_analytic_chart_show_in_budget_graphic" translatable="false">pref_analytic_chart_show_in_budget_graphic</string>
+    <string name="pref_analytic_chart_show_out_budget_graphic" translatable="false">pref_analytic_chart_show_out_budget_graphic</string>
+    <string name="pref_analytic_chart_show_cashflow_graphic" translatable="false">pref_analytic_chart_show_cashflow_graphic</string>
+    <string name="pref_analytic_chart_show_delta_graphic" translatable="false">pref_analytic_chart_show_delta_graphic</string>
     <string name="no_type">Select type</string>
 
 

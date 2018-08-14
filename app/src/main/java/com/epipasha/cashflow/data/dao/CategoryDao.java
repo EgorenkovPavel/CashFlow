@@ -41,6 +41,9 @@ public interface CategoryDao {
     @Query("SELECT * FROM categories WHERE type = :type ORDER BY title")
     LiveData<List<Category>> loadAllCategoriesByType(OperationType type);
 
+    @Query("SELECT * FROM categories WHERE type = :type ORDER BY title")
+    List<Category> getAllCategoriesByType(OperationType type);
+
     @Insert
     void insertCategory(Category category);
 
@@ -58,4 +61,7 @@ public interface CategoryDao {
 
     @Query("SELECT * FROM categories WHERE id = :id")
     LiveData<Category> loadCategoryById(int id);
+
+    @Query("SELECT * FROM categories WHERE id = :id")
+    Category getCategoryById(int id);
 }

@@ -1,191 +1,216 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/appBarLayout"
+    <data class="com.epipasha.cashflow.activities.ActivityDetailOperationBinding">
+        <import type="com.epipasha.cashflow.objects.OperationType" />
+
+        <variable
+            name="viewmodel"
+            type="com.epipasha.cashflow.data.viewmodel.OperationDetailViewModel" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-    </android.support.design.widget.AppBarLayout>
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/actionBarSize"
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+                app:title="@{viewmodel.isNew ? @string/new_operation : @string/operation}" />
 
-    <TextView
-        android:id="@+id/lblDate"
-        style="@style/label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1"
-        android:text="@string/date"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+        </android.support.design.widget.AppBarLayout>
 
-    <TextView
-        android:id="@+id/lblDate2"
-        style="@style/label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="@string/time"
-        app:layout_constraintBottom_toTopOf="@+id/operation_detail_time"
-        app:layout_constraintStart_toStartOf="@+id/operation_detail_time" />
+        <TextView
+            android:id="@+id/lblDate"
+            style="@style/label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_weight="1"
+            android:text="@string/date"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/appBarLayout"/>
 
-    <TextView
-        android:id="@+id/operation_detail_date"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
-        android:layout_marginStart="16dp"
-        android:layout_weight="1"
-        android:background="@drawable/input_field"
-        android:gravity="fill_vertical"
-        android:padding="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintEnd_toStartOf="@+id/operation_detail_time"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lblDate"
-        tools:text="12.10.2018" />
+        <TextView
+            android:id="@+id/lblDate2"
+            style="@style/label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/time"
+            app:layout_constraintBottom_toTopOf="@+id/operation_detail_time"
+            app:layout_constraintStart_toStartOf="@+id/operation_detail_time" />
 
-    <TextView
-        android:id="@+id/operation_detail_time"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="4dp"
-        android:layout_weight="1"
-        android:background="@drawable/input_field"
-        android:gravity="fill_vertical"
-        android:padding="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/operation_detail_date"
-        app:layout_constraintTop_toTopOf="@+id/operation_detail_date"
-        tools:text="14.25" />
+        <TextView
+            android:id="@+id/operation_detail_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:background="@drawable/input_field"
+            android:gravity="fill_vertical"
+            android:padding="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:date="@{viewmodel.operation.date}"
+            app:layout_constraintEnd_toStartOf="@+id/operation_detail_time"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lblDate"
+            tools:text="12.10.2018"/>
 
-    <TextView
-        android:id="@+id/lblType"
-        style="@style/label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/type"
-        app:layout_constraintStart_toStartOf="@+id/lblDate"
-        app:layout_constraintTop_toBottomOf="@+id/operation_detail_date" />
+        <TextView
+            android:id="@+id/operation_detail_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/input_field"
+            android:gravity="fill_vertical"
+            android:padding="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/operation_detail_date"
+            app:layout_constraintTop_toTopOf="@+id/operation_detail_date"
+            app:time="@{viewmodel.operation.date}"
+            tools:text="14.25"/>
 
-    <TextView
-        android:id="@+id/operation_detail_label_account"
-        style="@style/label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_weight="1"
-        android:text="@string/account"
-        app:layout_constraintStart_toStartOf="@+id/operation_detail_type_group"
-        app:layout_constraintTop_toBottomOf="@+id/operation_detail_type_group" />
+        <TextView
+            android:id="@+id/lblType"
+            style="@style/label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/type"
+            app:layout_constraintStart_toStartOf="@+id/lblDate"
+            app:layout_constraintTop_toBottomOf="@+id/operation_detail_date" />
 
-    <Spinner
-        android:id="@+id/operation_detail_account"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:layout_weight="1"
-        android:background="@drawable/input_field"
-        android:dropDownWidth="match_parent"
-        app:layout_constraintEnd_toEndOf="@+id/operation_detail_time"
-        app:layout_constraintStart_toStartOf="@+id/operation_detail_label_account"
-        app:layout_constraintTop_toBottomOf="@+id/operation_detail_label_account" />
+        <TextView
+            android:id="@+id/operation_detail_label_account"
+            style="@style/label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:text="@{viewmodel.operation.type == OperationType.TRANSFER ? @string/from : @string/account}"
+            app:layout_constraintStart_toStartOf="@+id/operation_detail_type_group"
+            app:layout_constraintTop_toBottomOf="@+id/operation_detail_type_group" />
 
-    <Spinner
-        android:id="@+id/operation_detail_category"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:background="@drawable/input_field"
-        android:dropDownWidth="match_parent"
-        android:spinnerMode="dropdown"
-        app:layout_constraintEnd_toEndOf="@+id/operation_detail_account"
-        app:layout_constraintStart_toStartOf="@+id/operation_detail_label_category"
-        app:layout_constraintTop_toBottomOf="@+id/operation_detail_label_category" />
+        <Spinner
+            android:id="@+id/operation_detail_account"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:background="@drawable/input_field"
+            android:dropDownWidth="match_parent"
+            android:entries="@{viewmodel.accounts}"
+            android:selectedItemPosition="@={viewmodel.accountPosition}"
+            app:layout_constraintEnd_toEndOf="@+id/operation_detail_time"
+            app:layout_constraintStart_toStartOf="@+id/operation_detail_label_account"
+            app:layout_constraintTop_toBottomOf="@+id/operation_detail_label_account"
+            android:onItemSelected="@{(parent,view,pos,id)->viewmodel.onAccountSelected(pos)}"/>
 
-    <TextView
-        android:id="@+id/operation_detail_label_category"
-        style="@style/label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/category"
-        app:layout_constraintStart_toStartOf="@+id/operation_detail_account"
-        app:layout_constraintTop_toBottomOf="@+id/operation_detail_account" />
+        <Spinner
+            android:id="@+id/operation_detail_category"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:background="@drawable/input_field"
+            android:dropDownWidth="match_parent"
+            android:entries="@{viewmodel.analytic}"
+            android:selectedItemPosition="@={viewmodel.analyticPosition}"
+            android:spinnerMode="dropdown"
+            app:layout_constraintEnd_toEndOf="@+id/operation_detail_account"
+            app:layout_constraintStart_toStartOf="@+id/operation_detail_label_category"
+            app:layout_constraintTop_toBottomOf="@+id/operation_detail_label_category"/>
 
-    <TextView
-        android:id="@+id/lblSum"
-        style="@style/label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_weight="1"
-        android:labelFor="@id/operation_detail_sum"
-        android:text="@string/sum"
-        app:layout_constraintStart_toStartOf="@+id/operation_detail_category"
-        app:layout_constraintTop_toBottomOf="@+id/operation_detail_category" />
+        <TextView
+            android:id="@+id/operation_detail_label_category"
+            style="@style/label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@{viewmodel.operation.type == OperationType.TRANSFER ? @string/to : @string/category}"
+            app:layout_constraintStart_toStartOf="@+id/operation_detail_account"
+            app:layout_constraintTop_toBottomOf="@+id/operation_detail_account" />
 
-    <EditText
-        android:id="@+id/operation_detail_sum"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="@drawable/input_field"
-        android:gravity="end"
-        android:inputType="numberDecimal"
-        android:padding="8dp"
-        app:layout_constraintEnd_toEndOf="@+id/operation_detail_category"
-        app:layout_constraintStart_toStartOf="@+id/lblSum"
-        app:layout_constraintTop_toBottomOf="@+id/lblSum"
-        tools:text="1000" />
+        <TextView
+            android:id="@+id/lblSum"
+            style="@style/label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:labelFor="@id/operation_detail_sum"
+            android:text="@string/sum"
+            app:layout_constraintStart_toStartOf="@+id/operation_detail_category"
+            app:layout_constraintTop_toBottomOf="@+id/operation_detail_category" />
 
-    <RadioGroup
-        android:id="@+id/operation_detail_type_group"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="@+id/operation_detail_time"
-        app:layout_constraintStart_toStartOf="@+id/lblType"
-        app:layout_constraintTop_toBottomOf="@+id/lblType">
+        <EditText
+            android:id="@+id/operation_detail_sum"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/input_field"
+            android:gravity="end"
+            android:inputType="numberDecimal"
+            android:padding="8dp"
+            app:layout_constraintEnd_toEndOf="@+id/operation_detail_category"
+            app:layout_constraintStart_toStartOf="@+id/lblSum"
+            app:layout_constraintTop_toBottomOf="@+id/lblSum"
+            tools:text="1000"
+            app:sum="@{viewmodel.operation.sum}"
+            android:addTextChangedListener="@{viewmodel.watcher}"/>
 
-        <RadioButton
-            android:id="@+id/operation_detail_btnIn"
-            style="@style/TypeButton"
-            tools:checked="true"
-            android:text="@string/in" />
+        <RadioGroup
+            android:id="@+id/operation_detail_type_group"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="@+id/operation_detail_time"
+            app:layout_constraintStart_toStartOf="@+id/lblType"
+            app:layout_constraintTop_toBottomOf="@+id/lblType">
 
-        <RadioButton
-            android:id="@+id/operation_detail_btnOut"
-            style="@style/TypeButton"
-            android:checked="false"
-            android:text="@string/out" />
+            <RadioButton
+                android:id="@+id/operation_detail_btnIn"
+                style="@style/TypeButton"
+                android:checked="@{viewmodel.operation.type == OperationType.IN}"
+                android:onClick="@{() -> viewmodel.setOperationType(OperationType.IN)}"
+                android:text="@string/in" />
 
-        <RadioButton
-            android:id="@+id/operation_detail_btnTransfer"
-            style="@style/TypeButton"
-            android:checked="false"
-            android:text="@string/transfer" />
+            <RadioButton
+                android:id="@+id/operation_detail_btnOut"
+                style="@style/TypeButton"
+                android:checked="@{viewmodel.operation.type == OperationType.OUT}"
+                android:onClick="@{() -> viewmodel.setOperationType(OperationType.OUT)}"
+                android:text="@string/out" />
 
-    </RadioGroup>
+            <RadioButton
+                android:id="@+id/operation_detail_btnTransfer"
+                style="@style/TypeButton"
+                android:checked="@{viewmodel.operation.type == OperationType.TRANSFER}"
+                android:onClick="@{() -> viewmodel.setOperationType(OperationType.TRANSFER)}"
+                android:text="@string/transfer" />
 
-</android.support.constraint.ConstraintLayout>
+        </RadioGroup>
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

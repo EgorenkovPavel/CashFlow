@@ -1,10 +1,9 @@
 package com.epipasha.cashflow.activities;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
@@ -14,13 +13,12 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.data.AppDatabase;
-import com.epipasha.cashflow.data.AppExecutors;
-import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.dao.AnalyticDao.MonthCashflow;
 import com.epipasha.cashflow.data.entites.Category;
+import com.epipasha.cashflow.data.viewmodel.AccountDetailViewModel;
 import com.epipasha.cashflow.data.viewmodel.CategoryDetailViewModel;
-import com.epipasha.cashflow.data.viewmodel.ModelFactory;
+import com.epipasha.cashflow.data.viewmodel.ViewModelFactory;
+import com.epipasha.cashflow.databinding.ActivityDetailCategoryBinding;
 import com.epipasha.cashflow.objects.OperationType;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -44,7 +42,6 @@ public class DetailCategoryActivity extends DetailActivity{
     public static final String EXTRA_CATEGORY_ID = "extraCategoryId";
 
     private static final int DEFAULT_CATEGORY_ID = -1;
-    private int mCategoryId = DEFAULT_CATEGORY_ID;
     private CategoryDetailViewModel model;
 
     private EditText etTitle, etBudget;
@@ -54,99 +51,32 @@ public class DetailCategoryActivity extends DetailActivity{
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail_category);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        ActivityDetailCategoryBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_detail_category);
+
+        setSupportActionBar(binding.toolbar);
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        etTitle = findViewById(R.id.category_detail_name);
-        etBudget = findViewById(R.id.category_detail_budget);
-        rgType = findViewById(R.id.type_group);
+        model = ViewModelProviders.of(this, ViewModelFactory.getInstance(getApplication()))
+                .get(CategoryDetailViewModel.class);
+
+        binding.setViewmodel(model);
+
         mChart = findViewById(R.id.chart);
 
         Intent i = getIntent();
         if(i != null && i.hasExtra(EXTRA_CATEGORY_ID)){
-            setTitle(getString(R.string.category));
-            mCategoryId = i.getIntExtra(EXTRA_CATEGORY_ID, DEFAULT_CATEGORY_ID);
-        }else
-            setTitle(getString(R.string.new_category));
-
-        model = ViewModelProviders.of(this, new ModelFactory(getApplication(), mCategoryId)).get(CategoryDetailViewModel.class);
-        model.getCategory().observe(this, new Observer<Category>() {
-            @Override
-            public void onChanged(@Nullable Category category) {
-                populateUI(category);
-            }
-        });
-        model.getMonthCashflow().observe(this, new Observer<List<MonthCashflow>>() {
-            @Override
-            public void onChanged(@Nullable List<MonthCashflow> monthCashflows) {
-                loadChart(monthCashflows);
-            }
-        });
-
-    }
-
-    private OperationType getSelectedType(){
-        switch (rgType.getCheckedRadioButtonId()){
-            case R.id.category_detail_in: return OperationType.IN;
-            case R.id.category_detail_out: return OperationType.OUT;
-            default: return null;
-        }
-    }
-
-    private void setCheckedType(OperationType type){
-        switch (type){
-            case IN:{
-                rgType.check(R.id.category_detail_in);
-                break;
-            }
-            case OUT:{
-                rgType.check(R.id.category_detail_out);
-                break;
-            }
+            int mCategoryId = i.getIntExtra(EXTRA_CATEGORY_ID, DEFAULT_CATEGORY_ID);
+            model.start(mCategoryId);
         }
     }
 
     @Override
     public void saveObject(){
-        String title = etTitle.getText().toString();
-
-        if(title.isEmpty()){
-            etTitle.setError(getString(R.string.error_fill_title));
-            return;
-        }
-
-        int budget = 0;
-        try {
-            budget = Integer.valueOf(etBudget.getText().toString());
-        }catch (Exception e){
-            etBudget.setError(getString(R.string.error_fill_budget));
-            return;
-        }
-
-        OperationType type = getSelectedType();
-
-        if (type == null){
-            return;
-        }
-
-        Category category = new Category(title, type, budget);
-
-        model.saveObject(category);
+        model.saveObject();
         finish();
 
-    }
-
-    private void populateUI(Category category) {
-        if (category == null) {
-            return;
-        }
-
-        etTitle.setText(category.getTitle());
-        etBudget.setText(String.valueOf(category.getBudget()));
-        setCheckedType(category.getType());
     }
 
     private void loadChart(List<MonthCashflow> monthCashflows){

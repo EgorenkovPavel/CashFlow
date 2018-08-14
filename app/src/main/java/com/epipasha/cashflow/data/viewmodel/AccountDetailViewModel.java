@@ -4,49 +4,62 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.databinding.ObservableBoolean;
+import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 
-import com.epipasha.cashflow.data.AppDatabase;
-import com.epipasha.cashflow.data.AppExecutors;
+import com.epipasha.cashflow.R;
+import com.epipasha.cashflow.data.DataSource;
+import com.epipasha.cashflow.data.Repository;
 import com.epipasha.cashflow.data.entites.Account;
 
-public class AccountDetailViewModel extends AndroidViewModel {
+public class AccountDetailViewModel extends AndroidViewModel implements DataSource.GetAccountCallback {
 
-    private static final int DEFAULT_ACCOUNT_ID = -1;
+    private final DataSource mRepository;
 
-    private AppDatabase mDb;
-    private LiveData<Account> mAccount;
-    private int mAccountId;
+    private ObservableBoolean isNew = new ObservableBoolean(true);
+    private ObservableField<Account> mAccount = new ObservableField<>();
 
-    public AccountDetailViewModel(@NonNull Application application, int id) {
+    public AccountDetailViewModel(@NonNull Application application, Repository repository) {
         super(application);
-
-        mAccountId = id;
-
-        mDb = AppDatabase.getInstance(this.getApplication());
-
-        if (mAccountId == DEFAULT_ACCOUNT_ID)
-            mAccount = new MutableLiveData<>();
-        else
-            mAccount = mDb.accountDao().loadAccountById(mAccountId);
-
+        mRepository = repository;
+        mAccount.set(new Account(""));
     }
 
-    public LiveData<Account> getAccount() {
+    public void start(int accountId){
+        mRepository.getAccountById(accountId, this);
+    }
+
+    public ObservableBoolean getIsNew() {
+        return isNew;
+    }
+
+    public ObservableField<Account> getAccount() {
         return mAccount;
     }
 
-    public void saveAccount(final Account account){
-        AppExecutors.getInstance().discIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                if(mAccountId == DEFAULT_ACCOUNT_ID){
-                    mDb.accountDao().insertAccount(account);
-                }else{
-                    account.setId(mAccountId);
-                    mDb.accountDao().updateAccount(account);
-                }
-            }
-        });
+    public void saveAccount(){
+        Account account = mAccount.get();
+
+        if (account == null){
+            return;
+        }
+
+        if(isNew.get()){
+            mRepository.insertAccount(account);
+        }else{
+            mRepository.updateAccount(account);
+        }
+    }
+
+    @Override
+    public void onAccountLoaded(Account account) {
+        mAccount.set(account);
+        isNew.set(false);
+    }
+
+    @Override
+    public void onDataNotAvailable() {
+        //mAccount.postValue(null);
     }
 }
