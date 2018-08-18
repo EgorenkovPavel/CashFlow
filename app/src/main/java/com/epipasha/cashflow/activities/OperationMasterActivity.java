@@ -3,20 +3,16 @@ package com.epipasha.cashflow.activities;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -25,6 +21,7 @@ import com.epipasha.cashflow.data.AppExecutors;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.viewmodel.OperationMasterViewModel;
+import com.epipasha.cashflow.data.viewmodel.ViewModelFactory;
 import com.epipasha.cashflow.objects.OperationType;
 
 import java.util.List;
@@ -41,17 +38,14 @@ public class OperationMasterActivity extends BaseActivity{
 
     private ViewGroup parentContainer;
     private Spinner spinAccount, spinAnalytic;
-    private TextView lblSum, lblAnalytic;
-    private RadioButton rbIn, rbOut, rbTransfer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_operation_master);
 
-        Toolbar myToolbar = findViewById(R.id.toolbar);
-        myToolbar.setTitle(getString(R.string.operation_master));
-        setSupportActionBar(myToolbar);
+        ActivityOperationMasterBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_operation_master);
+
+        setSupportActionBar(binding.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         findViews();
@@ -60,7 +54,9 @@ public class OperationMasterActivity extends BaseActivity{
 
         spinAccount.setAdapter(mAccountAdapter);
 
-        model = ViewModelProviders.of(this).get(OperationMasterViewModel.class);
+        model = ViewModelProviders.of(this, ViewModelFactory.getInstance(getApplication())).get(OperationMasterViewModel.class);
+
+        binding.setViewmodel(model);
 
         model.getAccounts().observe(this, new Observer<List<AccountWithBalance>>() {
             @Override
@@ -103,22 +99,7 @@ public class OperationMasterActivity extends BaseActivity{
             public void onChanged(@Nullable OperationType type) {
                 if(type == null) return;
 
-                rbIn.setChecked(type == OperationType.IN);
-                rbOut.setChecked(type == OperationType.OUT);
-                rbTransfer.setChecked(type == OperationType.TRANSFER);
-
-                switch (type){
-                    case IN: case OUT:{
-                        lblAnalytic.setText(getString(R.string.category));
-                        break;
-                    }
-                    case TRANSFER:{
-                        lblAnalytic.setText(getString(R.string.account));
-                        break;
-                    }
-                }
-
-                switch (type){
+                 switch (type){
                     case IN:{
                         spinAnalytic.setAdapter(mCategoryInAdapter);
                         break;
@@ -132,20 +113,6 @@ public class OperationMasterActivity extends BaseActivity{
                         break;
                     }
                 }
-            }
-        });
-
-        model.getOperationSum().observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(@Nullable Integer sum) {
-                lblSum.setText(String.format(Locale.getDefault(),"%,d",sum));
-            }
-        });
-
-        model.getOperationAccount().observe(this, new Observer<AccountWithBalance>() {
-            @Override
-            public void onChanged(@Nullable AccountWithBalance account) {
-                spinAccount.setSelection(mAccountAdapter.getPosition(account));
             }
         });
 
@@ -222,117 +189,12 @@ public class OperationMasterActivity extends BaseActivity{
 
         parentContainer = findViewById(R.id.master_container);
 
-        rbIn = findViewById(R.id.btnIn);
-        rbOut = findViewById(R.id.btnOut);
-        rbTransfer = findViewById(R.id.btnTransfer);
-
-        RadioGroup groupType = findViewById(R.id.type_group);
-        groupType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId){
-                    case R.id.btnIn : {
-                        model.onOperationTypeChanged(OperationType.IN);
-                        break;
-                    }
-                    case R.id.btnOut: {
-                        model.onOperationTypeChanged(OperationType.OUT);
-                        break;
-                    }
-                    case R.id.btnTransfer: {
-                        model.onOperationTypeChanged(OperationType.TRANSFER);
-                        break;
-                    }
-                }
-            }
-        });
-
         spinAccount = findViewById(R.id.spinner_account);
-        spinAccount.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                AccountWithBalance account = mAccountAdapter.getItem(position);
-                model.onOperationAccountChanged(account);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {}
-        });
-
         spinAnalytic = findViewById(R.id.spinner_analytic);
-        spinAnalytic.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(spinAnalytic.getAdapter().equals(mCategoryInAdapter)){
-                    Category category = mCategoryInAdapter.getItem(position);
-                    model.onOperationCategoryChanged(category);
-                }else if(spinAnalytic.getAdapter().equals(mCategoryOutAdapter)){
-                    Category category = mCategoryOutAdapter.getItem(position);
-                    model.onOperationCategoryChanged(category);
-                }else if(spinAnalytic.getAdapter().equals(mRecAccountAdapter)){
-                    AccountWithBalance account = mRecAccountAdapter.getItem(position);
-                    model.onOperationAccountRecChanged(account);
-                }
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
-
-        lblAnalytic = findViewById(R.id.lblAnalytic);
-        lblSum = findViewById(R.id.operation_master_sum);
-
-        Button btn0 = findViewById(R.id.digit_0);
-        Button btn1 = findViewById(R.id.digit_1);
-        Button btn2 = findViewById(R.id.digit_2);
-        Button btn3 = findViewById(R.id.digit_3);
-        Button btn4 = findViewById(R.id.digit_4);
-        Button btn5 = findViewById(R.id.digit_5);
-        Button btn6 = findViewById(R.id.digit_6);
-        Button btn7 = findViewById(R.id.digit_7);
-        Button btn8 = findViewById(R.id.digit_8);
-        Button btn9 = findViewById(R.id.digit_9);
-        ImageButton btnBack = findViewById(R.id.digit_back);
         Button btnMore = findViewById(R.id.operation_master_more);
         Button btnNext = findViewById(R.id.operation_master_next);
 
-        View.OnClickListener onDigitClick = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int digit = 0;
-                switch (view.getId()){
-                    case R.id.digit_0: digit = 0; break;
-                    case R.id.digit_1: digit = 1; break;
-                    case R.id.digit_2: digit = 2; break;
-                    case R.id.digit_3: digit = 3; break;
-                    case R.id.digit_4: digit = 4; break;
-                    case R.id.digit_5: digit = 5; break;
-                    case R.id.digit_6: digit = 6; break;
-                    case R.id.digit_7: digit = 7; break;
-                    case R.id.digit_8: digit = 8; break;
-                    case R.id.digit_9: digit = 9; break;
-                }
-                model.onDigitPressed(digit);
-            }
-        };
-
-        btn0.setOnClickListener(onDigitClick);
-        btn1.setOnClickListener(onDigitClick);
-        btn2.setOnClickListener(onDigitClick);
-        btn3.setOnClickListener(onDigitClick);
-        btn4.setOnClickListener(onDigitClick);
-        btn5.setOnClickListener(onDigitClick);
-        btn6.setOnClickListener(onDigitClick);
-        btn7.setOnClickListener(onDigitClick);
-        btn8.setOnClickListener(onDigitClick);
-        btn9.setOnClickListener(onDigitClick);
-
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                model.onDeleteDigit();
-            }
-        });
         btnMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

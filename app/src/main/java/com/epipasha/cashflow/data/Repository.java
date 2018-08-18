@@ -5,9 +5,12 @@ import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
 import com.epipasha.cashflow.data.entites.Account;
+import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.entites.Operation;
 import com.epipasha.cashflow.objects.OperationType;
+
+import java.util.List;
 
 public class Repository implements DataSource{
 
@@ -54,6 +57,16 @@ public class Repository implements DataSource{
         mLocalDataSource.getAllAccountsWithBalance(callback);
     }
 
+    @Override
+    public LiveData<List<AccountWithBalance>> loadAllAccountsWithBalance() {
+        return mLocalDataSource.loadAllAccountsWithBalance();
+    }
+
+    @Override
+    public LiveData<List<AccountWithBalance>> loadAllAccountsWithBalanceExceptId(int id) {
+        return mLocalDataSource.loadAllAccountsWithBalanceExceptId(id);
+    }
+
     // CATEGORIES
     public void getCategoryById(int id, GetCategoryCallback callback){
         mLocalDataSource.getCategoryById(id, callback);
@@ -70,6 +83,11 @@ public class Repository implements DataSource{
     @Override
     public void getCategoriesByType(OperationType type, GetCategoriesByTypeCallback callback) {
         mLocalDataSource.getCategoriesByType(type, callback);
+    }
+
+    @Override
+    public LiveData<List<Category>> loadAllCategoriesByType(OperationType type) {
+        return mLocalDataSource.loadAllCategoriesByType(type);
     }
 
     // OPERATIONS

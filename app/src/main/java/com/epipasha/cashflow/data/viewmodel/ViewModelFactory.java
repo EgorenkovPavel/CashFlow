@@ -45,7 +45,7 @@ public class ViewModelFactory extends ViewModelProvider.AndroidViewModelFactory 
         else if (modelClass == OperationDetailViewModel.class)
             return (T) new OperationDetailViewModel(mApplication, mRepository);
         else if (modelClass == OperationMasterViewModel.class)
-            return (T) new OperationMasterViewModel(mApplication);//, mRepository);
+            return (T) new OperationMasterViewModel(mApplication, mRepository);
 
         throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
     }

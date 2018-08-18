@@ -1,5 +1,6 @@
 package com.epipasha.cashflow.data;
 
+import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
 import com.epipasha.cashflow.data.entites.Account;
@@ -119,6 +120,16 @@ public class LocalDataSource implements DataSource{
         mAppExecutors.discIO().execute(runnable);
     }
 
+    @Override
+    public LiveData<List<AccountWithBalance>> loadAllAccountsWithBalance() {
+        return mDb.accountDao().loadAllAccountsWithBalance();
+    }
+
+    @Override
+    public LiveData<List<AccountWithBalance>> loadAllAccountsWithBalanceExceptId(int id) {
+        return mDb.accountDao().loadAllAccountsWithBalanceExceptId(id);
+    }
+
     // CATEGORIES
     public void getCategoryById(final int id, final DataSource.GetCategoryCallback callback){
         Runnable runnable = new Runnable() {
@@ -180,6 +191,11 @@ public class LocalDataSource implements DataSource{
         };
 
         mAppExecutors.discIO().execute(runnable);
+    }
+
+    @Override
+    public LiveData<List<Category>> loadAllCategoriesByType(OperationType type) {
+        return mDb.categoryDao().loadAllCategoriesByType(type);
     }
 
     // OPERATIONS

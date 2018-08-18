@@ -6,96 +6,86 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
+import android.databinding.BindingAdapter;
+import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
+import android.widget.TextView;
 
 import com.epipasha.cashflow.Prefs;
 import com.epipasha.cashflow.data.AppDatabase;
 import com.epipasha.cashflow.data.AppExecutors;
+import com.epipasha.cashflow.data.DataSource;
+import com.epipasha.cashflow.data.Repository;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.entites.Operation;
 import com.epipasha.cashflow.objects.OperationType;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class OperationMasterViewModel extends AndroidViewModel {
 
-    private AppDatabase mDb;
+    private DataSource mRepository;
 
     private LiveData<List<AccountWithBalance>> accounts;
     private LiveData<List<Category>> categoriesIn;
     private LiveData<List<Category>> categoriesOut;
-    private LiveData<List<AccountWithBalance>> recAccounts;
+    private MutableLiveData<List<AccountWithBalance>> recAccounts = new MutableLiveData<>();
 
     private MutableLiveData<OperationType> mOperationType;
-    private MutableLiveData<AccountWithBalance> mOperationAccount;
-    private MutableLiveData<Category> mOperationCategory;
-    private MutableLiveData<AccountWithBalance> mOperationRecAccount;
-    private MutableLiveData<Integer> mOperationSum;
 
     private MutableLiveData<Status> mStatus;
 
     private Operation operation;
 
-    public OperationMasterViewModel(@NonNull Application application) {
+    private ObservableField<Operation> mOperation = new ObservableField<>(new Operation(new Date(), OperationType.IN, 0,0,0,0));
+
+    public OperationMasterViewModel(@NonNull Application application, Repository repository) {
         super(application);
 
-        mDb = AppDatabase.getInstance(application);
+        mRepository = repository;
 
         mOperationType = new MutableLiveData<>();
         mOperationType.postValue(OperationType.IN);
 
-        mOperationAccount = new MutableLiveData<>();
-        mOperationCategory = new MutableLiveData<>();
-        mOperationRecAccount = new MutableLiveData<>();
-
-        mOperationSum = new MutableLiveData<>();
-        mOperationSum.postValue(0);
-
         mStatus = new MutableLiveData<>();
 
-        accounts = mDb.accountDao().loadAllAccountsWithBalance();
-        categoriesIn = mDb.categoryDao().loadAllCategoriesByType(OperationType.IN);
-        categoriesOut = mDb.categoryDao().loadAllCategoriesByType(OperationType.OUT);
+        accounts = mRepository.loadAllAccountsWithBalance();
+        categoriesIn = mRepository.loadAllCategoriesByType(OperationType.IN);
+        categoriesOut = mRepository.loadAllCategoriesByType(OperationType.OUT);
+    }
 
-        recAccounts = Transformations.switchMap(mOperationAccount, new Function<AccountWithBalance, LiveData<List<AccountWithBalance>>>() {
-            @Override
-            public LiveData<List<AccountWithBalance>> apply(AccountWithBalance account) {
-                if (account == null) return mDb.accountDao().loadAllAccountsWithBalance();
-                return mDb.accountDao().loadAllAccountsWithBalanceExceptId(account.getId());
-            }
-        });
+    public ObservableField<Operation> getOperation() {
+        return mOperation;
     }
 
     public void onOperationTypeChanged(OperationType type){
         this.mOperationType.postValue(type);
-    }
 
-    public void onOperationAccountChanged(AccountWithBalance account){
-        mOperationAccount.postValue(account);
-    }
-
-    public void onOperationCategoryChanged(Category category){
-        mOperationCategory.postValue(category);
-    }
-
-    public void onOperationAccountRecChanged(AccountWithBalance account){
-        mOperationRecAccount.postValue(account);
+        mOperation.get().setType(type);
+        mOperation.notifyChange();
     }
 
     public void onDigitPressed(int digit){
-        Integer val = mOperationSum.getValue();
-        val = val == null ? 0 : val;
-        val = val * 10 + digit;
-        mOperationSum.postValue(val);
+        int sum = mOperation.get().getSum();
+        sum = sum * 10 + digit;
+        mOperation.get().setSum(sum);
+        mOperation.notifyChange();
     }
 
     public void onDeleteDigit(){
-        Integer val = mOperationSum.getValue();
-        val = val == null ? 0 : val;
+        int val = mOperation.get().getSum();
         val = val/10;
-        mOperationSum.postValue(val);
+        mOperation.get().setSum(val);
+        mOperation.notifyChange();
+    }
+
+    @BindingAdapter("app:sum")
+    public static void onSumChanged(TextView view, int sum){
+        view.setText(String.format(Locale.getDefault(),"%,d",sum));
     }
 
     public LiveData<List<AccountWithBalance>> getAccounts() {
@@ -114,89 +104,96 @@ public class OperationMasterViewModel extends AndroidViewModel {
         return recAccounts;
     }
 
-    public LiveData<Integer> getOperationSum() {
-        return mOperationSum;
-    }
-
     public LiveData<OperationType> getOperationType() {
         return mOperationType;
     }
 
-    public MutableLiveData<AccountWithBalance> getOperationAccount() {
-        return mOperationAccount;
+    public void onAccountSelected(int pos){
+        AccountWithBalance account = accounts.getValue().get(pos);
+
+        mOperation.get().setAccountId(account.getId());
+
+        ArrayList<AccountWithBalance> ac = new ArrayList<>(accounts.getValue());
+        ac.remove(pos);
+        recAccounts.postValue(ac);
     }
 
-    public MutableLiveData<Category> getOperationCategory() {
-        return mOperationCategory;
-    }
+    public void onAnalyticSelected(int pos){
+        Operation operation = mOperation.get();
+        switch (operation.getType()){
+            case IN:{
+                Category category = categoriesIn.getValue().get(pos);
 
-    public MutableLiveData<AccountWithBalance> getOperationRecAccount() {
-        return mOperationRecAccount;
+                operation.setCategoryId(category.getId());
+                operation.setRecipientAccountId(null);
+                break;
+            }
+            case OUT:{
+                Category category = categoriesOut.getValue().get(pos);
+
+                operation.setCategoryId(category.getId());
+                operation.setRecipientAccountId(null);
+                break;
+            }
+            case TRANSFER:{
+                AccountWithBalance account = recAccounts.getValue().get(pos);
+
+                operation.setCategoryId(null);
+                operation.setRecipientAccountId(account.getId());
+                break;
+            }
+        }
     }
 
     public void saveOperation(){
 
-        AccountWithBalance account = mOperationAccount.getValue();
-        if (account == null){
-            mStatus.postValue(Status.EMPTY_ACCOUNT);
-            return;
-        }
+        int accountId = mOperation.get().getAccountId();
 
-        int accountId = account.getId();
         Integer categoryId = null;
         Integer repAccountId = null;
 
-        OperationType type = mOperationType.getValue();
-        if(type == null){
-            mStatus.postValue(Status.EMPTY_TYPE);
-            return;
-        }
+        OperationType type = mOperation.get().getType();
 
         switch (type){
             case IN:case OUT:{
-                Category category = mOperationCategory.getValue();
-                if(category == null){
-                    mStatus.postValue(Status.EMPTY_ANALYTIC);
-                    return;
-                }
-                categoryId = category.getId();
+                categoryId = mOperation.get().getCategoryId();
                 break;
             }case TRANSFER:{
-                AccountWithBalance recAccount = mOperationRecAccount.getValue();
-                if(recAccount == null){
-                    mStatus.postValue(Status.EMPTY_ANALYTIC);
-                    return;
-                }
-                repAccountId = recAccount.getId();
+                repAccountId = mOperation.get().getRecipientAccountId();
+                break;
             }
         }
 
-        Integer sum = mOperationSum.getValue();
-        if(sum == null || sum == 0){
-            mStatus.postValue(Status.EMPTY_SUM);
-            return;
-        }
+        int sum = mOperation.get().getSum();
 
         operation = new Operation(new Date(), type, accountId, categoryId, repAccountId, sum);
-        AppExecutors.getInstance().discIO().execute(new Runnable() {
+        mRepository.insertOperation(operation, new DataSource.InsertOperationCallback() {
             @Override
-            public void run() {
-                int operationId = (int)mDb.operationDao().insertOperationWithAnalytic(operation);
-                operation.setId(operationId);
+            public void onOperationInsertedSuccess(int id) {
+                operation.setId(id);
 
                 mStatus.postValue(Status.OPERATION_SAVED);
-                mOperationSum.postValue(0);
+                mOperation.get().setSum(0);
+            }
+
+            @Override
+            public void onOperationInsertedFailed() {
+
             }
         });
 
     }
 
     public void deleteOperation(){
-        AppExecutors.getInstance().discIO().execute(new Runnable() {
+        mRepository.deleteOperation(operation, new DataSource.DeleteOperationCallback() {
             @Override
-            public void run() {
-                mDb.operationDao().deleteOperation(operation);
+            public void onOperationDeletedSuccess(int numCol) {
                 mStatus.postValue(Status.OPERATION_DELETED);
+            }
+
+            @Override
+            public void onOperationDeletedFailed() {
+
             }
         });
     }
@@ -209,21 +206,21 @@ public class OperationMasterViewModel extends AndroidViewModel {
 
         //todo fix loading prefs
 
-        int accountId = Prefs.OperationMasterPrefs.getAccountId(getApplication());
-
-        List<AccountWithBalance> accountList = accounts.getValue();
-        if (accountList != null)
-            for (AccountWithBalance account:accountList) {
-                if (account.getId() == accountId){
-                    mOperationAccount.postValue(account);
-                }
-            }
-
-
-        //Utils.setPositionById(spinAccount, accountId);
-
-        OperationType type = Prefs.OperationMasterPrefs.getOperationType(getApplication());
-        onOperationTypeChanged(type);
+//        int accountId = Prefs.OperationMasterPrefs.getAccountId(getApplication());
+//
+//        List<AccountWithBalance> accountList = accounts.getValue();
+//        if (accountList != null)
+//            for (AccountWithBalance account:accountList) {
+//                if (account.getId() == accountId){
+//                    mOperationAccount.postValue(account);
+//                }
+//            }
+//
+//
+//        //Utils.setPositionById(spinAccount, accountId);
+//
+//        OperationType type = Prefs.OperationMasterPrefs.getOperationType(getApplication());
+//        onOperationTypeChanged(type);
 
 //        Utils.setPositionById(spinAnalytic,
 //                Prefs.OperationMasterPrefs.getAnalyticId(
@@ -231,31 +228,26 @@ public class OperationMasterViewModel extends AndroidViewModel {
     }
 
     public void savePrefs(){
-        OperationType type = mOperationType.getValue();
+        OperationType type = mOperation.get().getType();
         if(type != null) {
             Prefs.OperationMasterPrefs.saveOperationType(getApplication(), type);
 
             switch (type){
                 case IN: case OUT: {
-                    Category category = mOperationCategory.getValue();
-                    if (category != null) {
-                        Prefs.OperationMasterPrefs.saveAnalyticId(getApplication(), category.getId(), type);
-                    }
+                    int categoryId = mOperation.get().getCategoryId();
+                    Prefs.OperationMasterPrefs.saveAnalyticId(getApplication(), categoryId, type);
                     break;
                 }
                 case TRANSFER:{
-                    AccountWithBalance repAccount = mOperationRecAccount.getValue();
-                    if (repAccount != null) {
-                        Prefs.OperationMasterPrefs.saveAnalyticId(getApplication(), repAccount.getId(), type);
-                    }
+                    int repAccountId = mOperation.get().getRecipientAccountId();
+                    Prefs.OperationMasterPrefs.saveAnalyticId(getApplication(), repAccountId, type);
                     break;
                 }
             }
         }
 
-        AccountWithBalance account = mOperationAccount.getValue();
-        if (account != null)
-            Prefs.OperationMasterPrefs.saveAccountId(getApplication(), account.getId());
+        int accountId = mOperation.get().getAccountId();
+        Prefs.OperationMasterPrefs.saveAccountId(getApplication(), accountId);
 
     }
 

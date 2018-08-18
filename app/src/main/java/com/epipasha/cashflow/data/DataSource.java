@@ -1,5 +1,7 @@
 package com.epipasha.cashflow.data;
 
+import android.arch.lifecycle.LiveData;
+
 import com.epipasha.cashflow.data.entites.Account;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
@@ -56,31 +58,38 @@ public interface DataSource {
     }
 
     // ACCOUNTS
-    public void getAccountById(int id, GetAccountCallback callback);
+    void getAccountById(int id, GetAccountCallback callback);
 
-    public void insertAccount(Account account);
+    void insertAccount(Account account);
 
-    public void updateAccount(Account account);
+    void updateAccount(Account account);
 
-    public void getAllAccounts(GetAccountsCallback callback);
+    void getAllAccounts(GetAccountsCallback callback);
 
-    public void getAllAccountsWithBalance(GetAccountsWithBalanceCallback callback);
+    void getAllAccountsWithBalance(GetAccountsWithBalanceCallback callback);
+
+    LiveData<List<AccountWithBalance>> loadAllAccountsWithBalance();
+
+    LiveData<List<AccountWithBalance>> loadAllAccountsWithBalanceExceptId(int id);
 
     // CATEGORIES
-    public void getCategoryById(int id, GetCategoryCallback callback);
+    void getCategoryById(int id, GetCategoryCallback callback);
 
-    public void insertCategory(Category category);
+    void insertCategory(Category category);
 
-    public void updateCategory(Category category);
+    void updateCategory(Category category);
 
-    public void getCategoriesByType(OperationType type, GetCategoriesByTypeCallback callback);
+    void getCategoriesByType(OperationType type, GetCategoriesByTypeCallback callback);
+
+    LiveData<List<Category>> loadAllCategoriesByType(OperationType type);
 
     // OPERATIONS
-    public void getOperationById(int id, GetOperationCallback callback);
+    void getOperationById(int id, GetOperationCallback callback);
 
-    public void insertOperation(Operation operation, InsertOperationCallback callback);
+    void insertOperation(Operation operation, InsertOperationCallback callback);
 
-    public void updateOperation(Operation operation, UpdateOperationCallback callback);
+    void updateOperation(Operation operation, UpdateOperationCallback callback);
 
-    public void deleteOperation(Operation operation, DeleteOperationCallback callback);
+    void deleteOperation(Operation operation, DeleteOperationCallback callback);
+
 }
