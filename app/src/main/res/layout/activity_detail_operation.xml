@@ -45,7 +45,7 @@
             android:layout_weight="1"
             android:text="@string/date"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/appBarLayout"/>
+            app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
 
         <TextView
             android:id="@+id/lblDate2"
@@ -73,7 +73,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lblDate"
-            tools:text="12.10.2018"/>
+            tools:text="12.10.2018" />
 
         <TextView
             android:id="@+id/operation_detail_time"
@@ -91,7 +91,7 @@
             app:layout_constraintStart_toEndOf="@+id/operation_detail_date"
             app:layout_constraintTop_toTopOf="@+id/operation_detail_date"
             app:time="@{viewmodel.operation.date}"
-            tools:text="14.25"/>
+            tools:text="14.25" />
 
         <TextView
             android:id="@+id/lblType"
@@ -112,44 +112,52 @@
             android:layout_weight="1"
             android:text="@{viewmodel.operation.type == OperationType.TRANSFER ? @string/from : @string/account}"
             app:layout_constraintStart_toStartOf="@+id/operation_detail_type_group"
-            app:layout_constraintTop_toBottomOf="@+id/operation_detail_type_group" />
+            app:layout_constraintTop_toBottomOf="@+id/operation_detail_type_group"
+            tools:text="@string/account" />
 
         <Spinner
             android:id="@+id/operation_detail_account"
             android:layout_width="0dp"
             android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
             android:layout_weight="1"
             android:background="@drawable/input_field"
             android:dropDownWidth="match_parent"
             android:entries="@{viewmodel.accounts}"
+            android:onItemSelected="@{(parent,view,pos,id)->viewmodel.onAccountSelected(pos)}"
             android:selectedItemPosition="@={viewmodel.accountPosition}"
-            app:layout_constraintEnd_toEndOf="@+id/operation_detail_time"
-            app:layout_constraintStart_toStartOf="@+id/operation_detail_label_account"
-            app:layout_constraintTop_toBottomOf="@+id/operation_detail_label_account"
-            android:onItemSelected="@{(parent,view,pos,id)->viewmodel.onAccountSelected(pos)}"/>
+            app:layout_constraintEnd_toStartOf="@+id/operation_detail_category"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/operation_detail_label_account" />
 
         <Spinner
             android:id="@+id/operation_detail_category"
             android:layout_width="0dp"
             android:layout_height="50dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginStart="8dp"
             android:background="@drawable/input_field"
             android:dropDownWidth="match_parent"
             android:entries="@{viewmodel.analytic}"
             android:selectedItemPosition="@={viewmodel.analyticPosition}"
             android:spinnerMode="dropdown"
-            app:layout_constraintEnd_toEndOf="@+id/operation_detail_account"
-            app:layout_constraintStart_toStartOf="@+id/operation_detail_label_category"
-            app:layout_constraintTop_toBottomOf="@+id/operation_detail_label_category"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/operation_detail_account"
+            app:layout_constraintTop_toTopOf="@+id/operation_detail_account" />
 
         <TextView
             android:id="@+id/operation_detail_label_category"
             style="@style/label"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:text="@{viewmodel.operation.type == OperationType.TRANSFER ? @string/to : @string/category}"
-            app:layout_constraintStart_toStartOf="@+id/operation_detail_account"
-            app:layout_constraintTop_toBottomOf="@+id/operation_detail_account" />
+            app:layout_constraintStart_toStartOf="@+id/operation_detail_category"
+            app:layout_constraintTop_toTopOf="@+id/operation_detail_label_account"
+            tools:text="@string/category" />
 
         <TextView
             android:id="@+id/lblSum"
@@ -160,24 +168,25 @@
             android:layout_weight="1"
             android:labelFor="@id/operation_detail_sum"
             android:text="@string/sum"
-            app:layout_constraintStart_toStartOf="@+id/operation_detail_category"
-            app:layout_constraintTop_toBottomOf="@+id/operation_detail_category" />
+            app:layout_constraintStart_toStartOf="@+id/operation_detail_date"
+            app:layout_constraintTop_toBottomOf="@+id/operation_detail_account" />
 
         <EditText
             android:id="@+id/operation_detail_sum"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
             android:layout_weight="1"
+            android:addTextChangedListener="@{viewmodel.watcher}"
             android:background="@drawable/input_field"
             android:gravity="end"
             android:inputType="numberDecimal"
             android:padding="8dp"
-            app:layout_constraintEnd_toEndOf="@+id/operation_detail_category"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/lblSum"
             app:layout_constraintTop_toBottomOf="@+id/lblSum"
-            tools:text="1000"
             app:sum="@{viewmodel.operation.sum}"
-            android:addTextChangedListener="@{viewmodel.watcher}"/>
+            tools:text="1000" />
 
         <RadioGroup
             android:id="@+id/operation_detail_type_group"
