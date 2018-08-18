@@ -4,6 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
+import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.entites.Account;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
@@ -108,4 +109,9 @@ public class Repository implements DataSource{
         mLocalDataSource.deleteOperation(operation, callback);
     }
 
+    // ANALYTIC
+    @Override
+    public LiveData<List<AnalyticDao.MonthCashflow>> loadMonthCashflow(int categoryId) {
+        return mLocalDataSource.loadMonthCashflow(categoryId);
+    }
 }

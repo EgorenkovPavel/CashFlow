@@ -3,6 +3,7 @@ package com.epipasha.cashflow.data;
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
+import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.entites.Account;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
@@ -284,4 +285,10 @@ public class LocalDataSource implements DataSource{
         mAppExecutors.discIO().execute(runnable);
     }
 
+
+    // ANALYTIC
+    @Override
+    public LiveData<List<AnalyticDao.MonthCashflow>> loadMonthCashflow(int categoryId) {
+        return mDb.analyticDao().loadMonthCashflow(categoryId);
+    }
 }

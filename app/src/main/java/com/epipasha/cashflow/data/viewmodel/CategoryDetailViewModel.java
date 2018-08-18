@@ -12,6 +12,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 
+import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.Utils;
 import com.epipasha.cashflow.data.AppDatabase;
 import com.epipasha.cashflow.data.AppExecutors;
@@ -20,6 +21,9 @@ import com.epipasha.cashflow.data.Repository;
 import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.objects.OperationType;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.LimitLine;
+import com.github.mikephil.charting.components.YAxis;
 
 import java.util.List;
 import java.util.Locale;
@@ -61,10 +65,12 @@ public class CategoryDetailViewModel extends AndroidViewModel implements DataSou
 
         mRepository = repository;
         mCategory.set(new Category("", OperationType.IN, 0));
+
     }
 
     public void start(int categoryId){
         mRepository.getCategoryById(categoryId, this);
+        mMonthCashflow = mRepository.loadMonthCashflow(categoryId);
     }
 
     public ObservableBoolean getIsNew() {
@@ -103,9 +109,23 @@ public class CategoryDetailViewModel extends AndroidViewModel implements DataSou
     }
 
     @BindingAdapter({"app:budget"})
-    public static void getBudget(EditText view, int budget) {
+    public static void setBudget(EditText view, int budget) {
         view.setText(String.format(Locale.getDefault(),"%,d", budget));
         view.setSelection(view.getText().toString().length());
+    }
+
+    @BindingAdapter({"app:budgetLine"})
+    public static void selBudgetLine(BarChart chart, int budget){
+        chart.getAxisLeft().getLimitLines().clear();
+
+        YAxis yAxis = chart.getAxisLeft();
+        LimitLine line = new LimitLine(budget);
+        line.setEnabled(true);
+        line.setLineWidth(3);
+//        line.setLineColor(getResources().getColor(R.color.colorAccent));
+//        line.setTextColor(getResources().getColor(R.color.colorAccent));
+//        line.setLabel(getString(R.string.budget));
+        yAxis.addLimitLine(line);
     }
 
     @Override

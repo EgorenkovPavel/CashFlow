@@ -2,6 +2,7 @@ package com.epipasha.cashflow.data;
 
 import android.arch.lifecycle.LiveData;
 
+import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.entites.Account;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
@@ -92,4 +93,6 @@ public interface DataSource {
 
     void deleteOperation(Operation operation, DeleteOperationCallback callback);
 
+    //ANALYTIC
+    LiveData<List<AnalyticDao.MonthCashflow>> loadMonthCashflow(int categoryId);
 }

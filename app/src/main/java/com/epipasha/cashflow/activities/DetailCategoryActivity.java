@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 
 import com.epipasha.cashflow.R;
+import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.dao.AnalyticDao.MonthCashflow;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.viewmodel.AccountDetailViewModel;
@@ -70,6 +71,13 @@ public class DetailCategoryActivity extends DetailActivity{
             int mCategoryId = i.getIntExtra(EXTRA_CATEGORY_ID, DEFAULT_CATEGORY_ID);
             model.start(mCategoryId);
         }
+
+        model.getMonthCashflow().observe(this, new Observer<List<MonthCashflow>>() {
+            @Override
+            public void onChanged(@Nullable List<MonthCashflow> monthCashflows) {
+                loadChart(monthCashflows);
+            }
+        });
     }
 
     @Override
@@ -117,26 +125,8 @@ public class DetailCategoryActivity extends DetailActivity{
             }
         });
 
-        etBudget.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                addBudgetLineToChart();
-            }
-        });
-
         YAxis yAxis = mChart.getAxisLeft();
         yAxis.setAxisMinimum(0);
-        addBudgetLineToChart();
 
         mChart.getAxisRight().setEnabled(false);
         mChart.getDescription().setEnabled(false);
@@ -147,30 +137,6 @@ public class DetailCategoryActivity extends DetailActivity{
         mChart.setVisibleXRangeMaximum(3);
         mChart.moveViewToX(column);
         mChart.invalidate(); // refresh
-    }
-
-    private void addBudgetLineToChart(){
-        mChart.getAxisLeft().getLimitLines().clear();
-
-        String budgetText = etBudget.getText().toString();
-        if(budgetText.isEmpty()){
-            return;
-        }
-
-        float budget = Float.valueOf(budgetText);
-        if(budget == 0){
-            return;
-        }
-
-        YAxis yAxis = mChart.getAxisLeft();
-        LimitLine line = new LimitLine(budget);
-        line.setEnabled(true);
-        line.setLineWidth(3);
-        line.setLineColor(getResources().getColor(R.color.colorAccent));
-        line.setTextColor(getResources().getColor(R.color.colorAccent));
-        line.setLabel(getString(R.string.budget));
-        yAxis.addLimitLine(line);
-
     }
 
 }
