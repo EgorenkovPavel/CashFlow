@@ -28,6 +28,7 @@ import com.epipasha.cashflow.data.AppExecutors;
 import com.epipasha.cashflow.data.entites.Operation;
 import com.epipasha.cashflow.data.entites.OperationWithData;
 import com.epipasha.cashflow.data.viewmodel.OperationListViewModel;
+import com.epipasha.cashflow.data.viewmodel.ViewModelFactory;
 
 import java.util.List;
 
@@ -68,7 +69,7 @@ public class OperationListFragment extends Fragment implements OperationAdapter.
 
     private void retrieveItems() {
 
-        OperationListViewModel viewModel = ViewModelProviders.of(this).get(OperationListViewModel.class);
+        OperationListViewModel viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getActivity().getApplication())).get(OperationListViewModel.class);
         viewModel.getOperations().observe(this, new Observer<List<OperationWithData>>() {
             @Override
             public void onChanged(@Nullable List<OperationWithData> operations) {

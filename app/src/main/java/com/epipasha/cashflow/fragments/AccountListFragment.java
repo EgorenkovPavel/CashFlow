@@ -19,6 +19,7 @@ import com.epipasha.cashflow.activities.DetailAccountActivity;
 import com.epipasha.cashflow.adapters.AccountAdapter;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.viewmodel.AccountListViewModel;
+import com.epipasha.cashflow.data.viewmodel.ViewModelFactory;
 
 import java.util.List;
 
@@ -59,7 +60,7 @@ public class AccountListFragment extends Fragment implements AccountAdapter.Item
 
     private void retrieveItems() {
 
-        AccountListViewModel viewModel = ViewModelProviders.of(this).get(AccountListViewModel.class);
+        AccountListViewModel viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getActivity().getApplication())).get(AccountListViewModel.class);
         viewModel.getAccounts().observe(this, new Observer<List<AccountWithBalance>>() {
             @Override
             public void onChanged(@Nullable List<AccountWithBalance> accounts) {

@@ -2,6 +2,7 @@ package com.epipasha.cashflow.fragments;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -18,6 +19,8 @@ import android.widget.Button;
 
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.Backuper;
+import com.epipasha.cashflow.data.viewmodel.BackupViewModel;
+import com.epipasha.cashflow.data.viewmodel.ViewModelFactory;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -66,6 +69,8 @@ public class BackupFragment extends Fragment {
 
     private Button btnDriveShare, btnDriveRestore, btnConnect;
 
+    private BackupViewModel model;
+
     public BackupFragment() {
     }
 
@@ -73,6 +78,8 @@ public class BackupFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_backup, container, false);
+
+        model = ViewModelProviders.of(this, ViewModelFactory.getInstance(getActivity().getApplication())).get(BackupViewModel.class);
 
         Button bthFileShare = v.findViewById(R.id.btnFileShare);
         Button bthFileRestore = v.findViewById(R.id.btnFileRestore);
@@ -135,13 +142,11 @@ public class BackupFragment extends Fragment {
     private void startBackuping(int request){
         switch (request){
             case REQUEST_CODE_FILE_BACKUP: {
-                FileBackuper backuper = new FileBackuper();
-                backuper.execute();
+                model.fileBackup();
                 break;
             }
             case REQUEST_CODE_FILE_RESTORE: {
-                FileRestorer restorer = new FileRestorer();
-                restorer.execute();
+                model.fileRestore();
                 break;
             }
         }
@@ -385,29 +390,6 @@ public class BackupFragment extends Fragment {
     }
 
 
-
-    private class FileBackuper extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            String data = "";
-                data = Backuper.backupRoomDb(getActivity());
-                fileBackup(data);
-            return null;
-        }
-    }
-
-    private class FileRestorer extends AsyncTask<Void, Void, Void>{
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            String data = fileRestore();
-            Backuper.restoreRoomDb(getActivity(), data);
-
-            return null;
-        }
-    }
-
     private class DriveBackuper extends AsyncTask<Void, Void, String>{
 
         @Override
@@ -427,39 +409,6 @@ public class BackupFragment extends Fragment {
         protected Void doInBackground(String... data) {
             Backuper.restoreRoomDb(getActivity(), data[0]);
             return null;
-        }
-    }
-
-    private String fileRestore() {
-        String data = "";
-        try {
-            File root = android.os.Environment.getExternalStorageDirectory();
-            File file = new File(root.getAbsolutePath(), "myData.txt");
-            FileInputStream is = new FileInputStream(file);
-            int size = is.available();
-
-
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-
-            data = new String(buffer, "UTF-8");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return data;
-    }
-
-    private void fileBackup(String data) {
-        try {
-            File root = android.os.Environment.getExternalStorageDirectory();
-            File file = new File(root.getAbsolutePath(), "myData.txt");
-            FileOutputStream outputStream = new FileOutputStream(file);
-            outputStream.write(data.getBytes());
-            outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

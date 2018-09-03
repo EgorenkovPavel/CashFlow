@@ -39,7 +39,7 @@ import java.util.Locale;
 
 public class OperationDetailViewModel extends AndroidViewModel implements DataSource.GetOperationCallback, DataSource.GetAccountsCallback, DataSource.GetCategoriesByTypeCallback {
 
-    private MutableLiveData<Status> mStatus = new MutableLiveData<>();;
+    private MutableLiveData<Status> mStatus = new MutableLiveData<>();
 
     private DataSource mRepository;
     private ObservableField<Operation> mOperation;

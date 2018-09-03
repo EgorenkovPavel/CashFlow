@@ -8,16 +8,19 @@ import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.entites.Account;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
+import com.epipasha.cashflow.data.entites.CategoryWithCashflow;
 import com.epipasha.cashflow.data.entites.Operation;
+import com.epipasha.cashflow.data.entites.OperationWithData;
 import com.epipasha.cashflow.objects.OperationType;
 
+import java.util.Date;
 import java.util.List;
 
 public class Repository implements DataSource{
 
     private volatile static Repository INSTANCE = null;
 
-    private DataSource mLocalDataSource;
+    private LocalDataSource mLocalDataSource;
 
     private Repository(LocalDataSource localDataSource){
         mLocalDataSource = localDataSource;
@@ -91,6 +94,10 @@ public class Repository implements DataSource{
         return mLocalDataSource.loadAllCategoriesByType(type);
     }
 
+    public LiveData<List<CategoryWithCashflow>> loadAllCategoriesWithCashflow(Date start, Date end) {
+        return mLocalDataSource.loadAllCategoriesWithCashflow(start, end);
+    }
+
     // OPERATIONS
     public void getOperationById(int id, GetOperationCallback callback){
         mLocalDataSource.getOperationById(id, callback);
@@ -109,9 +116,14 @@ public class Repository implements DataSource{
         mLocalDataSource.deleteOperation(operation, callback);
     }
 
+    public LiveData<List<OperationWithData>> loadOperationWithData() {
+        return mLocalDataSource.loadOperationWithData();
+    }
+
     // ANALYTIC
     @Override
     public LiveData<List<AnalyticDao.MonthCashflow>> loadMonthCashflow(int categoryId) {
         return mLocalDataSource.loadMonthCashflow(categoryId);
     }
-}
+
+ }

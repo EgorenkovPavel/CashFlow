@@ -38,7 +38,14 @@ public class ViewModelFactory extends ViewModelProvider.AndroidViewModelFactory 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        if (modelClass == AccountDetailViewModel.class)
+        if (modelClass == AccountListViewModel.class)
+            return (T) new AccountListViewModel(mApplication, mRepository);
+        else if (modelClass == CategoryListViewModel.class)
+            return (T) new CategoryListViewModel(mApplication, mRepository);
+        else if (modelClass == OperationListViewModel.class)
+            return (T) new OperationListViewModel(mApplication, mRepository);
+
+        else if (modelClass == AccountDetailViewModel.class)
             return (T) new AccountDetailViewModel(mApplication, mRepository);
         else if (modelClass == CategoryDetailViewModel.class)
             return (T) new CategoryDetailViewModel(mApplication, mRepository);
@@ -46,6 +53,8 @@ public class ViewModelFactory extends ViewModelProvider.AndroidViewModelFactory 
             return (T) new OperationDetailViewModel(mApplication, mRepository);
         else if (modelClass == OperationMasterViewModel.class)
             return (T) new OperationMasterViewModel(mApplication, mRepository);
+        else if (modelClass == BackupViewModel.class)
+            return (T) new BackupViewModel(mApplication, mRepository);
 
         throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
     }

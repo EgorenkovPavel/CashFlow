@@ -7,9 +7,12 @@ import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.entites.Account;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
+import com.epipasha.cashflow.data.entites.CategoryWithCashflow;
 import com.epipasha.cashflow.data.entites.Operation;
+import com.epipasha.cashflow.data.entites.OperationWithData;
 import com.epipasha.cashflow.objects.OperationType;
 
+import java.util.Date;
 import java.util.List;
 
 public class LocalDataSource implements DataSource{
@@ -199,6 +202,10 @@ public class LocalDataSource implements DataSource{
         return mDb.categoryDao().loadAllCategoriesByType(type);
     }
 
+    public LiveData<List<CategoryWithCashflow>> loadAllCategoriesWithCashflow(Date start, Date end) {
+        return mDb.categoryDao().loadAllCategoriesWithCashflow(start, end);
+    }
+
     // OPERATIONS
     public void getOperationById(final int id, final DataSource.GetOperationCallback callback){
         Runnable runnable = new Runnable() {
@@ -285,10 +292,14 @@ public class LocalDataSource implements DataSource{
         mAppExecutors.discIO().execute(runnable);
     }
 
+    public LiveData<List<OperationWithData>> loadOperationWithData() {
+        return mDb.operationDao().loadOperationWithData();
+    }
 
     // ANALYTIC
     @Override
     public LiveData<List<AnalyticDao.MonthCashflow>> loadMonthCashflow(int categoryId) {
         return mDb.analyticDao().loadMonthCashflow(categoryId);
     }
+
 }

@@ -20,6 +20,7 @@ import com.epipasha.cashflow.activities.DetailCategoryActivity;
 import com.epipasha.cashflow.adapters.CategoryAdapter;
 import com.epipasha.cashflow.data.entites.CategoryWithCashflow;
 import com.epipasha.cashflow.data.viewmodel.CategoryListViewModel;
+import com.epipasha.cashflow.data.viewmodel.ViewModelFactory;
 
 import java.util.List;
 
@@ -60,7 +61,7 @@ public class CategoryListFragment extends Fragment implements CategoryAdapter.He
 
     private void retrieveItems() {
 
-        CategoryListViewModel viewModel = ViewModelProviders.of(this).get(CategoryListViewModel.class);
+        CategoryListViewModel viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getActivity().getApplication())).get(CategoryListViewModel.class);
         viewModel.getCategories().observe(this, new Observer<List<CategoryWithCashflow>>() {
             @Override
             public void onChanged(@Nullable List<CategoryWithCashflow> categories) {
