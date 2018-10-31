@@ -18,13 +18,13 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.epipasha.cashflow.activities.BackupActivity;
-import com.epipasha.cashflow.activities.DetailAccountActivity;
-import com.epipasha.cashflow.activities.DetailCategoryActivity;
+import com.epipasha.cashflow.activities.AccountActivity;
+import com.epipasha.cashflow.activities.CategoryActivity;
 import com.epipasha.cashflow.activities.OperationMasterActivity;
 import com.epipasha.cashflow.activities.PreferencesActivity;
-import com.epipasha.cashflow.fragments.AccountListFragment;
-import com.epipasha.cashflow.fragments.CategoryListFragment;
-import com.epipasha.cashflow.fragments.OperationListFragment;
+import com.epipasha.cashflow.fragments.AccountsFragment;
+import com.epipasha.cashflow.fragments.CategoriesFragment;
+import com.epipasha.cashflow.fragments.OperationsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,12 +52,12 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (tabs.getSelectedTabPosition()){
                     case 0: {
-                        Intent i = new Intent(MainActivity.this, DetailAccountActivity.class);
+                        Intent i = new Intent(MainActivity.this, AccountActivity.class);
                         startActivity(i);
                         break;
                     }
                     case 1:{
-                        Intent i = new Intent(MainActivity.this, DetailCategoryActivity.class);
+                        Intent i = new Intent(MainActivity.this, CategoryActivity.class);
                         startActivity(i);
                         break;
                     }
@@ -123,14 +123,14 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position){
                 case 0:
-                    //return new AccountListFragment();
-                    return new AccountListFragment();
+                    //return new AccountsFragment();
+                    return new AccountsFragment();
                 case 1:
-                    //return new CategoryListFragment();
-                    return new CategoryListFragment();
+                    //return new CategoriesFragment();
+                    return new CategoriesFragment();
                 case 2:
-                    //return new OperationListFragment();
-                    return new OperationListFragment();
+                    //return new OperationsFragment();
+                    return new OperationsFragment();
                 default:
                     return null;
             }

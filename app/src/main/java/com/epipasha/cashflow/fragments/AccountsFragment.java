@@ -15,19 +15,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.activities.AnalyticActivity;
-import com.epipasha.cashflow.activities.DetailCategoryActivity;
-import com.epipasha.cashflow.adapters.CategoryAdapter;
-import com.epipasha.cashflow.data.entites.CategoryWithCashflow;
-import com.epipasha.cashflow.viewmodel.CategoryListViewModel;
+import com.epipasha.cashflow.activities.AccountActivity;
+import com.epipasha.cashflow.adapters.AccountAdapter;
+import com.epipasha.cashflow.data.entites.AccountWithBalance;
+import com.epipasha.cashflow.viewmodel.AccountsViewModel;
 import com.epipasha.cashflow.viewmodel.ViewModelFactory;
 
 import java.util.List;
 
-public class CategoryListFragment extends Fragment implements CategoryAdapter.HeaderClickListener, CategoryAdapter.ItemClickListener {
+public class AccountsFragment extends Fragment implements AccountAdapter.ItemClickListener {
 
     private RecyclerView rvList;
-    private CategoryAdapter mAdapter;
+    private AccountAdapter mAdapter;
 
     @Nullable
     @Override
@@ -54,18 +53,18 @@ public class CategoryListFragment extends Fragment implements CategoryAdapter.He
                 layoutManager.getOrientation());
         rvList.addItemDecoration(mDividerItemDecoration);
 
-        mAdapter = new CategoryAdapter(this, this);
+        mAdapter = new AccountAdapter(this);
         rvList.setAdapter(mAdapter);
 
     }
 
     private void retrieveItems() {
 
-        CategoryListViewModel viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getActivity().getApplication())).get(CategoryListViewModel.class);
-        viewModel.getCategories().observe(this, new Observer<List<CategoryWithCashflow>>() {
+        AccountsViewModel viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getActivity().getApplication())).get(AccountsViewModel.class);
+        viewModel.getAccounts().observe(this, new Observer<List<AccountWithBalance>>() {
             @Override
-            public void onChanged(@Nullable List<CategoryWithCashflow> categories) {
-                mAdapter.setCategories(categories);
+            public void onChanged(@Nullable List<AccountWithBalance> accounts) {
+                mAdapter.setAccounts(accounts);
             }
         });
     }
@@ -73,14 +72,8 @@ public class CategoryListFragment extends Fragment implements CategoryAdapter.He
     @Override
     public void onItemClickListener(int itemId) {
         // Launch AddTaskActivity adding the itemId as an extra in the intent
-        Intent intent = new Intent(getActivity(), DetailCategoryActivity.class);
-        intent.putExtra(DetailCategoryActivity.EXTRA_CATEGORY_ID, itemId);
+        Intent intent = new Intent(getActivity(), AccountActivity.class);
+        intent.putExtra(AccountActivity.EXTRA_ACCOUNT_ID, itemId);
         startActivity(intent);
-    }
-
-    @Override
-    public void onHeaderClickListener() {
-        Intent i = new Intent(getActivity(), AnalyticActivity.class);
-        startActivity(i);
     }
 }

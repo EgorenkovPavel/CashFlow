@@ -7,16 +7,16 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.viewmodel.AccountDetailViewModel;
+import com.epipasha.cashflow.viewmodel.AccountViewModel;
 import com.epipasha.cashflow.viewmodel.ViewModelFactory;
 
-public class DetailAccountActivity extends DetailActivity {
+public class AccountActivity extends DetailActivity {
 
     public static final String EXTRA_ACCOUNT_ID = "extraAccountId";
 
     private static final int DEFAULT_ACCOUNT_ID = -1;
 
-    private AccountDetailViewModel model;
+    private AccountViewModel model;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,7 +29,7 @@ public class DetailAccountActivity extends DetailActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         model = ViewModelProviders.of(this, ViewModelFactory.getInstance(getApplication()))
-                .get(AccountDetailViewModel.class);
+                .get(AccountViewModel.class);
 
         binding.setViewmodel(model);
 

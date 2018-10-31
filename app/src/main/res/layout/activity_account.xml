@@ -9,7 +9,7 @@
 
         <variable
             name="viewmodel"
-            type="com.epipasha.cashflow.viewmodel.AccountDetailViewModel"/>
+            type="com.epipasha.cashflow.viewmodel.AccountViewModel"/>
 
     </data>
 <LinearLayout

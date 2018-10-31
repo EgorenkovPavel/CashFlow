@@ -28,7 +28,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class OperationDetailViewModel extends AndroidViewModel implements DataSource.GetOperationCallback, DataSource.GetAccountsCallback, DataSource.GetCategoriesByTypeCallback {
+public class OperationViewModel extends AndroidViewModel implements DataSource.GetOperationCallback, DataSource.GetAccountsCallback, DataSource.GetCategoriesByTypeCallback {
 
     private MutableLiveData<Status> mStatus = new MutableLiveData<>();
 
@@ -70,7 +70,7 @@ public class OperationDetailViewModel extends AndroidViewModel implements DataSo
         }
     };
 
-    public OperationDetailViewModel(@NonNull Application application, Repository repository) {
+    public OperationViewModel(@NonNull Application application, Repository repository) {
         super(application);
 
         mRepository = repository;

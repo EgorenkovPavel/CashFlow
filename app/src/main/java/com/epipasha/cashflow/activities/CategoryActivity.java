@@ -10,7 +10,7 @@ import android.widget.RadioGroup;
 
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.dao.AnalyticDao.MonthCashflow;
-import com.epipasha.cashflow.viewmodel.CategoryDetailViewModel;
+import com.epipasha.cashflow.viewmodel.CategoryViewModel;
 import com.epipasha.cashflow.viewmodel.ViewModelFactory;
 import com.epipasha.cashflow.databinding.ActivityCategoryBinding;
 import com.github.mikephil.charting.charts.BarChart;
@@ -29,12 +29,12 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class DetailCategoryActivity extends DetailActivity{
+public class CategoryActivity extends DetailActivity{
 
     public static final String EXTRA_CATEGORY_ID = "extraCategoryId";
 
     private static final int DEFAULT_CATEGORY_ID = -1;
-    private CategoryDetailViewModel model;
+    private CategoryViewModel model;
 
     private EditText etTitle, etBudget;
     private RadioGroup rgType;
@@ -51,7 +51,7 @@ public class DetailCategoryActivity extends DetailActivity{
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         model = ViewModelProviders.of(this, ViewModelFactory.getInstance(getApplication()))
-                .get(CategoryDetailViewModel.class);
+                .get(CategoryViewModel.class);
 
         binding.setViewmodel(model);
 

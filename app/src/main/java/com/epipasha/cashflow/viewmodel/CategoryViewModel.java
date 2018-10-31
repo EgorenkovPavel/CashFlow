@@ -24,7 +24,7 @@ import com.github.mikephil.charting.components.YAxis;
 import java.util.List;
 import java.util.Locale;
 
-public class CategoryDetailViewModel extends AndroidViewModel implements DataSource.GetCategoryCallback {
+public class CategoryViewModel extends AndroidViewModel{
 
     private DataSource mRepository;
 
@@ -55,7 +55,7 @@ public class CategoryDetailViewModel extends AndroidViewModel implements DataSou
         }
     };
 
-    public CategoryDetailViewModel(@NonNull Application application, Repository repository) {
+    public CategoryViewModel(@NonNull Application application, Repository repository) {
         super(application);
 
         mRepository = repository;
@@ -64,7 +64,18 @@ public class CategoryDetailViewModel extends AndroidViewModel implements DataSou
     }
 
     public void start(int categoryId){
-        mRepository.getCategoryById(categoryId, this);
+        mRepository.getCategoryById(categoryId, new DataSource.GetCategoryCallback() {
+            @Override
+            public void onCategoryLoaded(Category category) {
+                mCategory.set(category);
+                isNew.set(false);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+
+            }
+        });
         mMonthCashflow = mRepository.loadMonthCashflow(categoryId);
     }
 
@@ -91,7 +102,7 @@ public class CategoryDetailViewModel extends AndroidViewModel implements DataSou
     public void saveObject(){
         Category category = mCategory.get();
 
-        //todo add check fields
+        //TODO add check fields
         if(category == null){
             return;
         }
@@ -123,14 +134,4 @@ public class CategoryDetailViewModel extends AndroidViewModel implements DataSou
         yAxis.addLimitLine(line);
     }
 
-    @Override
-    public void onCategoryLoaded(Category category) {
-        mCategory.set(category);
-        isNew.set(false);
-    }
-
-    @Override
-    public void onDataNotAvailable() {
-
-    }
 }

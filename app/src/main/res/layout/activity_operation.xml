@@ -8,7 +8,7 @@
 
         <variable
             name="viewmodel"
-            type="com.epipasha.cashflow.viewmodel.OperationDetailViewModel" />
+            type="com.epipasha.cashflow.viewmodel.OperationViewModel" />
     </data>
 
     <android.support.constraint.ConstraintLayout

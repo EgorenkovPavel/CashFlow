@@ -10,12 +10,12 @@ import com.epipasha.cashflow.data.entites.OperationWithData;
 
 import java.util.List;
 
-public class OperationListViewModel extends AndroidViewModel {
+public class OperationsViewModel extends AndroidViewModel {
 
     private Repository mRepository;
     private LiveData<List<OperationWithData>> operations;
 
-    public OperationListViewModel(@NonNull Application application, Repository repository) {
+    public OperationsViewModel(@NonNull Application application, Repository repository) {
         super(application);
 
         mRepository = repository;

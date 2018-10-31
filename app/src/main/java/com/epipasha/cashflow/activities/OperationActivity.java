@@ -15,20 +15,20 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.epipasha.cashflow.R;
+import com.epipasha.cashflow.viewmodel.OperationViewModel;
 import com.epipasha.cashflow.viewmodel.ViewModelFactory;
-import com.epipasha.cashflow.viewmodel.OperationDetailViewModel;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-public class DetailOperationActivity extends DetailActivity {
+public class OperationActivity extends DetailActivity {
 
     public static final String EXTRA_OPERATION_ID = "extraOperationId";
 
     private static final int DEFAULT_OPERATION_ID = -1;
 
-    private OperationDetailViewModel model;
+    private OperationViewModel model;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,7 +39,7 @@ public class DetailOperationActivity extends DetailActivity {
         setSupportActionBar(binding.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        model = ViewModelProviders.of(this, ViewModelFactory.getInstance(getApplication())).get(OperationDetailViewModel.class);
+        model = ViewModelProviders.of(this, ViewModelFactory.getInstance(getApplication())).get(OperationViewModel.class);
 
         binding.setViewmodel(model);
 
@@ -64,9 +64,9 @@ public class DetailOperationActivity extends DetailActivity {
             model.start(mOperationId);
         }
 
-        model.getStatus().observe(this, new Observer<OperationDetailViewModel.Status>() {
+        model.getStatus().observe(this, new Observer<OperationViewModel.Status>() {
             @Override
-            public void onChanged(@Nullable OperationDetailViewModel.Status status) {
+            public void onChanged(@Nullable OperationViewModel.Status status) {
                 if(status == null) return;
 
                 switch (status){
@@ -75,14 +75,14 @@ public class DetailOperationActivity extends DetailActivity {
                         break;
                     }
                     case EMPTY_ACCOUNT:{
-                        Toast.makeText(DetailOperationActivity.this,
+                        Toast.makeText(OperationActivity.this,
                                 getString(R.string.error_choose_account),
                                 Toast.LENGTH_SHORT)
                                 .show();
                         break;
                     }
                     case EMPTY_ANALYTIC:{
-                        Toast.makeText(DetailOperationActivity.this,
+                        Toast.makeText(OperationActivity.this,
                                 getString(R.string.no_analytic_selected),
                                 Toast.LENGTH_SHORT)
                                 .show();

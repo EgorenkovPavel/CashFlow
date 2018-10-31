@@ -174,12 +174,12 @@ public class OperationMasterActivity extends BaseActivity{
 
         mCategoryInAdapter = new ArrayAdapter<>(
                 OperationMasterActivity.this,
-                R.layout.list_item_account,
+                R.layout.item_account,
                 R.id.account_list_item_name);
 
         mCategoryOutAdapter = new ArrayAdapter<>(
                 OperationMasterActivity.this,
-                R.layout.list_item_account,
+                R.layout.item_account,
                 R.id.account_list_item_name);
 
         mRecAccountAdapter = new AccountAdapter(this);
@@ -220,8 +220,8 @@ public class OperationMasterActivity extends BaseActivity{
     private class AccountAdapter extends ArrayAdapter<AccountWithBalance>{
 
         public AccountAdapter(@NonNull Context context) {
-            super(context, R.layout.list_item_account);
-            setDropDownViewResource(R.layout.list_item_account);
+            super(context, R.layout.item_account);
+            setDropDownViewResource(R.layout.item_account);
         }
 
         @NonNull
@@ -239,7 +239,7 @@ public class OperationMasterActivity extends BaseActivity{
             View view = convertView;
             if (view == null)
                 view = LayoutInflater.from(getContext())
-                        .inflate(R.layout.list_item_account, parent, false);
+                        .inflate(R.layout.item_account, parent, false);
 
             AccountWithBalance account = getItem(position);
 

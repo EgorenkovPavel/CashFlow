@@ -151,14 +151,14 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private CategoryHolder onCreateItemViewHolder(ViewGroup parent) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_category, parent, false);
+                .inflate(R.layout.item_category, parent, false);
 
         return new CategoryAdapter.CategoryHolder(view);
     }
 
     private HeaderHolder onCreateHeaderViewHolder(ViewGroup parent) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_category_header, parent, false);
+                .inflate(R.layout.item_category_header, parent, false);
 
         return new CategoryAdapter.HeaderHolder(view);
     }

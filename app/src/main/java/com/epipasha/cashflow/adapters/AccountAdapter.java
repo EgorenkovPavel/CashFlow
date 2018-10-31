@@ -51,14 +51,14 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private RecyclerView.ViewHolder onCreateHeaderViewHolder(@NonNull ViewGroup parent, int viewType){
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_account_header, parent, false);
+                .inflate(R.layout.item_account_header, parent, false);
 
         return new AccountAdapter.HeaderHolder(view);
     }
 
     private RecyclerView.ViewHolder onCreateItemViewHolder(@NonNull ViewGroup parent, int viewType){
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_account, parent, false);
+                .inflate(R.layout.item_account, parent, false);
 
         return new AccountAdapter.AccountHolder(view);
     }

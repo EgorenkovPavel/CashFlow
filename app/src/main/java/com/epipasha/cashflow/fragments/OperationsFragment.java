@@ -19,17 +19,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.activities.DetailOperationActivity;
+import com.epipasha.cashflow.activities.OperationActivity;
 import com.epipasha.cashflow.adapters.OperationAdapter;
 import com.epipasha.cashflow.data.AppDatabase;
 import com.epipasha.cashflow.data.AppExecutors;
 import com.epipasha.cashflow.data.entites.OperationWithData;
-import com.epipasha.cashflow.viewmodel.OperationListViewModel;
+import com.epipasha.cashflow.viewmodel.OperationsViewModel;
 import com.epipasha.cashflow.viewmodel.ViewModelFactory;
 
 import java.util.List;
 
-public class OperationListFragment extends Fragment implements OperationAdapter.ItemClickListener, OperationAdapter.ItemLongClickListener{
+public class OperationsFragment extends Fragment implements OperationAdapter.ItemClickListener, OperationAdapter.ItemLongClickListener{
 
     private RecyclerView rvList;
     private OperationAdapter mAdapter;
@@ -66,7 +66,7 @@ public class OperationListFragment extends Fragment implements OperationAdapter.
 
     private void retrieveItems() {
 
-        OperationListViewModel viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getActivity().getApplication())).get(OperationListViewModel.class);
+        OperationsViewModel viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getActivity().getApplication())).get(OperationsViewModel.class);
         viewModel.getOperations().observe(this, new Observer<List<OperationWithData>>() {
             @Override
             public void onChanged(@Nullable List<OperationWithData> operations) {
@@ -78,8 +78,8 @@ public class OperationListFragment extends Fragment implements OperationAdapter.
     @Override
     public void onItemClickListener(int itemId) {
         // Launch AddTaskActivity adding the itemId as an extra in the intent
-        Intent intent = new Intent(getActivity(), DetailOperationActivity.class);
-        intent.putExtra(DetailOperationActivity.EXTRA_OPERATION_ID, itemId);
+        Intent intent = new Intent(getActivity(), OperationActivity.class);
+        intent.putExtra(OperationActivity.EXTRA_OPERATION_ID, itemId);
         startActivity(intent);
     }
 

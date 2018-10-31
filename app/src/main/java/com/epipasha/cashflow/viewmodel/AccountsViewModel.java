@@ -10,12 +10,12 @@ import com.epipasha.cashflow.data.entites.AccountWithBalance;
 
 import java.util.List;
 
-public class AccountListViewModel extends AndroidViewModel {
+public class AccountsViewModel extends AndroidViewModel {
 
     private Repository mRepository;
     private LiveData<List<AccountWithBalance>> accounts;
 
-    public AccountListViewModel(@NonNull Application application, Repository repository) {
+    public AccountsViewModel(@NonNull Application application, Repository repository) {
         super(application);
 
         mRepository = repository;

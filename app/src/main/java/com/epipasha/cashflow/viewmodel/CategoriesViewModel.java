@@ -12,12 +12,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class CategoryListViewModel extends AndroidViewModel {
+public class CategoriesViewModel extends AndroidViewModel {
 
     private Repository mRepository;
     private LiveData<List<CategoryWithCashflow>> categories;
 
-    public CategoryListViewModel(@NonNull Application application, Repository repository) {
+    public CategoriesViewModel(@NonNull Application application, Repository repository) {
         super(application);
 
         mRepository = repository;

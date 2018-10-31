@@ -23,7 +23,7 @@
         </activity>
 
         <activity
-            android:name=".activities.DetailAccountActivity"
+            android:name=".activities.AccountActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
@@ -32,7 +32,7 @@
         </activity>
 
         <activity
-            android:name=".activities.DetailCategoryActivity"
+            android:name=".activities.CategoryActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
@@ -41,7 +41,7 @@
         </activity>
 
         <activity
-            android:name=".activities.DetailOperationActivity"
+            android:name=".activities.OperationActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme">
             <meta-data

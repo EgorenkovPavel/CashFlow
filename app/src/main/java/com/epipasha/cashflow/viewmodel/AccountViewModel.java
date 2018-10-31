@@ -10,14 +10,14 @@ import com.epipasha.cashflow.data.DataSource;
 import com.epipasha.cashflow.data.Repository;
 import com.epipasha.cashflow.data.entites.Account;
 
-public class AccountDetailViewModel extends AndroidViewModel {
+public class AccountViewModel extends AndroidViewModel {
 
     private final DataSource mRepository;
 
     private ObservableBoolean isNew = new ObservableBoolean(true);
     private ObservableField<Account> mAccount = new ObservableField<>();
 
-    public AccountDetailViewModel(@NonNull Application application, Repository repository) {
+    public AccountViewModel(@NonNull Application application, Repository repository) {
         super(application);
         mRepository = repository;
         mAccount.set(new Account());

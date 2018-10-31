@@ -38,19 +38,19 @@ public class ViewModelFactory extends ViewModelProvider.AndroidViewModelFactory 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        if (modelClass == AccountListViewModel.class)
-            return (T) new AccountListViewModel(mApplication, mRepository);
-        else if (modelClass == CategoryListViewModel.class)
-            return (T) new CategoryListViewModel(mApplication, mRepository);
-        else if (modelClass == OperationListViewModel.class)
-            return (T) new OperationListViewModel(mApplication, mRepository);
+        if (modelClass == AccountsViewModel.class)
+            return (T) new AccountsViewModel(mApplication, mRepository);
+        else if (modelClass == CategoriesViewModel.class)
+            return (T) new CategoriesViewModel(mApplication, mRepository);
+        else if (modelClass == OperationsViewModel.class)
+            return (T) new OperationsViewModel(mApplication, mRepository);
 
-        else if (modelClass == AccountDetailViewModel.class)
-            return (T) new AccountDetailViewModel(mApplication, mRepository);
-        else if (modelClass == CategoryDetailViewModel.class)
-            return (T) new CategoryDetailViewModel(mApplication, mRepository);
-        else if (modelClass == OperationDetailViewModel.class)
-            return (T) new OperationDetailViewModel(mApplication, mRepository);
+        else if (modelClass == AccountViewModel.class)
+            return (T) new AccountViewModel(mApplication, mRepository);
+        else if (modelClass == CategoryViewModel.class)
+            return (T) new CategoryViewModel(mApplication, mRepository);
+        else if (modelClass == OperationViewModel.class)
+            return (T) new OperationViewModel(mApplication, mRepository);
         else if (modelClass == OperationMasterViewModel.class)
             return (T) new OperationMasterViewModel(mApplication, mRepository);
         else if (modelClass == BackupViewModel.class)

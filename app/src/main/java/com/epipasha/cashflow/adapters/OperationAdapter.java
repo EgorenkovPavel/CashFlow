@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.data.entites.Operation;
 import com.epipasha.cashflow.data.entites.OperationWithData;
 
 import java.text.SimpleDateFormat;
@@ -48,7 +47,7 @@ public class OperationAdapter extends RecyclerView.Adapter<OperationAdapter.Oper
     @Override
     public OperationAdapter.OperationHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_operation, parent, false);
+                .inflate(R.layout.item_operation, parent, false);
 
         return new OperationAdapter.OperationHolder(view);
     }
