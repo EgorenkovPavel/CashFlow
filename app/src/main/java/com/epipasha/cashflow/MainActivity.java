@@ -17,14 +17,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.epipasha.cashflow.activities.BackupActivity;
-import com.epipasha.cashflow.activities.AccountActivity;
-import com.epipasha.cashflow.activities.CategoryActivity;
-import com.epipasha.cashflow.activities.OperationMasterActivity;
+import com.epipasha.cashflow.backup.BackupActivity;
+import com.epipasha.cashflow.accounts.AccountActivity;
+import com.epipasha.cashflow.categories.CategoryActivity;
+import com.epipasha.cashflow.operations.OperationMasterActivity;
 import com.epipasha.cashflow.activities.PreferencesActivity;
-import com.epipasha.cashflow.fragments.AccountsFragment;
-import com.epipasha.cashflow.fragments.CategoriesFragment;
-import com.epipasha.cashflow.fragments.OperationsFragment;
+import com.epipasha.cashflow.accounts.AccountsFragment;
+import com.epipasha.cashflow.categories.CategoriesFragment;
+import com.epipasha.cashflow.operations.OperationsFragment;
 
 public class MainActivity extends AppCompatActivity {
 

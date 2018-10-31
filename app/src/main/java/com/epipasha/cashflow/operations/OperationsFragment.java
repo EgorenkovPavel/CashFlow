@@ -1,4 +1,4 @@
-package com.epipasha.cashflow.fragments;
+package com.epipasha.cashflow.operations;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -19,13 +19,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.activities.OperationActivity;
-import com.epipasha.cashflow.adapters.OperationAdapter;
 import com.epipasha.cashflow.data.AppDatabase;
 import com.epipasha.cashflow.data.AppExecutors;
 import com.epipasha.cashflow.data.entites.OperationWithData;
-import com.epipasha.cashflow.viewmodel.OperationsViewModel;
-import com.epipasha.cashflow.viewmodel.ViewModelFactory;
+import com.epipasha.cashflow.data.ViewModelFactory;
 
 import java.util.List;
 

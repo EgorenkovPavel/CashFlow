@@ -9,7 +9,7 @@
         <import type="com.epipasha.cashflow.objects.OperationType"/>
         <variable
             name="viewmodel"
-            type="com.epipasha.cashflow.viewmodel.CategoryViewModel"/>
+            type="com.epipasha.cashflow.categories.CategoryViewModel"/>
     </data>
 
     <LinearLayout

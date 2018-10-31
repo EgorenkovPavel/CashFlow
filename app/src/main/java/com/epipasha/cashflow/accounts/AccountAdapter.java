@@ -1,4 +1,4 @@
-package com.epipasha.cashflow.adapters;
+package com.epipasha.cashflow.accounts;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;

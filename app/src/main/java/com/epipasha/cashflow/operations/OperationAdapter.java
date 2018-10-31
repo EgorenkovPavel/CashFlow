@@ -1,4 +1,4 @@
-package com.epipasha.cashflow.adapters;
+package com.epipasha.cashflow.operations;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

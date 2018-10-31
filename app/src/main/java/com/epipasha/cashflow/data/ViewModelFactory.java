@@ -1,13 +1,18 @@
-package com.epipasha.cashflow.viewmodel;
+package com.epipasha.cashflow.data;
 
 import android.app.Application;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 
-import com.epipasha.cashflow.data.AppDatabase;
-import com.epipasha.cashflow.data.LocalDataSource;
-import com.epipasha.cashflow.data.Repository;
+import com.epipasha.cashflow.accounts.AccountViewModel;
+import com.epipasha.cashflow.accounts.AccountsViewModel;
+import com.epipasha.cashflow.backup.BackupViewModel;
+import com.epipasha.cashflow.categories.CategoriesViewModel;
+import com.epipasha.cashflow.categories.CategoryViewModel;
+import com.epipasha.cashflow.operations.OperationMasterViewModel;
+import com.epipasha.cashflow.operations.OperationViewModel;
+import com.epipasha.cashflow.operations.OperationsViewModel;
 
 public class ViewModelFactory extends ViewModelProvider.AndroidViewModelFactory {
 

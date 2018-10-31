@@ -1,4 +1,4 @@
-package com.epipasha.cashflow.activities;
+package com.epipasha.cashflow.categories;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -9,9 +9,9 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 
 import com.epipasha.cashflow.R;
+import com.epipasha.cashflow.activities.DetailActivity;
 import com.epipasha.cashflow.data.dao.AnalyticDao.MonthCashflow;
-import com.epipasha.cashflow.viewmodel.CategoryViewModel;
-import com.epipasha.cashflow.viewmodel.ViewModelFactory;
+import com.epipasha.cashflow.data.ViewModelFactory;
 import com.epipasha.cashflow.databinding.ActivityCategoryBinding;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -29,7 +29,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class CategoryActivity extends DetailActivity{
+public class CategoryActivity extends DetailActivity {
 
     public static final String EXTRA_CATEGORY_ID = "extraCategoryId";
 

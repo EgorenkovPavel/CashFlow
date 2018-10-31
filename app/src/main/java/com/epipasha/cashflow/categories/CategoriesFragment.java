@@ -1,4 +1,4 @@
-package com.epipasha.cashflow.fragments;
+package com.epipasha.cashflow.categories;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -16,11 +16,8 @@ import android.view.ViewGroup;
 
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.activities.AnalyticActivity;
-import com.epipasha.cashflow.activities.CategoryActivity;
-import com.epipasha.cashflow.adapters.CategoryAdapter;
 import com.epipasha.cashflow.data.entites.CategoryWithCashflow;
-import com.epipasha.cashflow.viewmodel.CategoriesViewModel;
-import com.epipasha.cashflow.viewmodel.ViewModelFactory;
+import com.epipasha.cashflow.data.ViewModelFactory;
 
 import java.util.List;
 

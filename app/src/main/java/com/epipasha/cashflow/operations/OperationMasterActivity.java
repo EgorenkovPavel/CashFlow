@@ -1,4 +1,4 @@
-package com.epipasha.cashflow.activities;
+package com.epipasha.cashflow.operations;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -17,17 +17,18 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
+import com.epipasha.cashflow.activities.ActivityOperationMasterBinding;
+import com.epipasha.cashflow.activities.BaseActivity;
 import com.epipasha.cashflow.data.AppExecutors;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
-import com.epipasha.cashflow.viewmodel.OperationMasterViewModel;
-import com.epipasha.cashflow.viewmodel.ViewModelFactory;
+import com.epipasha.cashflow.data.ViewModelFactory;
 import com.epipasha.cashflow.objects.OperationType;
 
 import java.util.List;
 import java.util.Locale;
 
-public class OperationMasterActivity extends BaseActivity{
+public class OperationMasterActivity extends BaseActivity {
 
     private OperationMasterViewModel model;
 

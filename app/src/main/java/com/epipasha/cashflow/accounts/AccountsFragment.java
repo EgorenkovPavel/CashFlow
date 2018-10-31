@@ -1,4 +1,4 @@
-package com.epipasha.cashflow.fragments;
+package com.epipasha.cashflow.accounts;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -15,11 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.activities.AccountActivity;
-import com.epipasha.cashflow.adapters.AccountAdapter;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
-import com.epipasha.cashflow.viewmodel.AccountsViewModel;
-import com.epipasha.cashflow.viewmodel.ViewModelFactory;
+import com.epipasha.cashflow.data.ViewModelFactory;
 
 import java.util.List;
 

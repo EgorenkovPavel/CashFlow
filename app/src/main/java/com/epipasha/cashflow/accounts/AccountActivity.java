@@ -1,4 +1,4 @@
-package com.epipasha.cashflow.activities;
+package com.epipasha.cashflow.accounts;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -7,8 +7,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.viewmodel.AccountViewModel;
-import com.epipasha.cashflow.viewmodel.ViewModelFactory;
+import com.epipasha.cashflow.activities.ActivityAccountBinding;
+import com.epipasha.cashflow.activities.DetailActivity;
+import com.epipasha.cashflow.data.ViewModelFactory;
 
 public class AccountActivity extends DetailActivity {
 

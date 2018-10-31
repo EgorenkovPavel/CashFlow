@@ -1,4 +1,4 @@
-package com.epipasha.cashflow.activities;
+package com.epipasha.cashflow.operations;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -15,8 +15,9 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.viewmodel.OperationViewModel;
-import com.epipasha.cashflow.viewmodel.ViewModelFactory;
+import com.epipasha.cashflow.activities.ActivityOperationBinding;
+import com.epipasha.cashflow.activities.DetailActivity;
+import com.epipasha.cashflow.data.ViewModelFactory;
 
 import java.util.Calendar;
 import java.util.Date;

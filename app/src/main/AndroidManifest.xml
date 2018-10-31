@@ -23,7 +23,7 @@
         </activity>
 
         <activity
-            android:name=".activities.AccountActivity"
+            android:name=".accounts.AccountActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
@@ -32,7 +32,7 @@
         </activity>
 
         <activity
-            android:name=".activities.CategoryActivity"
+            android:name=".categories.CategoryActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
@@ -41,7 +41,7 @@
         </activity>
 
         <activity
-            android:name=".activities.OperationActivity"
+            android:name=".operations.OperationActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
@@ -50,7 +50,7 @@
         </activity>
 
         <activity
-            android:name=".activities.OperationMasterActivity"
+            android:name=".operations.OperationMasterActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
@@ -68,7 +68,7 @@
         </activity>
 
         <activity
-            android:name=".activities.BackupActivity"
+            android:name=".backup.BackupActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
