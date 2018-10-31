@@ -75,14 +75,19 @@
                 style="@style/TypeButton"
                 android:checked="@{viewmodel.category.type == OperationType.IN}"
                 android:onClick="@{() -> viewmodel.setOperationType(OperationType.IN)}"
-                android:text="@string/in" />
+                android:text="@string/in"
+                android:textAppearance="@style/TextAppearance.AppCompat.Button"
+                android:textColor="@drawable/text_type"
+                tools:checked="true" />
 
             <RadioButton
                 android:id="@+id/category_detail_out"
                 style="@style/TypeButton"
                 android:checked="@{viewmodel.category.type == OperationType.OUT}"
                 android:onClick="@{() -> viewmodel.setOperationType(OperationType.OUT)}"
-                android:text="@string/out" />
+                android:text="@string/out"
+                android:textAppearance="@style/TextAppearance.AppCompat.Button"
+                android:textColor="@drawable/text_type" />
 
         </RadioGroup>
 

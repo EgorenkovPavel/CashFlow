@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle" >
-    <corners
-        android:radius="5dp" />
-    <solid
-        android:color="#fff" />
-    <stroke
-        android:width="2dp"
-        android:color="@color/colorPrimary" />
-</shape>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_window_focused="false" android:state_enabled="true"
+        android:drawable="@drawable/field_normal" />
+    <item android:state_window_focused="false" android:state_enabled="false"
+        android:drawable="@drawable/field_normal" />
+    <item android:state_pressed="true" android:drawable="@drawable/field_normal" />
+    <item android:state_enabled="true" android:state_focused="true" android:drawable="@drawable/field_accent" />
+    <item android:state_enabled="true" android:drawable="@drawable/field_normal" />
+    <item android:state_focused="true" android:drawable="@drawable/field_accent" />
+    <item android:drawable="@drawable/field_normal" />
+</selector>

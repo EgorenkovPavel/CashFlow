@@ -55,12 +55,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:checked="@{viewmodel.operation.type == OperationType.IN}"
+                android:onClick="@{() -> viewmodel.onOperationTypeChanged(OperationType.IN)}"
                 android:text="@string/in"
                 android:textAllCaps="true"
-                android:textColor="@android:color/background_light"
-                android:textStyle="bold"
-                android:checked="@{viewmodel.operation.type == OperationType.IN}"
-                android:onClick="@{() -> viewmodel.onOperationTypeChanged(OperationType.IN)}"/>
+                android:textColor="@drawable/text_type"
+                android:textStyle="bold" />
 
             <RadioButton
                 android:id="@+id/btnOut"
@@ -68,12 +68,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:checked="@{viewmodel.operation.type == OperationType.OUT}"
+                android:onClick="@{() -> viewmodel.onOperationTypeChanged(OperationType.OUT)}"
                 android:text="@string/out"
                 android:textAllCaps="true"
-                android:textColor="@android:color/background_light"
-                android:textStyle="bold"
-                android:checked="@{viewmodel.operation.type == OperationType.OUT}"
-                android:onClick="@{() -> viewmodel.onOperationTypeChanged(OperationType.OUT)}"/>
+                android:textColor="@drawable/text_type"
+                android:textStyle="bold" />
 
             <RadioButton
                 android:id="@+id/btnTransfer"
@@ -81,12 +81,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:checked="@{viewmodel.operation.type == OperationType.TRANSFER}"
+                android:onClick="@{() -> viewmodel.onOperationTypeChanged(OperationType.TRANSFER)}"
                 android:text="@string/transfer"
                 android:textAllCaps="true"
-                android:textColor="@android:color/background_light"
-                android:textStyle="bold"
-                android:checked="@{viewmodel.operation.type == OperationType.TRANSFER}"
-                android:onClick="@{() -> viewmodel.onOperationTypeChanged(OperationType.TRANSFER)}"/>
+                android:textColor="@drawable/text_type"
+                android:textStyle="bold" />
 
         </RadioGroup>
 
