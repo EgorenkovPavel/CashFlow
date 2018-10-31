@@ -1,9 +1,8 @@
-package com.epipasha.cashflow.data.viewmodel;
+package com.epipasha.cashflow.viewmodel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.databinding.BindingAdapter;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
@@ -12,10 +11,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 
-import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.Utils;
-import com.epipasha.cashflow.data.AppDatabase;
-import com.epipasha.cashflow.data.AppExecutors;
 import com.epipasha.cashflow.data.DataSource;
 import com.epipasha.cashflow.data.Repository;
 import com.epipasha.cashflow.data.dao.AnalyticDao;
@@ -27,7 +23,6 @@ import com.github.mikephil.charting.components.YAxis;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Observable;
 
 public class CategoryDetailViewModel extends AndroidViewModel implements DataSource.GetCategoryCallback {
 

@@ -7,8 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.data.viewmodel.AccountDetailViewModel;
-import com.epipasha.cashflow.data.viewmodel.ViewModelFactory;
+import com.epipasha.cashflow.viewmodel.AccountDetailViewModel;
+import com.epipasha.cashflow.viewmodel.ViewModelFactory;
 
 public class DetailAccountActivity extends DetailActivity {
 
@@ -22,10 +22,10 @@ public class DetailAccountActivity extends DetailActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActivityDetailAccountBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_detail_account);
+        ActivityAccountBinding binding = DataBindingUtil
+                .setContentView(this, R.layout.activity_account);
 
         setSupportActionBar(binding.toolbar);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         model = ViewModelProviders.of(this, ViewModelFactory.getInstance(getApplication()))

@@ -1,19 +1,15 @@
-package com.epipasha.cashflow.data.viewmodel;
+package com.epipasha.cashflow.viewmodel;
 
 import android.app.Application;
-import android.arch.core.util.Function;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Transformations;
 import android.databinding.BindingAdapter;
 import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.Prefs;
-import com.epipasha.cashflow.data.AppDatabase;
-import com.epipasha.cashflow.data.AppExecutors;
 import com.epipasha.cashflow.data.DataSource;
 import com.epipasha.cashflow.data.Repository;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;

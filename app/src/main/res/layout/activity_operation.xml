@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data class="com.epipasha.cashflow.activities.ActivityDetailOperationBinding">
+    <data class="com.epipasha.cashflow.activities.ActivityOperationBinding">
         <import type="com.epipasha.cashflow.objects.OperationType" />
 
         <variable
             name="viewmodel"
-            type="com.epipasha.cashflow.data.viewmodel.OperationDetailViewModel" />
+            type="com.epipasha.cashflow.viewmodel.OperationDetailViewModel" />
     </data>
 
     <android.support.constraint.ConstraintLayout

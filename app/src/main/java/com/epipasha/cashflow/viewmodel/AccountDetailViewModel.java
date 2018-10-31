@@ -1,19 +1,16 @@
-package com.epipasha.cashflow.data.viewmodel;
+package com.epipasha.cashflow.viewmodel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 
-import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.DataSource;
 import com.epipasha.cashflow.data.Repository;
 import com.epipasha.cashflow.data.entites.Account;
 
-public class AccountDetailViewModel extends AndroidViewModel implements DataSource.GetAccountCallback {
+public class AccountDetailViewModel extends AndroidViewModel {
 
     private final DataSource mRepository;
 
@@ -23,11 +20,22 @@ public class AccountDetailViewModel extends AndroidViewModel implements DataSour
     public AccountDetailViewModel(@NonNull Application application, Repository repository) {
         super(application);
         mRepository = repository;
-        mAccount.set(new Account(""));
+        mAccount.set(new Account());
     }
 
     public void start(int accountId){
-        mRepository.getAccountById(accountId, this);
+        mRepository.getAccountById(accountId, new DataSource.GetAccountCallback() {
+            @Override
+            public void onAccountLoaded(Account account) {
+                mAccount.set(account);
+                isNew.set(false);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+                mAccount.set(new Account());
+            }
+        });
     }
 
     public ObservableBoolean getIsNew() {
@@ -52,14 +60,4 @@ public class AccountDetailViewModel extends AndroidViewModel implements DataSour
         }
     }
 
-    @Override
-    public void onAccountLoaded(Account account) {
-        mAccount.set(account);
-        isNew.set(false);
-    }
-
-    @Override
-    public void onDataNotAvailable() {
-        //mAccount.postValue(null);
-    }
 }

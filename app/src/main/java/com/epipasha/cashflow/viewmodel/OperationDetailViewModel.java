@@ -1,11 +1,8 @@
-package com.epipasha.cashflow.data.viewmodel;
+package com.epipasha.cashflow.viewmodel;
 
 import android.app.Application;
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.MutableLiveData;
-import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
@@ -13,12 +10,8 @@ import android.databinding.ObservableInt;
 import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import com.epipasha.cashflow.Utils;
 import com.epipasha.cashflow.data.DataSource;
@@ -31,9 +24,7 @@ import com.epipasha.cashflow.objects.OperationType;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 

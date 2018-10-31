@@ -1,11 +1,9 @@
-package com.epipasha.cashflow.data.viewmodel;
+package com.epipasha.cashflow.viewmodel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
-import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 
 import com.epipasha.cashflow.data.AppExecutors;
 import com.epipasha.cashflow.data.Backuper;

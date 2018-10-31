@@ -9,7 +9,7 @@
         <import type="com.epipasha.cashflow.objects.OperationType"/>
         <variable
             name="viewmodel"
-            type="com.epipasha.cashflow.data.viewmodel.OperationMasterViewModel"/>
+            type="com.epipasha.cashflow.viewmodel.OperationMasterViewModel"/>
     </data>
 
 <android.support.design.widget.CoordinatorLayout

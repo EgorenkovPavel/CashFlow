@@ -20,8 +20,8 @@ import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.AppExecutors;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
-import com.epipasha.cashflow.data.viewmodel.OperationMasterViewModel;
-import com.epipasha.cashflow.data.viewmodel.ViewModelFactory;
+import com.epipasha.cashflow.viewmodel.OperationMasterViewModel;
+import com.epipasha.cashflow.viewmodel.ViewModelFactory;
 import com.epipasha.cashflow.objects.OperationType;
 
 import java.util.List;

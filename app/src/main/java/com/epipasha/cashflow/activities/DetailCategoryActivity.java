@@ -1,29 +1,20 @@
 package com.epipasha.cashflow.activities;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.dao.AnalyticDao.MonthCashflow;
-import com.epipasha.cashflow.data.entites.Category;
-import com.epipasha.cashflow.data.viewmodel.AccountDetailViewModel;
-import com.epipasha.cashflow.data.viewmodel.CategoryDetailViewModel;
-import com.epipasha.cashflow.data.viewmodel.ViewModelFactory;
-import com.epipasha.cashflow.databinding.ActivityDetailCategoryBinding;
-import com.epipasha.cashflow.objects.OperationType;
+import com.epipasha.cashflow.viewmodel.CategoryDetailViewModel;
+import com.epipasha.cashflow.viewmodel.ViewModelFactory;
+import com.epipasha.cashflow.databinding.ActivityCategoryBinding;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -53,7 +44,7 @@ public class DetailCategoryActivity extends DetailActivity{
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActivityDetailCategoryBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_detail_category);
+        ActivityCategoryBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_category);
 
         setSupportActionBar(binding.toolbar);
 
@@ -72,12 +63,14 @@ public class DetailCategoryActivity extends DetailActivity{
             model.start(mCategoryId);
         }
 
-        model.getMonthCashflow().observe(this, new Observer<List<MonthCashflow>>() {
-            @Override
-            public void onChanged(@Nullable List<MonthCashflow> monthCashflows) {
-                loadChart(monthCashflows);
-            }
-        });
+        //TODO
+//        model.getMonthCashflow().observe(this, new Observer<List<MonthCashflow>>() {
+//            @Override
+//            public void onChanged(@Nullable List<MonthCashflow> monthCashflows) {
+//                if(monthCashflows == null) return;
+//                loadChart(monthCashflows);
+//            }
+//        });
     }
 
     @Override

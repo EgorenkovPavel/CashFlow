@@ -4,7 +4,6 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,7 +13,6 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,10 +23,9 @@ import com.epipasha.cashflow.activities.DetailOperationActivity;
 import com.epipasha.cashflow.adapters.OperationAdapter;
 import com.epipasha.cashflow.data.AppDatabase;
 import com.epipasha.cashflow.data.AppExecutors;
-import com.epipasha.cashflow.data.entites.Operation;
 import com.epipasha.cashflow.data.entites.OperationWithData;
-import com.epipasha.cashflow.data.viewmodel.OperationListViewModel;
-import com.epipasha.cashflow.data.viewmodel.ViewModelFactory;
+import com.epipasha.cashflow.viewmodel.OperationListViewModel;
+import com.epipasha.cashflow.viewmodel.ViewModelFactory;
 
 import java.util.List;
 

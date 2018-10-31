@@ -4,42 +4,23 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
-import android.text.Editable;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.epipasha.cashflow.NumberTextWatcherForThousand;
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.data.entites.Account;
-import com.epipasha.cashflow.data.entites.Category;
-import com.epipasha.cashflow.data.entites.OperationWithData;
-import com.epipasha.cashflow.data.viewmodel.ViewModelFactory;
-import com.epipasha.cashflow.data.viewmodel.OperationDetailViewModel;
-import com.epipasha.cashflow.objects.OperationType;
+import com.epipasha.cashflow.viewmodel.ViewModelFactory;
+import com.epipasha.cashflow.viewmodel.OperationDetailViewModel;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Locale;
 
 public class DetailOperationActivity extends DetailActivity {
 
@@ -53,7 +34,7 @@ public class DetailOperationActivity extends DetailActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final ActivityDetailOperationBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_detail_operation);
+        final ActivityOperationBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_operation);
 
         setSupportActionBar(binding.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

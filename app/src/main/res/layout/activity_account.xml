@@ -4,12 +4,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data class="com.epipasha.cashflow.activities.ActivityDetailAccountBinding">
+    <data class="com.epipasha.cashflow.activities.ActivityAccountBinding">
         <import type="android.view.View" />
 
         <variable
             name="viewmodel"
-            type="com.epipasha.cashflow.data.viewmodel.AccountDetailViewModel"/>
+            type="com.epipasha.cashflow.viewmodel.AccountDetailViewModel"/>
 
     </data>
 <LinearLayout

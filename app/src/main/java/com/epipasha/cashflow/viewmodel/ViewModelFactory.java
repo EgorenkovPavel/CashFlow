@@ -1,4 +1,4 @@
-package com.epipasha.cashflow.data.viewmodel;
+package com.epipasha.cashflow.viewmodel;
 
 import android.app.Application;
 import android.arch.lifecycle.ViewModel;

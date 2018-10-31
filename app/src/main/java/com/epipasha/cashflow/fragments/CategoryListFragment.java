@@ -19,8 +19,8 @@ import com.epipasha.cashflow.activities.AnalyticActivity;
 import com.epipasha.cashflow.activities.DetailCategoryActivity;
 import com.epipasha.cashflow.adapters.CategoryAdapter;
 import com.epipasha.cashflow.data.entites.CategoryWithCashflow;
-import com.epipasha.cashflow.data.viewmodel.CategoryListViewModel;
-import com.epipasha.cashflow.data.viewmodel.ViewModelFactory;
+import com.epipasha.cashflow.viewmodel.CategoryListViewModel;
+import com.epipasha.cashflow.viewmodel.ViewModelFactory;
 
 import java.util.List;
 

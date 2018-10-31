@@ -19,8 +19,8 @@ import android.widget.Button;
 
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.Backuper;
-import com.epipasha.cashflow.data.viewmodel.BackupViewModel;
-import com.epipasha.cashflow.data.viewmodel.ViewModelFactory;
+import com.epipasha.cashflow.viewmodel.BackupViewModel;
+import com.epipasha.cashflow.viewmodel.ViewModelFactory;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -44,9 +44,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;

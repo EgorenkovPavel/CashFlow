@@ -18,6 +18,10 @@ public class Account {
         this.title = title;
     }
 
+    @Ignore
+    public Account() {
+    }
+
     public Account(int id, String title) {
         this.id = id;
         this.title = title;

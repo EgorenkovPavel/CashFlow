@@ -18,8 +18,8 @@ import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.activities.DetailAccountActivity;
 import com.epipasha.cashflow.adapters.AccountAdapter;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
-import com.epipasha.cashflow.data.viewmodel.AccountListViewModel;
-import com.epipasha.cashflow.data.viewmodel.ViewModelFactory;
+import com.epipasha.cashflow.viewmodel.AccountListViewModel;
+import com.epipasha.cashflow.viewmodel.ViewModelFactory;
 
 import java.util.List;
 
