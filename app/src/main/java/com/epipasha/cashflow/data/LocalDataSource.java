@@ -292,6 +292,17 @@ public class LocalDataSource implements DataSource{
         mAppExecutors.discIO().execute(runnable);
     }
 
+    public void deleteOperationById(final int operationId, final DeleteOperationCallback callback) {
+
+        mAppExecutors.discIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                int numColumn = mDb.operationDao().deleteOperationById(operationId);
+                if (callback != null) callback.onOperationDeletedSuccess(numColumn);
+            }
+        });
+    }
+
     public LiveData<List<OperationWithData>> loadOperationWithData() {
         return mDb.operationDao().loadOperationWithData();
     }

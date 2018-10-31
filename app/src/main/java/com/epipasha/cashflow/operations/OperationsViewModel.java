@@ -26,4 +26,9 @@ public class OperationsViewModel extends AndroidViewModel {
     public LiveData<List<OperationWithData>> getOperations() {
         return operations;
     }
+
+    public void deleteOperation(final int operationId){
+        mRepository.deleteOperationById(operationId, null);
+    }
+
 }

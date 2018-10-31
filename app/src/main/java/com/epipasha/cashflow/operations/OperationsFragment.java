@@ -19,10 +19,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.data.AppDatabase;
-import com.epipasha.cashflow.data.AppExecutors;
-import com.epipasha.cashflow.data.entites.OperationWithData;
 import com.epipasha.cashflow.data.ViewModelFactory;
+import com.epipasha.cashflow.data.entites.OperationWithData;
 
 import java.util.List;
 
@@ -30,6 +28,7 @@ public class OperationsFragment extends Fragment implements OperationAdapter.Ite
 
     private RecyclerView rvList;
     private OperationAdapter mAdapter;
+    private OperationsViewModel model;
 
     @Nullable
     @Override
@@ -49,7 +48,8 @@ public class OperationsFragment extends Fragment implements OperationAdapter.Ite
 
         rvList.setHasFixedSize(true);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager layoutManager =
+                new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         rvList.setLayoutManager(layoutManager);
 
         DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(rvList.getContext(),
@@ -63,8 +63,10 @@ public class OperationsFragment extends Fragment implements OperationAdapter.Ite
 
     private void retrieveItems() {
 
-        OperationsViewModel viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getActivity().getApplication())).get(OperationsViewModel.class);
-        viewModel.getOperations().observe(this, new Observer<List<OperationWithData>>() {
+        model = ViewModelProviders
+                .of(this, ViewModelFactory.getInstance(getActivity().getApplication()))
+                .get(OperationsViewModel.class);
+        model.getOperations().observe(this, new Observer<List<OperationWithData>>() {
             @Override
             public void onChanged(@Nullable List<OperationWithData> operations) {
                 mAdapter.setOperations(operations);
@@ -81,20 +83,20 @@ public class OperationsFragment extends Fragment implements OperationAdapter.Ite
     }
 
     @Override
-    public void onItemLongClickListener(final int operationId, View view) {
+    public void onItemLongClickListener(final int operationId, final View view) {
 
-        PopupMenu popupMenu = new PopupMenu(getActivity(), view);
+        PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
         popupMenu.inflate(R.menu.popup_list_item_operation);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 if(menuItem.getItemId() == R.id.action_delete_operation){
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                     builder.setMessage(R.string.dialog_delete_operation)
                             .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    deleteOperation(operationId);
+                                    model.deleteOperation(operationId);
                                  }
                             })
                             .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -114,14 +116,5 @@ public class OperationsFragment extends Fragment implements OperationAdapter.Ite
         popupMenu.show();
     }
 
-    private void deleteOperation(final int operationId){
-        AppExecutors.getInstance().discIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                AppDatabase mDb = AppDatabase.getInstance(getContext());
-                mDb.operationDao().deleteOperationById(operationId);
-             }
-        });
-    }
 
 }

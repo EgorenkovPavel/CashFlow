@@ -120,6 +120,11 @@ public class Repository implements DataSource{
         return mLocalDataSource.loadOperationWithData();
     }
 
+    public void deleteOperationById(int operationId, DeleteOperationCallback callback) {
+        mLocalDataSource.deleteOperationById(operationId, callback);
+    }
+
+
     // ANALYTIC
     @Override
     public LiveData<List<AnalyticDao.MonthCashflow>> loadMonthCashflow(int categoryId) {
