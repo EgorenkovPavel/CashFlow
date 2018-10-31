@@ -44,7 +44,8 @@ public class OperationMasterActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActivityOperationMasterBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_operation_master);
+        ActivityOperationMasterBinding binding =
+                DataBindingUtil.setContentView(this, R.layout.activity_operation_master);
 
         setSupportActionBar(binding.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -55,7 +56,9 @@ public class OperationMasterActivity extends BaseActivity {
 
         spinAccount.setAdapter(mAccountAdapter);
 
-        model = ViewModelProviders.of(this, ViewModelFactory.getInstance(getApplication())).get(OperationMasterViewModel.class);
+        model = ViewModelProviders.of(this,
+                ViewModelFactory.getInstance(getApplication()))
+                .get(OperationMasterViewModel.class);
 
         binding.setViewmodel(model);
 

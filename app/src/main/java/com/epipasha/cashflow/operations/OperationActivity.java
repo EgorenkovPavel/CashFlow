@@ -35,12 +35,15 @@ public class OperationActivity extends DetailActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final ActivityOperationBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_operation);
+        final ActivityOperationBinding binding =
+                DataBindingUtil.setContentView(this, R.layout.activity_operation);
 
         setSupportActionBar(binding.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        model = ViewModelProviders.of(this, ViewModelFactory.getInstance(getApplication())).get(OperationViewModel.class);
+        model = ViewModelProviders.of(this,
+                ViewModelFactory.getInstance(getApplication()))
+                .get(OperationViewModel.class);
 
         binding.setViewmodel(model);
 
