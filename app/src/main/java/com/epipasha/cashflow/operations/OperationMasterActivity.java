@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +20,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.activities.ActivityOperationMasterBinding;
 import com.epipasha.cashflow.activities.BaseActivity;
 import com.epipasha.cashflow.data.AppExecutors;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.ViewModelFactory;
+import com.epipasha.cashflow.databinding.NewMasterBinding;
 import com.epipasha.cashflow.objects.OperationType;
 
 import java.util.List;
@@ -33,28 +36,24 @@ public class OperationMasterActivity extends BaseActivity {
     private OperationMasterViewModel model;
 
     private AccountAdapter mAccountAdapter;
-    private ArrayAdapter<Category> mCategoryInAdapter;
-    private ArrayAdapter<Category> mCategoryOutAdapter;
+    private CategoryAdapter mCategoryInAdapter;
+    private CategoryAdapter mCategoryOutAdapter;
     private AccountAdapter mRecAccountAdapter;
 
-    private ViewGroup parentContainer;
-    private Spinner spinAccount, spinAnalytic;
+    private RecyclerView rvAccounts;
+    private RecyclerView rvAnalytics;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActivityOperationMasterBinding binding =
-                DataBindingUtil.setContentView(this, R.layout.activity_operation_master);
-
-        setSupportActionBar(binding.toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        NewMasterBinding binding = DataBindingUtil.setContentView(this, R.layout.new_master);
 
         findViews();
 
         initAdapters();
 
-        spinAccount.setAdapter(mAccountAdapter);
+        rvAccounts.setAdapter(mAccountAdapter);
 
         model = ViewModelProviders.of(this,
                 ViewModelFactory.getInstance(getApplication()))
@@ -65,36 +64,22 @@ public class OperationMasterActivity extends BaseActivity {
         model.getAccounts().observe(this, new Observer<List<AccountWithBalance>>() {
             @Override
             public void onChanged(@Nullable List<AccountWithBalance> accounts) {
-                mAccountAdapter.clear();
-                if (accounts != null) mAccountAdapter.addAll(accounts);
-                mAccountAdapter.notifyDataSetChanged();
+                mAccountAdapter.setItems(accounts);
+                mRecAccountAdapter.setItems(accounts);
             }
         });
 
         model.getCategoriesIn().observe(this, new Observer<List<Category>>() {
             @Override
             public void onChanged(@Nullable List<Category> categories) {
-                mCategoryInAdapter.clear();
-                if (categories != null) mCategoryInAdapter.addAll(categories);
-                mCategoryInAdapter.notifyDataSetChanged();
+                mCategoryInAdapter.setItems(categories);
             }
         });
 
         model.getCategoriesOut().observe(this, new Observer<List<Category>>() {
             @Override
             public void onChanged(@Nullable List<Category> categories) {
-                mCategoryOutAdapter.clear();
-                if (categories != null) mCategoryOutAdapter.addAll(categories);
-                mCategoryOutAdapter.notifyDataSetChanged();
-            }
-        });
-
-        model.getRecAccounts().observe(this, new Observer<List<AccountWithBalance>>() {
-            @Override
-            public void onChanged(@Nullable List<AccountWithBalance> accounts) {
-                mRecAccountAdapter.clear();
-                if (accounts != null) mRecAccountAdapter.addAll(accounts);
-                mRecAccountAdapter.notifyDataSetChanged();
+                mCategoryOutAdapter.setItems(categories);
             }
         });
 
@@ -105,18 +90,46 @@ public class OperationMasterActivity extends BaseActivity {
 
                  switch (type){
                     case IN:{
-                        spinAnalytic.setAdapter(mCategoryInAdapter);
+                        rvAnalytics.setAdapter(mCategoryInAdapter);
                         break;
                     }
                     case OUT:{
-                        spinAnalytic.setAdapter(mCategoryOutAdapter);
+                        rvAnalytics.setAdapter(mCategoryOutAdapter);
                         break;
                     }
                     case TRANSFER: {
-                        spinAnalytic.setAdapter(mRecAccountAdapter);
+                        rvAnalytics.setAdapter(mRecAccountAdapter);
                         break;
                     }
                 }
+            }
+        });
+
+        model.getSelectedAccount().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer id) {
+                mAccountAdapter.setSelectedId(id);
+            }
+        });
+
+        model.getSelectedInCategory().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer id) {
+                mCategoryInAdapter.setSelectedId(id);
+            }
+        });
+
+        model.getSelectedOutCategory().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer id) {
+                mCategoryOutAdapter.setSelectedId(id);
+            }
+        });
+
+        model.getSelectedRepAccount().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer id) {
+                mRecAccountAdapter.setSelectedId(id);
             }
         });
 
@@ -126,23 +139,23 @@ public class OperationMasterActivity extends BaseActivity {
                 if(status == null) return;
                 switch (status){
                     case EMPTY_SUM:{
-                        Snackbar.make(parentContainer, R.string.no_sum, Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(rvAccounts, R.string.no_sum, Snackbar.LENGTH_LONG).show();
                         break;
                     }
                     case EMPTY_TYPE:{
-                        Snackbar.make(parentContainer, R.string.no_type, Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(rvAccounts, R.string.no_type, Snackbar.LENGTH_LONG).show();
                         break;
                     }
                     case EMPTY_ANALYTIC:{
-                        Snackbar.make(parentContainer, R.string.no_analytic_selected, Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(rvAccounts, R.string.no_analytic_selected, Snackbar.LENGTH_LONG).show();
                         break;
                     }
                     case EMPTY_ACCOUNT:{
-                        Snackbar.make(parentContainer, R.string.no_account_selected, Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(rvAccounts, R.string.no_account_selected, Snackbar.LENGTH_LONG).show();
                         break;
                     }
                     case OPERATION_SAVED: {
-                        Snackbar snackbar = Snackbar.make(parentContainer, R.string.operation_created, Snackbar.LENGTH_LONG);
+                        Snackbar snackbar = Snackbar.make(rvAccounts, R.string.operation_created, Snackbar.LENGTH_LONG);
                         snackbar.setAction(R.string.undo, new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -158,7 +171,7 @@ public class OperationMasterActivity extends BaseActivity {
                         break;
                     }
                     case OPERATION_DELETED:{
-                        Snackbar.make(parentContainer, R.string.operation_deleted, Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(rvAccounts, R.string.operation_deleted, Snackbar.LENGTH_LONG).show();
                         break;
                     }
                 }
@@ -167,37 +180,57 @@ public class OperationMasterActivity extends BaseActivity {
 
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        model.loadPrefs();
-    }
-
     private void initAdapters(){
-        mAccountAdapter = new AccountAdapter(this);
+        mAccountAdapter = new AccountAdapter();
+        mAccountAdapter.setListener(new ItemClickListener<AccountWithBalance>() {
+            @Override
+            public void onItemClick(AccountWithBalance item) {
+                model.selectAccount(item);
+            }
+        });
 
-        mCategoryInAdapter = new ArrayAdapter<>(
-                OperationMasterActivity.this,
-                R.layout.item_account,
-                R.id.account_list_item_name);
+        mCategoryInAdapter = new CategoryAdapter();
+        mCategoryInAdapter.setListener(new ItemClickListener<Category>() {
+            @Override
+            public void onItemClick(Category item) {
+                model.selectInCategory(item);
+            }
+        });
 
-        mCategoryOutAdapter = new ArrayAdapter<>(
-                OperationMasterActivity.this,
-                R.layout.item_account,
-                R.id.account_list_item_name);
+        mCategoryOutAdapter = new CategoryAdapter();
+        mCategoryOutAdapter.setListener(new ItemClickListener<Category>() {
+            @Override
+            public void onItemClick(Category item) {
+                model.selectOutCategory(item);
+            }
+        });
 
-        mRecAccountAdapter = new AccountAdapter(this);
+        mRecAccountAdapter = new AccountAdapter();
+        mRecAccountAdapter.setListener(new ItemClickListener<AccountWithBalance>() {
+            @Override
+            public void onItemClick(AccountWithBalance item) {
+                model.selectRepAccount(item);
+            }
+        });
     }
 
     private void findViews() {
 
-        parentContainer = findViewById(R.id.master_container);
+        rvAccounts = findViewById(R.id.rvAccounts);
+        rvAnalytics = findViewById(R.id.rvAnalytics);
 
-        spinAccount = findViewById(R.id.spinner_account);
-        spinAnalytic = findViewById(R.id.spinner_analytic);
+        rvAccounts.setHasFixedSize(true);
+        rvAnalytics.setHasFixedSize(true);
 
-        Button btnMore = findViewById(R.id.operation_master_more);
-        Button btnNext = findViewById(R.id.operation_master_next);
+        rvAccounts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        rvAnalytics.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+
+        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
+        rvAccounts.addItemDecoration(mDividerItemDecoration);
+        rvAnalytics.addItemDecoration(mDividerItemDecoration);
+
+        Button btnMore = findViewById(R.id.btnMore);
+        Button btnNext = findViewById(R.id.btnNext);
 
         btnMore.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -215,43 +248,130 @@ public class OperationMasterActivity extends BaseActivity {
 
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        model.savePrefs();
-    }
+    private class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountViewHolder>{
 
-    private class AccountAdapter extends ArrayAdapter<AccountWithBalance>{
-
-        public AccountAdapter(@NonNull Context context) {
-            super(context, R.layout.item_account);
-            setDropDownViewResource(R.layout.item_account);
-        }
+        private List<AccountWithBalance> items;
+        private Integer selectedId;
+        private ItemClickListener<AccountWithBalance> listener;
 
         @NonNull
         @Override
-        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            return adapterView(position, convertView, parent);
+        public AccountViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_master_account, parent, false);
+            return new AccountViewHolder(v);
         }
 
         @Override
-        public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            return adapterView(position, convertView, parent);
+        public void onBindViewHolder(@NonNull AccountViewHolder holder, int position) {
+            AccountWithBalance account = items.get(position);
+
+            holder.name.setText(account.getTitle());
+            holder.sum.setText(String.format(Locale.getDefault(), "%,d", account.getSum()));
+
+            holder.itemView.setSelected(selectedId != null && selectedId == account.getId());
         }
 
-        private View adapterView(int position, @Nullable View convertView, @NonNull ViewGroup parent){
-            View view = convertView;
-            if (view == null)
-                view = LayoutInflater.from(getContext())
-                        .inflate(R.layout.item_account, parent, false);
+        @Override
+        public int getItemCount() {
+            return items == null ? 0 : items.size();
+        }
 
-            AccountWithBalance account = getItem(position);
+        public void setItems(List<AccountWithBalance> items){
+            this.items = items;
+            notifyDataSetChanged();
+        }
 
-            ((TextView)view.findViewById(R.id.account_list_item_name)).setText(account.getTitle());
-            ((TextView)view.findViewById(R.id.account_list_item_sum)).setText(String.format(Locale.getDefault(), "%,d", account.getSum()));
+        public void setListener(ItemClickListener<AccountWithBalance> listener) {
+            this.listener = listener;
+        }
 
-            return view;
+        public void setSelectedId(Integer id){
+            this.selectedId = id;
+            notifyDataSetChanged();
+        }
+
+        class AccountViewHolder extends RecyclerView.ViewHolder{
+
+            TextView name;
+            TextView sum;
+
+            public AccountViewHolder(View itemView) {
+                super(itemView);
+
+                name = itemView.findViewById(R.id.account_list_item_name);
+                sum = itemView.findViewById(R.id.account_list_item_sum);
+
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (listener != null) listener.onItemClick(items.get(getLayoutPosition()));
+                    }
+                });
+            }
         }
     }
 
+    private class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>{
+
+        private List<Category> items;
+        private Integer selectedId;
+        private ItemClickListener<Category> listener;
+
+        @NonNull
+        @Override
+        public CategoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_master_category, parent, false);
+            return new CategoryViewHolder(v);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
+            Category category = items.get(position);
+
+            holder.name.setText(category.getTitle());
+
+            holder.itemView.setSelected(selectedId != null && selectedId == category.getId());
+        }
+
+        @Override
+        public int getItemCount() {
+            return items == null ? 0 : items.size();
+        }
+
+        public void setItems(List<Category> items){
+            this.items = items;
+            notifyDataSetChanged();
+        }
+
+        public void setListener(ItemClickListener<Category> listener) {
+            this.listener = listener;
+        }
+
+        public void setSelectedId(Integer id){
+            this.selectedId = id;
+            notifyDataSetChanged();
+        }
+
+        class CategoryViewHolder extends RecyclerView.ViewHolder{
+
+            TextView name;
+
+            public CategoryViewHolder(View itemView) {
+                super(itemView);
+
+                name = itemView.findViewById(R.id.lbl_in);
+
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (listener != null) listener.onItemClick(items.get(getLayoutPosition()));
+                    }
+                });
+             }
+        }
+    }
+
+    private interface ItemClickListener<T>{
+        void onItemClick(T item);
+    }
 }

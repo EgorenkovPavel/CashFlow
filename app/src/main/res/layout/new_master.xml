@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="com.epipasha.cashflow.objects.OperationType"/>
+        <variable
+            name="viewmodel"
+            type="com.epipasha.cashflow.operations.OperationMasterViewModel"/>
+    </data>
+<android.support.constraint.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvAccounts"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/type_normal"
+        app:layout_constraintBottom_toTopOf="@+id/keyboard"
+        app:layout_constraintEnd_toStartOf="@+id/rvAnalytics"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lblAccount"
+        tools:listitem="@layout/item_master_account" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvAnalytics"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/type_normal"
+        app:layout_constraintBottom_toTopOf="@+id/keyboard"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/rvAccounts"
+        app:layout_constraintTop_toBottomOf="@+id/lblAnalytic"
+        tools:listitem="@layout/item_master_category" />
+
+    <include
+        android:id="@+id/keyboard"
+        layout="@layout/include_keyboard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnMore"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:viewmodel="@{viewmodel}"/>
+
+    <TextView
+        android:id="@+id/tvSum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        tools:text="1000"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rgType"
+        app:sum="@{viewmodel.operation.sum}"/>
+
+    <RadioGroup
+        android:id="@+id/rgType"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/type_normal"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RadioButton
+            android:id="@+id/rbIn"
+            style="@style/TypeButton"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/in"
+            android:textAllCaps="true"
+            android:checked="@{viewmodel.operation.type == OperationType.IN}"
+            android:onClick="@{() -> viewmodel.onOperationTypeChanged(OperationType.IN)}" />
+
+        <RadioButton
+            android:id="@+id/rbOut"
+            style="@style/TypeButton"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/out"
+            android:textAllCaps="true"
+            android:checked="@{viewmodel.operation.type == OperationType.OUT}"
+            android:onClick="@{() -> viewmodel.onOperationTypeChanged(OperationType.OUT)}" />
+
+        <RadioButton
+            android:id="@+id/rbTransfer"
+            style="@style/TypeButton"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/transfer"
+            android:textAllCaps="true"
+            android:checked="@{viewmodel.operation.type == OperationType.TRANSFER}"
+            android:onClick="@{() -> viewmodel.onOperationTypeChanged(OperationType.TRANSFER)}" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btnMore"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/more"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnNext"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnNext"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="@string/next"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btnMore" />
+
+    <TextView
+        android:id="@+id/lblAccount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/account"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        app:layout_constraintBottom_toBottomOf="@+id/tvSum"
+        app:layout_constraintStart_toStartOf="@+id/rvAccounts"
+        app:layout_constraintTop_toBottomOf="@+id/tvSum" />
+
+    <TextView
+        android:id="@+id/lblAnalytic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="@{viewmodel.operation.type != OperationType.TRANSFER ? @string/category : @string/account}"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        app:layout_constraintBottom_toBottomOf="@+id/tvSum"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSum"
+        tools:text="Analytic" />
+</android.support.constraint.ConstraintLayout>
+</layout>

@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.epipasha.cashflow.Prefs;
 import com.epipasha.cashflow.data.DataSource;
 import com.epipasha.cashflow.data.Repository;
+import com.epipasha.cashflow.data.entites.Account;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.entites.Operation;
@@ -29,9 +30,13 @@ public class OperationMasterViewModel extends AndroidViewModel {
     private LiveData<List<AccountWithBalance>> accounts;
     private LiveData<List<Category>> categoriesIn;
     private LiveData<List<Category>> categoriesOut;
-    private MutableLiveData<List<AccountWithBalance>> recAccounts = new MutableLiveData<>();
 
-    private MutableLiveData<OperationType> mOperationType;
+    private MutableLiveData<Integer> selectedAccount = new MutableLiveData<>();
+    private MutableLiveData<Integer> selectedInCategory = new MutableLiveData<>();
+    private MutableLiveData<Integer> selectedOutCategory = new MutableLiveData<>();
+    private MutableLiveData<Integer> selectedRepAccount = new MutableLiveData<>();
+
+    private MutableLiveData<OperationType> mOperationType = new MutableLiveData<>();
 
     private MutableLiveData<Status> mStatus;
 
@@ -44,7 +49,6 @@ public class OperationMasterViewModel extends AndroidViewModel {
 
         mRepository = repository;
 
-        mOperationType = new MutableLiveData<>();
         mOperationType.postValue(OperationType.IN);
 
         mStatus = new MutableLiveData<>();
@@ -96,71 +100,72 @@ public class OperationMasterViewModel extends AndroidViewModel {
         return categoriesOut;
     }
 
-    public LiveData<List<AccountWithBalance>> getRecAccounts() {
-        return recAccounts;
-    }
-
     public LiveData<OperationType> getOperationType() {
         return mOperationType;
     }
 
-    public void onAccountSelected(int pos){
-        AccountWithBalance account = accounts.getValue().get(pos);
+    public void selectAccount(AccountWithBalance account){
+        selectedAccount.setValue(account.getId());
 
-        mOperation.get().setAccountId(account.getId());
-
-        ArrayList<AccountWithBalance> ac = new ArrayList<>(accounts.getValue());
-        ac.remove(pos);
-        recAccounts.postValue(ac);
+        Integer repAccountId = selectedRepAccount.getValue();
+        if(repAccountId != null && repAccountId == account.getId())
+            selectedRepAccount.setValue(null);
     }
 
-    public void onAnalyticSelected(int pos){
-        Operation operation = mOperation.get();
-        switch (operation.getType()){
-            case IN:{
-                Category category = categoriesIn.getValue().get(pos);
+    public void selectInCategory(Category category){
+        selectedInCategory.setValue(category.getId());
+    }
 
-                operation.setCategoryId(category.getId());
-                operation.setRecipientAccountId(null);
-                break;
-            }
-            case OUT:{
-                Category category = categoriesOut.getValue().get(pos);
+    public void selectOutCategory(Category category){
+        selectedOutCategory.setValue(category.getId());
+    }
 
-                operation.setCategoryId(category.getId());
-                operation.setRecipientAccountId(null);
-                break;
-            }
-            case TRANSFER:{
-                AccountWithBalance account = recAccounts.getValue().get(pos);
-
-                operation.setCategoryId(null);
-                operation.setRecipientAccountId(account.getId());
-                break;
-            }
-        }
+    public void selectRepAccount(AccountWithBalance account){
+        Integer accountId = selectedAccount.getValue();
+        if(accountId == null || accountId != account.getId())
+            selectedRepAccount.setValue(account.getId());
     }
 
     public void saveOperation(){
 
-        int accountId = mOperation.get().getAccountId();
-
-        Integer categoryId = null;
-        Integer repAccountId = null;
+        Integer accountId = selectedAccount.getValue();
+        Integer categoryInId = selectedInCategory.getValue();
+        Integer categoryOutId = selectedOutCategory.getValue();
+        Integer repAccountId = selectedRepAccount.getValue();
 
         OperationType type = mOperation.get().getType();
+        Integer categoryId = null;
 
         switch (type){
-            case IN:case OUT:{
-                categoryId = mOperation.get().getCategoryId();
+            case IN:{
+                categoryId = categoryInId;
+                repAccountId = null;
+                break;
+            }case OUT:{
+                categoryId = categoryOutId;
+                repAccountId = null;
                 break;
             }case TRANSFER:{
-                repAccountId = mOperation.get().getRecipientAccountId();
+                categoryId = null;
                 break;
             }
         }
 
         int sum = mOperation.get().getSum();
+
+        if(accountId == null){
+            mStatus.postValue(Status.EMPTY_ACCOUNT);
+            return;
+        }else if(categoryId == null && (type == OperationType.IN || type == OperationType.OUT)){
+            mStatus.postValue(Status.EMPTY_ANALYTIC);
+            return;
+        }else if(repAccountId == null && type == OperationType.TRANSFER){
+            mStatus.postValue(Status.EMPTY_ANALYTIC);
+            return;
+        }else if(sum == 0){
+            mStatus.postValue(Status.EMPTY_SUM);
+            return;
+        }
 
         operation = new Operation(new Date(), type, accountId, categoryId, repAccountId, sum);
         mRepository.insertOperation(operation, new DataSource.InsertOperationCallback() {
@@ -177,7 +182,6 @@ public class OperationMasterViewModel extends AndroidViewModel {
 
             }
         });
-
     }
 
     public void deleteOperation(){
@@ -198,53 +202,20 @@ public class OperationMasterViewModel extends AndroidViewModel {
         return mStatus;
     }
 
-    public void loadPrefs(){
-
-        //todo fix loading prefs
-
-//        int accountId = Prefs.OperationMasterPrefs.getAccountId(getApplication());
-//
-//        List<AccountWithBalance> accountList = accounts.getValue();
-//        if (accountList != null)
-//            for (AccountWithBalance account:accountList) {
-//                if (account.getId() == accountId){
-//                    mOperationAccount.postValue(account);
-//                }
-//            }
-//
-//
-//        //Utils.setPositionById(spinAccount, accountId);
-//
-//        OperationType type = Prefs.OperationMasterPrefs.getOperationType(getApplication());
-//        onOperationTypeChanged(type);
-
-//        Utils.setPositionById(spinAnalytic,
-//                Prefs.OperationMasterPrefs.getAnalyticId(
-//                        getApplication(), type));
+    public MutableLiveData<Integer> getSelectedAccount() {
+        return selectedAccount;
     }
 
-    public void savePrefs(){
-        OperationType type = mOperation.get().getType();
-        if(type != null) {
-            Prefs.OperationMasterPrefs.saveOperationType(getApplication(), type);
+    public MutableLiveData<Integer> getSelectedInCategory() {
+        return selectedInCategory;
+    }
 
-            switch (type){
-                case IN: case OUT: {
-                    int categoryId = mOperation.get().getCategoryId();
-                    Prefs.OperationMasterPrefs.saveAnalyticId(getApplication(), categoryId, type);
-                    break;
-                }
-                case TRANSFER:{
-                    int repAccountId = mOperation.get().getRecipientAccountId();
-                    Prefs.OperationMasterPrefs.saveAnalyticId(getApplication(), repAccountId, type);
-                    break;
-                }
-            }
-        }
+    public MutableLiveData<Integer> getSelectedOutCategory() {
+        return selectedOutCategory;
+    }
 
-        int accountId = mOperation.get().getAccountId();
-        Prefs.OperationMasterPrefs.saveAccountId(getApplication(), accountId);
-
+    public MutableLiveData<Integer> getSelectedRepAccount() {
+        return selectedRepAccount;
     }
 
     public enum Status{
