@@ -30,6 +30,7 @@
         <item name="android:background">@drawable/master_radiobutton</item>
         <item name="android:button">@android:color/transparent</item>
         <item name="android:gravity">center</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 
     <style name="label">

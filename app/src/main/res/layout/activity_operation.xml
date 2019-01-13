@@ -204,21 +204,21 @@
                 style="@style/TypeButton"
                 android:checked="@{viewmodel.operation.type == OperationType.IN}"
                 android:onClick="@{() -> viewmodel.setOperationType(OperationType.IN)}"
-                android:text="@string/in" />
+                android:text="@string/in"/>
 
             <RadioButton
                 android:id="@+id/operation_detail_btnOut"
                 style="@style/TypeButton"
                 android:checked="@{viewmodel.operation.type == OperationType.OUT}"
                 android:onClick="@{() -> viewmodel.setOperationType(OperationType.OUT)}"
-                android:text="@string/out" />
+                android:text="@string/out"/>
 
             <RadioButton
                 android:id="@+id/operation_detail_btnTransfer"
                 style="@style/TypeButton"
                 android:checked="@{viewmodel.operation.type == OperationType.TRANSFER}"
                 android:onClick="@{() -> viewmodel.setOperationType(OperationType.TRANSFER)}"
-                android:text="@string/transfer" />
+                android:text="@string/transfer"/>
 
         </RadioGroup>
 
