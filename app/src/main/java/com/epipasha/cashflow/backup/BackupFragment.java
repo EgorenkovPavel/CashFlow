@@ -63,7 +63,12 @@ public class BackupFragment extends Fragment {
     private DriveResourceClient mDriveResourceClient;
     private TaskCompletionSource<DriveId> mOpenItemTaskSource;
 
-    private Button btnDriveShare, btnDriveRestore, btnConnect;
+    private Button bthFileShare;
+    private Button bthFileRestore;
+    private Button btnDriveShare;
+    private Button btnDriveRestore;
+    private Button btnDriveOldRestore;
+    private Button btnConnect;
 
     private BackupViewModel model;
 
@@ -72,49 +77,13 @@ public class BackupFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_backup, container, false);
 
-        model = ViewModelProviders.of(this, ViewModelFactory.getInstance(getActivity().getApplication())).get(BackupViewModel.class);
+        model = ViewModelProviders.of(this,
+                ViewModelFactory.getInstance(getActivity().getApplication())).get(BackupViewModel.class);
 
-        Button bthFileShare = v.findViewById(R.id.btnFileShare);
-        Button bthFileRestore = v.findViewById(R.id.btnFileRestore);
-        btnDriveShare = v.findViewById(R.id.btnDriveShare);
-        btnDriveRestore = v.findViewById(R.id.btnDriveRestore);
-        btnConnect = v.findViewById(R.id.btnConnect);
-
-        bthFileShare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startFileBackup(REQUEST_CODE_FILE_BACKUP);
-            }
-        });
-        bthFileRestore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startFileBackup(REQUEST_CODE_FILE_RESTORE);
-            }
-        });
-
-        btnDriveShare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DriveBackuper backuper = new DriveBackuper();
-                backuper.execute();
-            }
-        });
-        btnDriveRestore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                downloadFileFromDrive();
-            }
-        });
-        btnConnect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                signIn();
-            }
-        });
+        findViews(v);
 
         setDriveVisibility(false);
 
@@ -123,7 +92,26 @@ public class BackupFragment extends Fragment {
         return v;
     }
 
-    private void startFileBackup(int request){
+    //FILE
+    private void findViews(View v){
+        bthFileShare = v.findViewById(R.id.btnFileShare);
+        bthFileRestore = v.findViewById(R.id.btnFileRestore);
+
+        bthFileShare.setOnClickListener(view -> startFileBackup(REQUEST_CODE_FILE_BACKUP));
+        bthFileRestore.setOnClickListener(view -> startFileBackup(REQUEST_CODE_FILE_RESTORE));
+
+        btnDriveShare = v.findViewById(R.id.btnDriveShare);
+        btnDriveRestore = v.findViewById(R.id.btnDriveRestore);
+        btnDriveOldRestore = v.findViewById(R.id.btnDriveOldRestore);
+        btnConnect = v.findViewById(R.id.btnConnect);
+
+        btnDriveShare.setOnClickListener(view -> uploadFileToDrive());
+        btnDriveRestore.setOnClickListener(view -> downloadFileFromDrive());
+        btnDriveOldRestore.setOnClickListener(view -> downloadOldFileFromDrive());
+        btnConnect.setOnClickListener(view -> signIn());
+    }
+
+    private void startFileBackup(int request) {
         if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             // Check Permissions Now
@@ -135,8 +123,8 @@ public class BackupFragment extends Fragment {
         }
     }
 
-    private void startBackuping(int request){
-        switch (request){
+    private void startBackuping(int request) {
+        switch (request) {
             case REQUEST_CODE_FILE_BACKUP: {
                 model.fileBackup();
                 break;
@@ -160,6 +148,7 @@ public class BackupFragment extends Fragment {
     }
 
 
+    //DRIVE
     private void loadDriveClient() {
         Set<Scope> requiredScopes = new HashSet<>(2);
         requiredScopes.add(Drive.SCOPE_FILE);
@@ -171,34 +160,33 @@ public class BackupFragment extends Fragment {
     }
 
     protected void signIn() {
-           GoogleSignInOptions signInOptions =
-                    new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestScopes(Drive.SCOPE_FILE)
-                            .requestScopes(Drive.SCOPE_APPFOLDER)
-                            .build();
-            GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(getActivity(), signInOptions);
-            startActivityForResult(googleSignInClient.getSignInIntent(), REQUEST_CODE_SIGN_IN);
+        GoogleSignInOptions signInOptions =
+                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestScopes(Drive.SCOPE_FILE)
+                        .requestScopes(Drive.SCOPE_APPFOLDER)
+                        .build();
+        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(getActivity(), signInOptions);
+        startActivityForResult(googleSignInClient.getSignInIntent(), REQUEST_CODE_SIGN_IN);
 
     }
 
-    private void downloadFileFromDrive(){
+    private void uploadFileToDrive(){
+        DriveBackuper backuper = new DriveBackuper();
+        backuper.execute();
+    }
 
+    private void downloadFileFromDrive() {
         pickTextFile()
-                .addOnSuccessListener(getActivity(),
-                        new OnSuccessListener<DriveId>() {
-                            @Override
-                            public void onSuccess(DriveId driveId) {
-                                retrieveContents(driveId.asDriveFile());
-                            }
-                        })
-                .addOnFailureListener(getActivity(), new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, "No file selected", e);
-                    }
-                });
-
+                .addOnSuccessListener(getActivity(), driveId -> retrieveContents(driveId.asDriveFile(), false))
+                .addOnFailureListener(getActivity(), e -> Log.e(TAG, "No file selected", e));
     }
+
+    private void downloadOldFileFromDrive() {
+        pickTextFile()
+                .addOnSuccessListener(getActivity(), driveId -> retrieveContents(driveId.asDriveFile(), true))
+                .addOnFailureListener(getActivity(), e -> Log.e(TAG, "No file selected", e));
+    }
+
 
     private void createFileWithIntent(final String backup) {
         // [START create_file_with_intent]
@@ -276,57 +264,39 @@ public class BackupFragment extends Fragment {
         return mOpenItemTaskSource.getTask();
     }
 
-    private void retrieveContents(DriveFile file) {
-        // [START open_file]
+    private void retrieveContents(DriveFile file, boolean oldFormat) {
+
         Task<DriveContents> openFileTask =
                 mDriveResourceClient.openFile(file, DriveFile.MODE_READ_ONLY);
-        // [END open_file]
-        // [START read_contents]
+
         openFileTask
-                .continueWithTask(new Continuation<DriveContents, Task<Void>>() {
-                    @Override
-                    public Task<Void> then(@NonNull Task<DriveContents> task) {
-                        DriveContents contents = task.getResult();
-                        // Process contents...
-                        // [START_EXCLUDE]
-                        // [START read_as_string]
-                        try {
-                            BufferedReader reader = new BufferedReader(
-                                    new InputStreamReader(contents.getInputStream()));
-                            StringBuilder builder = new StringBuilder();
-                            String line;
-                            while ((line = reader.readLine()) != null) {
-                                builder.append(line).append("\n");
-                            }
+                .continueWithTask(task -> {
+                    DriveContents contents = task.getResult();
 
-                            String contentsAsString = builder.toString();
-
-                            DriveRestorer restorer = new DriveRestorer();
-                            restorer.execute(contentsAsString);
-
-                        }catch (Exception e){
-
+                    try {
+                        BufferedReader reader = new BufferedReader(
+                                new InputStreamReader(contents.getInputStream()));
+                        StringBuilder builder = new StringBuilder();
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            builder.append(line).append("\n");
                         }
-                        // [END read_as_string]
-                        // [END_EXCLUDE]
-                        // [START discard_contents]
-                        Task<Void> discardTask = mDriveResourceClient.discardContents(contents);
-                        // [END discard_contents]
-                        return discardTask;
+
+                        String contentsAsString = builder.toString();
+
+                        DriveRestorer restorer = new DriveRestorer();
+                        restorer.setOldFormat(oldFormat);
+                        restorer.execute(contentsAsString);
+
+                    } catch (Exception e) {
+
                     }
+
+                    Task<Void> discardTask = mDriveResourceClient.discardContents(contents);
+
+                    return discardTask;
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Handle failure
-                        // [START_EXCLUDE]
-                        Log.e(TAG, "Unable to read contents", e);
-                        //showMessage(getString(R.string.read_failed));
-                        //finish();
-                        // [END_EXCLUDE]
-                    }
-                });
-        // [END read_contents]
+                .addOnFailureListener(e -> Log.e(TAG, "Unable to read contents", e));
     }
 
     @Override
@@ -357,7 +327,7 @@ public class BackupFragment extends Fragment {
                     mOpenItemTaskSource.setException(new RuntimeException("Unable to open file"));
                 }
                 break;
-            case REQUEST_CODE_CREATE_FILE:{
+            case REQUEST_CODE_CREATE_FILE: {
                 if (resultCode != RESULT_OK) {
                     Log.e(TAG, "Unable to create file");
                     //showMessage(getString(R.string.file_create_error));
@@ -379,14 +349,15 @@ public class BackupFragment extends Fragment {
         setDriveVisibility(true);
     }
 
-    private void setDriveVisibility(Boolean connected){
+    private void setDriveVisibility(Boolean connected) {
         btnConnect.setVisibility(connected ? View.GONE : View.VISIBLE);
         btnDriveRestore.setVisibility(connected ? View.VISIBLE : View.GONE);
+        btnDriveOldRestore.setVisibility(connected ? View.VISIBLE : View.GONE);
         btnDriveShare.setVisibility(connected ? View.VISIBLE : View.GONE);
     }
 
 
-    private class DriveBackuper extends AsyncTask<Void, Void, String>{
+    private class DriveBackuper extends AsyncTask<Void, Void, String> {
 
         @Override
         protected void onPostExecute(String backup) {
@@ -399,11 +370,21 @@ public class BackupFragment extends Fragment {
         }
     }
 
-    private class DriveRestorer extends AsyncTask<String, Void, Void>{
+    private class DriveRestorer extends AsyncTask<String, Void, Void> {
+
+        private boolean oldFormat;
+
+        public void setOldFormat(boolean oldFormat) {
+            this.oldFormat = oldFormat;
+        }
 
         @Override
         protected Void doInBackground(String... data) {
-            Backuper.restoreRoomDb(getActivity(), data[0]);
+            if (oldFormat)
+                Backuper.restoreOldRoomDb(getActivity(), data[0]);
+            else
+                Backuper.restoreRoomDb(getActivity(), data[0]);
+
             return null;
         }
     }
