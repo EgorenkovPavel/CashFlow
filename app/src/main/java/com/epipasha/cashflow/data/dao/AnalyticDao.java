@@ -31,6 +31,7 @@ public interface AnalyticDao {
             + "FROM cashflow "
             + "INNER JOIN categories "
             + "ON cashflow.category_id = categories.id "
+            + "GROUP BY month, year, type "
             + "ORDER BY year, month")
     LiveData<List<MonthCashflow>> loadAllMonthCashflow();
 
