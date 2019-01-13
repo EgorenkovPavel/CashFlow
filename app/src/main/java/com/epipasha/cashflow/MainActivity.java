@@ -46,26 +46,22 @@ public class MainActivity extends AppCompatActivity {
         tabs.setupWithViewPager(viewPager);
 
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                switch (tabs.getSelectedTabPosition()){
-                    case 0: {
-                        Intent i = new Intent(MainActivity.this, AccountActivity.class);
-                        startActivity(i);
-                        break;
-                    }
-                    case 1:{
-                        Intent i = new Intent(MainActivity.this, CategoryActivity.class);
-                        startActivity(i);
-                        break;
-                    }
-                    case 2:{
-                        Intent i = new Intent(MainActivity.this, OperationMasterActivity.class);
-                        startActivity(i);
-                        break;
-                    }
+        fab.setOnClickListener(view -> {
+            switch (tabs.getSelectedTabPosition()){
+                case 0: {
+                    Intent i = new Intent(MainActivity.this, AccountActivity.class);
+                    startActivity(i);
+                    break;
+                }
+                case 1:{
+                    Intent i = new Intent(MainActivity.this, CategoryActivity.class);
+                    startActivity(i);
+                    break;
+                }
+                case 2:{
+                    Intent i = new Intent(MainActivity.this, OperationMasterActivity.class);
+                    startActivity(i);
+                    break;
                 }
             }
         });
@@ -123,13 +119,10 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position){
                 case 0:
-                    //return new AccountsFragment();
                     return new AccountsFragment();
                 case 1:
-                    //return new CategoriesFragment();
                     return new CategoriesFragment();
                 case 2:
-                    //return new OperationsFragment();
                     return new OperationsFragment();
                 default:
                     return null;

@@ -32,7 +32,6 @@
     <string name="preferences">Preferences</string>
     <string name="pref_show_operation_master_on_start" translatable="false">pref_show_operation_master_on_start</string>
     <string name="title_show_operation_master">Operation master</string>
-    <string name="fact">Fact</string>
     <string name="operation_type">Operation type</string>
     <string name="backup">Backup</string>
     <string name="restore">Restore</string>
@@ -46,7 +45,6 @@
     <string name="google_drive" translatable="false">Google drive</string>
     <string name="pref_selected_tab" translatable="false">selected_tab</string>
     <string name="cashflow">Cashflow</string>
-    <string name="operation_master">Operation master</string>
     <string name="total_sum">Total sum</string>
     <string name="new_account">New account</string>
     <string name="new_category">New category</string>
@@ -56,18 +54,13 @@
     <string name="no_account_selected">No account selected!!!</string>
     <string name="no_analytic_selected">No analytic selected!!!</string>
     <string name="no_sum">Type the sum</string>
-    <string name="error">Error</string>
     <string name="operation_created">Operation created!!!</string>
     <string name="undo">UNDO</string>
     <string name="operation_deleted">Operation deleted</string>
-    <string name="error_fill_title">Fill title</string>
-    <string name="error_fill_budget">Fill budget</string>
     <string name="error_fill_sum">Fill sum</string>
     <string name="summary_show_operation_master">Show on start</string>
     <string name="summary_dont_show_operation_master">Don\'t show on start</string>
     <string name="error_choose_account">Choose account</string>
-    <string name="error_choose_category">Choose category</string>
-    <string name="error_choose_rep_account">Choose recipient account</string>
     <string name="connect">Connect</string>
     <string name="ok" translatable="false">OK</string>
     <string name="cancel" translatable="false">Cancel</string>
@@ -82,6 +75,7 @@
     <string name="pref_analytic_chart_show_cashflow_graphic" translatable="false">pref_analytic_chart_show_cashflow_graphic</string>
     <string name="pref_analytic_chart_show_delta_graphic" translatable="false">pref_analytic_chart_show_delta_graphic</string>
     <string name="no_type">Select type</string>
+    <string name="old_format_restore">Old format restore</string>
 
 
 </resources>

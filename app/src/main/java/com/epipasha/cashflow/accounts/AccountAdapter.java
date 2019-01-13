@@ -32,49 +32,37 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
         switch (viewType) {
-
             case HEADER_ITEM: {
                 return onCreateHeaderViewHolder(parent, viewType);
             }
-
             case LIST_ITEM: {
                 return onCreateItemViewHolder(parent, viewType);
             }
-
             default:
                 throw new IllegalArgumentException("Invalid view type, value of " + viewType);
         }
-
     }
 
     private RecyclerView.ViewHolder onCreateHeaderViewHolder(@NonNull ViewGroup parent, int viewType){
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_account_header, parent, false);
-
         return new AccountAdapter.HeaderHolder(view);
     }
 
     private RecyclerView.ViewHolder onCreateItemViewHolder(@NonNull ViewGroup parent, int viewType){
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_account, parent, false);
-
         return new AccountAdapter.AccountHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-
         if (position == 0) {
-
             onBindHeaderViewHolder((HeaderHolder) holder);
-
         } else {
             onBindItemViewHolder((AccountHolder) holder, position - 1);
         }
-
-
     }
 
     private void onBindHeaderViewHolder(HeaderHolder holder){
@@ -88,7 +76,6 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private void onBindItemViewHolder(AccountHolder holder, int position){
         AccountWithBalance mAccount = mAccounts.get(position);
 
-        //Set values
         holder.itemView.setTag(mAccount.getId());
         holder.accountTitleView.setText(mAccount.getTitle());
         holder.accountSumView.setText(String.format(Locale.getDefault(), "%,d", mAccount.getSum()));
@@ -133,7 +120,6 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             int elementId = mAccounts.get(getAdapterPosition() - 1).getId();
             mItemClickListener.onItemClickListener(elementId);
         }
-
     }
 
     class HeaderHolder extends RecyclerView.ViewHolder{
@@ -145,6 +131,5 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             accountTitleView = itemView.findViewById(R.id.account_list_item_name);
             accountSumView = itemView.findViewById(R.id.account_list_item_sum);
         }
-
     }
 }

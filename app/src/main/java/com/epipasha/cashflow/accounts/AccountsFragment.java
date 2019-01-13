@@ -40,7 +40,6 @@ public class AccountsFragment extends Fragment implements AccountAdapter.ItemCli
     }
 
     private void initRecycledView(){
-
         rvList.setHasFixedSize(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
@@ -52,7 +51,6 @@ public class AccountsFragment extends Fragment implements AccountAdapter.ItemCli
 
         mAdapter = new AccountAdapter(this);
         rvList.setAdapter(mAdapter);
-
     }
 
     private void retrieveItems() {
