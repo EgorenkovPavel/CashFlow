@@ -2,7 +2,6 @@ package com.epipasha.cashflow.operations;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,9 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
@@ -25,7 +22,7 @@ import com.epipasha.cashflow.data.AppExecutors;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.ViewModelFactory;
-import com.epipasha.cashflow.databinding.NewMasterBinding;
+import com.epipasha.cashflow.databinding.ActivityMasterBinding;
 import com.epipasha.cashflow.objects.OperationType;
 
 import java.util.List;
@@ -47,7 +44,7 @@ public class OperationMasterActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        NewMasterBinding binding = DataBindingUtil.setContentView(this, R.layout.new_master);
+        ActivityMasterBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_master);
 
         findViews();
 

@@ -86,10 +86,10 @@
             style="@style/TypeButton"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/in"
-            android:textAllCaps="true"
             android:checked="@{viewmodel.operation.type == OperationType.IN}"
-            android:onClick="@{() -> viewmodel.onOperationTypeChanged(OperationType.IN)}" />
+            android:onClick="@{() -> viewmodel.onOperationTypeChanged(OperationType.IN)}"
+            android:text="@string/in"
+            android:textAllCaps="true" />
 
         <RadioButton
             android:id="@+id/rbOut"

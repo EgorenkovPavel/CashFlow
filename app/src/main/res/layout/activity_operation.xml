@@ -193,6 +193,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@drawable/type_normal"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="@+id/operation_detail_time"
             app:layout_constraintStart_toStartOf="@+id/lblType"
