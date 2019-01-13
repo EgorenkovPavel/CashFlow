@@ -20,6 +20,7 @@ public interface AnalyticDao {
             + "INNER JOIN categories "
             + "ON cashflow.category_id = categories.id "
             + "WHERE category_id = :categoryId "
+            + "GROUP BY month, year, type "
             + "ORDER BY year, month")
     LiveData<List<MonthCashflow>> loadMonthCashflow(int categoryId);
 

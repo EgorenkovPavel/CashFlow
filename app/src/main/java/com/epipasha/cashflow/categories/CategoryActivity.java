@@ -1,5 +1,6 @@
 package com.epipasha.cashflow.categories;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -64,27 +65,26 @@ public class CategoryActivity extends DetailActivity {
         }
 
         //TODO
-//        model.getMonthCashflow().observe(this, new Observer<List<MonthCashflow>>() {
-//            @Override
-//            public void onChanged(@Nullable List<MonthCashflow> monthCashflows) {
-//                if(monthCashflows == null) return;
-//                loadChart(monthCashflows);
-//            }
-//        });
+        model.getMonthCashflow().observe(this, new Observer<List<MonthCashflow>>() {
+            @Override
+            public void onChanged(@Nullable List<MonthCashflow> monthCashflows) {
+                if(monthCashflows == null) return;
+                loadChart(monthCashflows);
+            }
+        });
     }
 
     @Override
     public void saveObject(){
         model.saveObject();
         finish();
-
     }
 
     private void loadChart(List<MonthCashflow> monthCashflows){
 
         List<BarEntry> entries = new ArrayList<>();
         final List<String> labels = new ArrayList<>();
-        int column = monthCashflows.size();
+        int column = 1;
         for (MonthCashflow monthCashflow:monthCashflows) {
             entries.add(new BarEntry(column, monthCashflow.getSum()));
 
@@ -94,6 +94,8 @@ public class CategoryActivity extends DetailActivity {
             DateFormat df = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
 
             labels.add(df.format(cal.getTime()));
+
+            column++;
         }
 
         BarDataSet set = new BarDataSet(entries, "BarDataSet");

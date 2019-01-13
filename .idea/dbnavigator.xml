@@ -25,7 +25,7 @@
     <show-object-properties value="true" />
     <loaded-nodes>
       <connection connection-id="b176ffc6-5318-46ba-bd6a-efaeaf4454a3">
-        <schema name="main" object-types="table, view" />
+        <schema name="main" object-types="table, view, constraint, index, column, dataset trigger" />
       </connection>
     </loaded-nodes>
   </component>
@@ -36,6 +36,14 @@
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="b176ffc6-5318-46ba-bd6a-efaeaf4454a3" />
+  </component>
+  <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-list connection-id="b176ffc6-5318-46ba-bd6a-efaeaf4454a3" dataset="main.balance" active-filter-id="" />
+    <filter-list connection-id="b176ffc6-5318-46ba-bd6a-efaeaf4454a3" dataset="main.cashflow" active-filter-id="8057170b-583d-43fa-b802-952aa375048c">
+      <filter id="8057170b-583d-43fa-b802-952aa375048c" name="3" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="category_id" operator="=" value="3" active="true" />
+      </filter>
+    </filter-list>
   </component>
   <component name="DBNavigator.Project.EditorStateManager">
     <last-used-providers />
