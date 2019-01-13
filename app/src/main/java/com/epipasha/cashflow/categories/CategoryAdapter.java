@@ -109,8 +109,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.categoryTitleView.setText(title);
         holder.pbBudget.setMax(budget);
         holder.pbBudget.setProgress(fact);
-        holder.tvProgressLabel.setText(String.format(Locale.getDefault(), "%,d / %,d", fact, budget));
-        holder.categoryDeltaView.setText(String.format(Locale.getDefault(), "%,d", delta));
+        holder.categoryFactView.setText(String.format(Locale.getDefault(), "%,d", fact));
+        holder.categoryBudgetView.setText(String.format(Locale.getDefault(), "%,d", budget));
     }
 
     private void onBindHeaderViewHolder(HeaderHolder holder) {
@@ -191,16 +191,16 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     class CategoryHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         TextView categoryTitleView;
-        TextView categoryDeltaView;
+        TextView categoryFactView;
+        TextView categoryBudgetView;
         ProgressBar pbBudget;
-        TextView tvProgressLabel;
 
         public CategoryHolder(View itemView) {
             super(itemView);
             categoryTitleView = itemView.findViewById(R.id.lbl_in);
-            categoryDeltaView = itemView.findViewById(R.id.tvInDelta);
+            categoryFactView = itemView.findViewById(R.id.tvFact);
+            categoryBudgetView = itemView.findViewById(R.id.tvBudget);
             pbBudget = itemView.findViewById(R.id.pb_budget);
-            tvProgressLabel = itemView.findViewById(R.id.tv_progress_lbl);
 
             itemView.setOnClickListener(this);
         }
