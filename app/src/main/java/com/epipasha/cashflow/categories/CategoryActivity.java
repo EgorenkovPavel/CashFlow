@@ -64,7 +64,6 @@ public class CategoryActivity extends DetailActivity {
             model.start(mCategoryId);
         }
 
-        //TODO
         model.getMonthCashflow().observe(this, new Observer<List<MonthCashflow>>() {
             @Override
             public void onChanged(@Nullable List<MonthCashflow> monthCashflows) {
@@ -97,6 +96,8 @@ public class CategoryActivity extends DetailActivity {
 
             column++;
         }
+
+        //TODO addempty sum for date that don't exists in db
 
         BarDataSet set = new BarDataSet(entries, "BarDataSet");
         set.setColor(getResources().getColor(R.color.colorPrimary));

@@ -5,6 +5,7 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Query;
 
+import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.objects.OperationType;
 
 import java.util.List;
@@ -34,6 +35,43 @@ public interface AnalyticDao {
             + "GROUP BY month, year, type "
             + "ORDER BY year, month")
     LiveData<List<MonthCashflow>> loadAllMonthCashflow();
+
+    @Query("SELECT categories.title, "
+            + "SUM(cashflow.sum) as sum "
+            + "FROM cashflow "
+            + "INNER JOIN categories "
+            + "ON cashflow.category_id = categories.id "
+            + "WHERE cashflow.month = :month "
+            + "AND cashflow.year = :year "
+            + "AND categories.type = :type "
+            + "GROUP BY title ")
+    LiveData<List<CategoryCashflow>> loadCategoryCashflow(int year, int month, OperationType type);
+
+
+    class CategoryCashflow{
+
+        @ColumnInfo(name = "title")
+        private String title;
+        @ColumnInfo(name = "sum")
+        private int sum;
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public int getSum() {
+            return sum;
+        }
+
+        public void setSum(int sum) {
+            this.sum = sum;
+        }
+    }
+
 
     class MonthCashflow{
 

@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -16,9 +17,12 @@ import com.epipasha.cashflow.Prefs;
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.AppDatabase;
 import com.epipasha.cashflow.data.AppExecutors;
+import com.epipasha.cashflow.data.dao.AnalyticDao;
+import com.epipasha.cashflow.data.dao.AnalyticDao.CategoryCashflow;
 import com.epipasha.cashflow.data.dao.AnalyticDao.MonthCashflow;
 import com.epipasha.cashflow.objects.OperationType;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.LimitLine;
@@ -27,8 +31,13 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.firebase.database.collection.LLRBNode;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -44,6 +53,7 @@ public class AnalyticActivity extends BaseActivity {
     private AppDatabase mDb;
 
     private LineChart mChartIn;
+    private PieChart mChartPie;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +66,9 @@ public class AnalyticActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mChartIn = findViewById(R.id.chart_in);
+        mChartPie = findViewById(R.id.chart_pie);
+
+        //TODO add model
 
         mDb = AppDatabase.getInstance(getApplicationContext());
         AppExecutors.getInstance().discIO().execute(new Runnable() {
@@ -70,6 +83,46 @@ public class AnalyticActivity extends BaseActivity {
                 });
             }
         });
+
+        mDb = AppDatabase.getInstance(getApplicationContext());
+        AppExecutors.getInstance().discIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                Calendar cal = Calendar.getInstance();
+
+                LiveData<List<CategoryCashflow>> list = mDb.analyticDao().loadCategoryCashflow(
+                        cal.get(Calendar.YEAR),
+                        cal.get(Calendar.MONTH),
+                        OperationType.OUT);
+                list.observe(AnalyticActivity.this, new Observer<List<CategoryCashflow>>() {
+                    @Override
+                    public void onChanged(@Nullable List<CategoryCashflow> categoryCashflow) {
+                        loadPie(categoryCashflow);
+                    }
+                });
+            }
+        });
+    }
+
+    private void loadPie(List<CategoryCashflow> categoryCashflow) {
+
+        List<PieEntry> entries = new ArrayList<>();
+
+        for(CategoryCashflow cashflow:categoryCashflow){
+            entries.add(new PieEntry(cashflow.getSum(), cashflow.getTitle()));
+        }
+
+        PieDataSet set = new PieDataSet(entries, "Election Results");
+        set.setColors(ColorTemplate.COLORFUL_COLORS);
+        set.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+
+        PieData data = new PieData(set);
+        mChartPie.setEntryLabelColor(Color.BLACK);
+        mChartPie.getLegend().setEnabled(false);
+        mChartPie.getDescription().setEnabled(false);
+        mChartPie.setData(data);
+        mChartPie.invalidate(); // refresh
+
     }
 
     @Override
