@@ -1,24 +1,21 @@
 package com.epipasha.cashflow.operations;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.databinding.BindingAdapter;
-import android.databinding.ObservableField;
-import android.support.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.ObservableField;
+import androidx.annotation.NonNull;
 import android.widget.TextView;
 
-import com.epipasha.cashflow.Prefs;
 import com.epipasha.cashflow.data.DataSource;
 import com.epipasha.cashflow.data.Repository;
-import com.epipasha.cashflow.data.entites.Account;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.entites.Operation;
 import com.epipasha.cashflow.objects.OperationType;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;

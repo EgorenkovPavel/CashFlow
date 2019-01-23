@@ -1,11 +1,11 @@
 package com.epipasha.cashflow.categories;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
@@ -64,12 +64,9 @@ public class CategoryActivity extends DetailActivity {
             model.start(mCategoryId);
         }
 
-        model.getMonthCashflow().observe(this, new Observer<List<MonthCashflow>>() {
-            @Override
-            public void onChanged(@Nullable List<MonthCashflow> monthCashflows) {
-                if(monthCashflows == null) return;
-                loadChart(monthCashflows);
-            }
+        model.getMonthCashflow().observe(this, monthCashflows -> {
+            if(monthCashflows == null) return;
+            loadChart(monthCashflows);
         });
     }
 
@@ -110,14 +107,11 @@ public class CategoryActivity extends DetailActivity {
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
-        xAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                if(value - (int)(value) == 0){
-                    return labels.get((int)value - 1);
-                }else{
-                    return "";
-                }
+        xAxis.setValueFormatter((value, axis) -> {
+            if(value - (int)(value) == 0){
+                return labels.get((int)value - 1);
+            }else{
+                return "";
             }
         });
 

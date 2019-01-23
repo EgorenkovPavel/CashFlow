@@ -1,7 +1,6 @@
 package com.epipasha.cashflow.data;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.epipasha.cashflow.data.entites.Account;
 import com.epipasha.cashflow.data.entites.Category;

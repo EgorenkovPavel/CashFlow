@@ -2,15 +2,15 @@ package com.epipasha.cashflow.backup;
 
 import static android.app.Activity.RESULT_OK;
 
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -192,53 +192,44 @@ public class BackupFragment extends Fragment {
         // [START create_file_with_intent]
         Task<DriveContents> createContentsTask = mDriveResourceClient.createContents();
         createContentsTask
-                .continueWithTask(new Continuation<DriveContents, Task<IntentSender>>() {
-                    @Override
-                    public Task<IntentSender> then(@NonNull Task<DriveContents> task) {
-                        DriveContents contents = task.getResult();
-                        OutputStream outputStream = contents.getOutputStream();
+                .continueWithTask(task -> {
+                    DriveContents contents = task.getResult();
+                    OutputStream outputStream = contents.getOutputStream();
 
-                        try {
-                            outputStream.write(backup.getBytes());
-                        } catch (IOException e1) {
-                            Log.i(TAG, "Unable to write file contents.");
-                        }
-
-                        MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
-                                .setTitle("Cashflow backup")
-                                .setMimeType("text/plain")
-                                .setStarred(true)
-                                .build();
-
-                        CreateFileActivityOptions createOptions =
-                                new CreateFileActivityOptions.Builder()
-                                        .setInitialDriveContents(contents)
-                                        .setInitialMetadata(changeSet)
-                                        .build();
-                        return mDriveClient.newCreateFileActivityIntentSender(createOptions);
+                    try {
+                        outputStream.write(backup.getBytes());
+                    } catch (IOException e1) {
+                        Log.i(TAG, "Unable to write file contents.");
                     }
+
+                    MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
+                            .setTitle("Cashflow backup")
+                            .setMimeType("text/plain")
+                            .setStarred(true)
+                            .build();
+
+                    CreateFileActivityOptions createOptions =
+                            new CreateFileActivityOptions.Builder()
+                                    .setInitialDriveContents(contents)
+                                    .setInitialMetadata(changeSet)
+                                    .build();
+                    return mDriveClient.newCreateFileActivityIntentSender(createOptions);
                 })
                 .addOnSuccessListener(getActivity(),
-                        new OnSuccessListener<IntentSender>() {
-                            @Override
-                            public void onSuccess(IntentSender intentSender) {
-                                try {
-                                    startIntentSenderForResult(
-                                            intentSender, REQUEST_CODE_CREATE_FILE, null, 0, 0, 0, null);
-                                } catch (IntentSender.SendIntentException e) {
-                                    Log.e(TAG, "Unable to create file", e);
-                                    //showMessage(getString(R.string.file_create_error));
-                                    //finish();
-                                }
+                        intentSender -> {
+                            try {
+                                startIntentSenderForResult(
+                                        intentSender, REQUEST_CODE_CREATE_FILE, null, 0, 0, 0, null);
+                            } catch (IntentSender.SendIntentException e) {
+                                Log.e(TAG, "Unable to create file", e);
+                                //showMessage(getString(R.string.file_create_error));
+                                //finish();
                             }
                         })
-                .addOnFailureListener(getActivity(), new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, "Unable to create file", e);
-                        //showMessage(getString(R.string.file_create_error));
-                        //finish();
-                    }
+                .addOnFailureListener(getActivity(), e -> {
+                    Log.e(TAG, "Unable to create file", e);
+                    //showMessage(getString(R.string.file_create_error));
+                    //finish();
                 });
         // [END create_file_with_intent]
     }
@@ -253,13 +244,10 @@ public class BackupFragment extends Fragment {
         mOpenItemTaskSource = new TaskCompletionSource<>();
         mDriveClient
                 .newOpenFileActivityIntentSender(openOptions)
-                .continueWith(new Continuation<IntentSender, Void>() {
-                    @Override
-                    public Void then(@NonNull Task<IntentSender> task) throws Exception {
-                        startIntentSenderForResult(
-                                task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0, null);
-                        return null;
-                    }
+                .continueWith((Continuation<IntentSender, Void>) task -> {
+                    startIntentSenderForResult(
+                            task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0, null);
+                    return null;
                 });
         return mOpenItemTaskSource.getTask();
     }
@@ -292,9 +280,7 @@ public class BackupFragment extends Fragment {
 
                     }
 
-                    Task<Void> discardTask = mDriveResourceClient.discardContents(contents);
-
-                    return discardTask;
+                    return mDriveResourceClient.discardContents(contents);
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "Unable to read contents", e));
     }

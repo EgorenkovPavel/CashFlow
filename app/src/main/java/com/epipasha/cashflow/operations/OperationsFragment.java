@@ -1,18 +1,18 @@
 package com.epipasha.cashflow.operations;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,7 +49,7 @@ public class OperationsFragment extends Fragment implements OperationAdapter.Ite
         rvList.setHasFixedSize(true);
 
         LinearLayoutManager layoutManager =
-                new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+                new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         rvList.setLayoutManager(layoutManager);
 
         DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(rvList.getContext(),
@@ -66,12 +66,7 @@ public class OperationsFragment extends Fragment implements OperationAdapter.Ite
         model = ViewModelProviders
                 .of(this, ViewModelFactory.getInstance(getActivity().getApplication()))
                 .get(OperationsViewModel.class);
-        model.getOperations().observe(this, new Observer<List<OperationWithData>>() {
-            @Override
-            public void onChanged(@Nullable List<OperationWithData> operations) {
-                mAdapter.setOperations(operations);
-            }
-        });
+        model.getOperations().observe(this, operations -> mAdapter.setOperations(operations));
     }
 
     @Override
@@ -87,31 +82,20 @@ public class OperationsFragment extends Fragment implements OperationAdapter.Ite
 
         PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
         popupMenu.inflate(R.menu.popup_list_item_operation);
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                if(menuItem.getItemId() == R.id.action_delete_operation){
+        popupMenu.setOnMenuItemClickListener(menuItem -> {
+            if(menuItem.getItemId() == R.id.action_delete_operation){
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                    builder.setMessage(R.string.dialog_delete_operation)
-                            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    model.deleteOperation(operationId);
-                                 }
-                            })
-                            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    mAdapter.notifyDataSetChanged();
-                                }
-                            });
-                    // Create the AlertDialog object and return it
-                    builder.create().show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                builder.setMessage(R.string.dialog_delete_operation)
+                        .setPositiveButton(R.string.ok, (dialog, id) -> model.deleteOperation(operationId))
+                        .setNegativeButton(R.string.cancel, (dialog, id) -> mAdapter.notifyDataSetChanged());
+                // Create the AlertDialog object and return it
+                builder.create().show();
 
-                    return true;
-                }
-
-                return false;
+                return true;
             }
+
+            return false;
         });
         popupMenu.show();
     }

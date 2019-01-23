@@ -1,11 +1,10 @@
 package com.epipasha.cashflow.data.dao;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Query;
+import androidx.lifecycle.LiveData;
+import androidx.room.ColumnInfo;
+import androidx.room.Dao;
+import androidx.room.Query;
 
-import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.objects.OperationType;
 
 import java.util.List;

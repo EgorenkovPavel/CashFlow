@@ -1,6 +1,6 @@
 package com.epipasha.cashflow.data.entites;
 
-import android.arch.persistence.room.ColumnInfo;
+import androidx.room.ColumnInfo;
 
 import com.epipasha.cashflow.objects.OperationType;
 

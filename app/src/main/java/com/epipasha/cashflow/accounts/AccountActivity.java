@@ -1,12 +1,14 @@
 package com.epipasha.cashflow.accounts;
 
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.epipasha.cashflow.R;
+
+
 import com.epipasha.cashflow.activities.ActivityAccountBinding;
 import com.epipasha.cashflow.activities.DetailActivity;
 import com.epipasha.cashflow.data.ViewModelFactory;

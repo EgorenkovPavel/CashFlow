@@ -1,15 +1,15 @@
 package com.epipasha.cashflow.activities;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.PreferenceFragmentCompat;
+
 import android.view.MenuItem;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.activities.BaseActivity;
 
 public class PreferencesActivity extends BaseActivity {
 
@@ -27,7 +27,7 @@ public class PreferencesActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction tr = fm.beginTransaction();
         tr.add(R.id.container, new PrefFragment());
         tr.commit();
@@ -39,13 +39,18 @@ public class PreferencesActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static class PrefFragment extends PreferenceFragment{
+    public static class PrefFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
             // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.preferences);
+        }
+
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+
         }
     }
 }

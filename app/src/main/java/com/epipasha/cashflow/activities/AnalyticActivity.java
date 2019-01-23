@@ -1,14 +1,14 @@
 package com.epipasha.cashflow.activities;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,7 +17,6 @@ import com.epipasha.cashflow.Prefs;
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.AppDatabase;
 import com.epipasha.cashflow.data.AppExecutors;
-import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.dao.AnalyticDao.CategoryCashflow;
 import com.epipasha.cashflow.data.dao.AnalyticDao.MonthCashflow;
 import com.epipasha.cashflow.objects.OperationType;
@@ -37,7 +36,6 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.google.firebase.database.collection.LLRBNode;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -71,36 +69,20 @@ public class AnalyticActivity extends BaseActivity {
         //TODO add model
 
         mDb = AppDatabase.getInstance(getApplicationContext());
-        AppExecutors.getInstance().discIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                LiveData<List<MonthCashflow>> list = mDb.analyticDao().loadAllMonthCashflow();
-                list.observe(AnalyticActivity.this, new Observer<List<MonthCashflow>>() {
-                    @Override
-                    public void onChanged(@Nullable List<MonthCashflow> monthCashflows) {
-                        loadChart(monthCashflows);
-                    }
-                });
-            }
+        AppExecutors.getInstance().discIO().execute(() -> {
+            LiveData<List<MonthCashflow>> list = mDb.analyticDao().loadAllMonthCashflow();
+            list.observe(AnalyticActivity.this, monthCashflows -> loadChart(monthCashflows));
         });
 
         mDb = AppDatabase.getInstance(getApplicationContext());
-        AppExecutors.getInstance().discIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                Calendar cal = Calendar.getInstance();
+        AppExecutors.getInstance().discIO().execute(() -> {
+            Calendar cal = Calendar.getInstance();
 
-                LiveData<List<CategoryCashflow>> list = mDb.analyticDao().loadCategoryCashflow(
-                        cal.get(Calendar.YEAR),
-                        cal.get(Calendar.MONTH),
-                        OperationType.OUT);
-                list.observe(AnalyticActivity.this, new Observer<List<CategoryCashflow>>() {
-                    @Override
-                    public void onChanged(@Nullable List<CategoryCashflow> categoryCashflow) {
-                        loadPie(categoryCashflow);
-                    }
-                });
-            }
+            LiveData<List<CategoryCashflow>> list = mDb.analyticDao().loadCategoryCashflow(
+                    cal.get(Calendar.YEAR),
+                    cal.get(Calendar.MONTH),
+                    OperationType.OUT);
+            list.observe(AnalyticActivity.this, categoryCashflow -> loadPie(categoryCashflow));
         });
     }
 
@@ -155,33 +137,22 @@ public class AnalyticActivity extends BaseActivity {
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Choose graphics")
-                        .setMultiChoiceItems(titles, values, new DialogInterface.OnMultiChoiceClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i, boolean b) {
-                                values[i] = b;
-                            }
-                        })
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                Prefs.AnalyticChartPrefs.saveShowInGraphic(AnalyticActivity.this, values[0]);
-                                Prefs.AnalyticChartPrefs.saveShowOutGraphic(AnalyticActivity.this, values[1]);
-                                Prefs.AnalyticChartPrefs.saveShowInBudgetGraphic(AnalyticActivity.this, values[2]);
-                                Prefs.AnalyticChartPrefs.saveShowOutBudgetGraphic(AnalyticActivity.this, values[3]);
-                                Prefs.AnalyticChartPrefs.saveShowDeltaGraphic(AnalyticActivity.this, values[4]);
-                                Prefs.AnalyticChartPrefs.saveShowCashflowGraphic(AnalyticActivity.this, values[5]);
+                        .setMultiChoiceItems(titles, values, (dialogInterface, i, b) -> values[i] = b)
+                        .setPositiveButton(R.string.ok, (dialog, id) -> {
+                            Prefs.AnalyticChartPrefs.saveShowInGraphic(AnalyticActivity.this, values[0]);
+                            Prefs.AnalyticChartPrefs.saveShowOutGraphic(AnalyticActivity.this, values[1]);
+                            Prefs.AnalyticChartPrefs.saveShowInBudgetGraphic(AnalyticActivity.this, values[2]);
+                            Prefs.AnalyticChartPrefs.saveShowOutBudgetGraphic(AnalyticActivity.this, values[3]);
+                            Prefs.AnalyticChartPrefs.saveShowDeltaGraphic(AnalyticActivity.this, values[4]);
+                            Prefs.AnalyticChartPrefs.saveShowCashflowGraphic(AnalyticActivity.this, values[5]);
 
-                                YAxis yAxis = mChartIn.getAxisLeft();
-                                yAxis.getLimitLines().clear();
+                            YAxis yAxis = mChartIn.getAxisLeft();
+                            yAxis.getLimitLines().clear();
 
-                                // todo restart loading chart
-                                //startLoadingChart();
-                            }
+                            // todo restart loading chart
+                            //startLoadingChart();
                         })
-                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                            }
+                        .setNegativeButton(R.string.cancel, (dialog, id) -> {
                         });
 
                 builder.create().show();
@@ -317,14 +288,11 @@ public class AnalyticActivity extends BaseActivity {
         xAxis.setPosition(XAxis.XAxisPosition.TOP);
         //xAxis.setDrawGridLines(false);
         xAxis.setGranularity(1);
-        xAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                if(value - (int)(value) == 0 && value > 0){
-                    return labels.get((int)value - 1);
-                }else{
-                    return "";
-                }
+        xAxis.setValueFormatter((value, axis) -> {
+            if(value - (int)(value) == 0 && value > 0){
+                return labels.get((int)value - 1);
+            }else{
+                return "";
             }
         });
 

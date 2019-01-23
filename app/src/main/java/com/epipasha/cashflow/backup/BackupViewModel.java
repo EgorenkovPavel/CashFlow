@@ -1,9 +1,9 @@
 package com.epipasha.cashflow.backup;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
-import android.support.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.annotation.NonNull;
 
 import com.epipasha.cashflow.data.AppExecutors;
 import com.epipasha.cashflow.data.Backuper;
@@ -27,23 +27,17 @@ public class BackupViewModel extends AndroidViewModel {
 
     public void fileBackup(){
         AppExecutors mAppExecutors = AppExecutors.getInstance();
-        mAppExecutors.discIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                String data = Backuper.backupRoomDb(getApplication());
-                backupToDisc(data);
-            }
+        mAppExecutors.discIO().execute(() -> {
+            String data = Backuper.backupRoomDb(getApplication());
+            backupToDisc(data);
         });
     }
 
     public void fileRestore(){
         AppExecutors mAppExecutors = AppExecutors.getInstance();
-        mAppExecutors.discIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                String data = restoreFromDisc();
-                Backuper.restoreRoomDb(getApplication(), data);
-            }
+        mAppExecutors.discIO().execute(() -> {
+            String data = restoreFromDisc();
+            Backuper.restoreRoomDb(getApplication(), data);
         });
     }
 

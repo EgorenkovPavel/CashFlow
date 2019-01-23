@@ -1,15 +1,15 @@
 package com.epipasha.cashflow.operations;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
-import android.databinding.DataBindingUtil;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,119 +58,70 @@ public class OperationMasterActivity extends BaseActivity {
 
         binding.setViewmodel(model);
 
-        model.getAccounts().observe(this, new Observer<List<AccountWithBalance>>() {
-            @Override
-            public void onChanged(@Nullable List<AccountWithBalance> accounts) {
-                mAccountAdapter.setItems(accounts);
-                mRecAccountAdapter.setItems(accounts);
-            }
+        model.getAccounts().observe(this, accounts -> {
+            mAccountAdapter.setItems(accounts);
+            mRecAccountAdapter.setItems(accounts);
         });
 
-        model.getCategoriesIn().observe(this, new Observer<List<Category>>() {
-            @Override
-            public void onChanged(@Nullable List<Category> categories) {
-                mCategoryInAdapter.setItems(categories);
-            }
-        });
+        model.getCategoriesIn().observe(this, categories -> mCategoryInAdapter.setItems(categories));
 
-        model.getCategoriesOut().observe(this, new Observer<List<Category>>() {
-            @Override
-            public void onChanged(@Nullable List<Category> categories) {
-                mCategoryOutAdapter.setItems(categories);
-            }
-        });
+        model.getCategoriesOut().observe(this, categories -> mCategoryOutAdapter.setItems(categories));
 
-        model.getOperationType().observe(this, new Observer<OperationType>() {
-            @Override
-            public void onChanged(@Nullable OperationType type) {
-                if(type == null) return;
+        model.getOperationType().observe(this, type -> {
+            if(type == null) return;
 
-                 switch (type){
-                    case IN:{
-                        rvAnalytics.setAdapter(mCategoryInAdapter);
-                        break;
-                    }
-                    case OUT:{
-                        rvAnalytics.setAdapter(mCategoryOutAdapter);
-                        break;
-                    }
-                    case TRANSFER: {
-                        rvAnalytics.setAdapter(mRecAccountAdapter);
-                        break;
-                    }
+             switch (type){
+                case IN:{
+                    rvAnalytics.setAdapter(mCategoryInAdapter);
+                    break;
+                }
+                case OUT:{
+                    rvAnalytics.setAdapter(mCategoryOutAdapter);
+                    break;
+                }
+                case TRANSFER: {
+                    rvAnalytics.setAdapter(mRecAccountAdapter);
+                    break;
                 }
             }
         });
 
-        model.getSelectedAccount().observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(@Nullable Integer id) {
-                mAccountAdapter.setSelectedId(id);
-            }
-        });
+        model.getSelectedAccount().observe(this, id -> mAccountAdapter.setSelectedId(id));
 
-        model.getSelectedInCategory().observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(@Nullable Integer id) {
-                mCategoryInAdapter.setSelectedId(id);
-            }
-        });
+        model.getSelectedInCategory().observe(this, id -> mCategoryInAdapter.setSelectedId(id));
 
-        model.getSelectedOutCategory().observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(@Nullable Integer id) {
-                mCategoryOutAdapter.setSelectedId(id);
-            }
-        });
+        model.getSelectedOutCategory().observe(this, id -> mCategoryOutAdapter.setSelectedId(id));
 
-        model.getSelectedRepAccount().observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(@Nullable Integer id) {
-                mRecAccountAdapter.setSelectedId(id);
-            }
-        });
+        model.getSelectedRepAccount().observe(this, id -> mRecAccountAdapter.setSelectedId(id));
 
-        model.getStatus().observe(this, new Observer<OperationMasterViewModel.Status>() {
-            @Override
-            public void onChanged(@Nullable OperationMasterViewModel.Status status) {
-                if(status == null) return;
-                switch (status){
-                    case EMPTY_SUM:{
-                        Snackbar.make(rvAccounts, R.string.no_sum, Snackbar.LENGTH_LONG).show();
-                        break;
-                    }
-                    case EMPTY_TYPE:{
-                        Snackbar.make(rvAccounts, R.string.no_type, Snackbar.LENGTH_LONG).show();
-                        break;
-                    }
-                    case EMPTY_ANALYTIC:{
-                        Snackbar.make(rvAccounts, R.string.no_analytic_selected, Snackbar.LENGTH_LONG).show();
-                        break;
-                    }
-                    case EMPTY_ACCOUNT:{
-                        Snackbar.make(rvAccounts, R.string.no_account_selected, Snackbar.LENGTH_LONG).show();
-                        break;
-                    }
-                    case OPERATION_SAVED: {
-                        Snackbar snackbar = Snackbar.make(rvAccounts, R.string.operation_created, Snackbar.LENGTH_LONG);
-                        snackbar.setAction(R.string.undo, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                AppExecutors.getInstance().discIO().execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        model.deleteOperation();
-                                    }
-                                });
-                            }
-                        });
-                        snackbar.show();
-                        break;
-                    }
-                    case OPERATION_DELETED:{
-                        Snackbar.make(rvAccounts, R.string.operation_deleted, Snackbar.LENGTH_LONG).show();
-                        break;
-                    }
+        model.getStatus().observe(this, status -> {
+            if(status == null) return;
+            switch (status){
+                case EMPTY_SUM:{
+                    Snackbar.make(rvAccounts, R.string.no_sum, Snackbar.LENGTH_LONG).show();
+                    break;
+                }
+                case EMPTY_TYPE:{
+                    Snackbar.make(rvAccounts, R.string.no_type, Snackbar.LENGTH_LONG).show();
+                    break;
+                }
+                case EMPTY_ANALYTIC:{
+                    Snackbar.make(rvAccounts, R.string.no_analytic_selected, Snackbar.LENGTH_LONG).show();
+                    break;
+                }
+                case EMPTY_ACCOUNT:{
+                    Snackbar.make(rvAccounts, R.string.no_account_selected, Snackbar.LENGTH_LONG).show();
+                    break;
+                }
+                case OPERATION_SAVED: {
+                    Snackbar snackbar = Snackbar.make(rvAccounts, R.string.operation_created, Snackbar.LENGTH_LONG);
+                    snackbar.setAction(R.string.undo, view -> AppExecutors.getInstance().discIO().execute(() -> model.deleteOperation()));
+                    snackbar.show();
+                    break;
+                }
+                case OPERATION_DELETED:{
+                    Snackbar.make(rvAccounts, R.string.operation_deleted, Snackbar.LENGTH_LONG).show();
+                    break;
                 }
             }
         });
@@ -179,36 +130,16 @@ public class OperationMasterActivity extends BaseActivity {
 
     private void initAdapters(){
         mAccountAdapter = new AccountAdapter();
-        mAccountAdapter.setListener(new ItemClickListener<AccountWithBalance>() {
-            @Override
-            public void onItemClick(AccountWithBalance item) {
-                model.selectAccount(item);
-            }
-        });
+        mAccountAdapter.setListener(item -> model.selectAccount(item));
 
         mCategoryInAdapter = new CategoryAdapter();
-        mCategoryInAdapter.setListener(new ItemClickListener<Category>() {
-            @Override
-            public void onItemClick(Category item) {
-                model.selectInCategory(item);
-            }
-        });
+        mCategoryInAdapter.setListener(item -> model.selectInCategory(item));
 
         mCategoryOutAdapter = new CategoryAdapter();
-        mCategoryOutAdapter.setListener(new ItemClickListener<Category>() {
-            @Override
-            public void onItemClick(Category item) {
-                model.selectOutCategory(item);
-            }
-        });
+        mCategoryOutAdapter.setListener(item -> model.selectOutCategory(item));
 
         mRecAccountAdapter = new AccountAdapter();
-        mRecAccountAdapter.setListener(new ItemClickListener<AccountWithBalance>() {
-            @Override
-            public void onItemClick(AccountWithBalance item) {
-                model.selectRepAccount(item);
-            }
-        });
+        mRecAccountAdapter.setListener(item -> model.selectRepAccount(item));
     }
 
     private void findViews() {
@@ -219,8 +150,8 @@ public class OperationMasterActivity extends BaseActivity {
         rvAccounts.setHasFixedSize(true);
         rvAnalytics.setHasFixedSize(true);
 
-        rvAccounts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        rvAnalytics.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        rvAccounts.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        rvAnalytics.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
 
         DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
         rvAccounts.addItemDecoration(mDividerItemDecoration);
@@ -229,19 +160,11 @@ public class OperationMasterActivity extends BaseActivity {
         Button btnMore = findViewById(R.id.btnMore);
         Button btnNext = findViewById(R.id.btnNext);
 
-        btnMore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setResult(RESULT_OK);
-                finish();
-            }
+        btnMore.setOnClickListener(view -> {
+            setResult(RESULT_OK);
+            finish();
         });
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                model.saveOperation();
-            }
-        });
+        btnNext.setOnClickListener(view -> model.saveOperation());
 
     }
 
@@ -298,11 +221,8 @@ public class OperationMasterActivity extends BaseActivity {
                 name = itemView.findViewById(R.id.account_list_item_name);
                 sum = itemView.findViewById(R.id.account_list_item_sum);
 
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (listener != null) listener.onItemClick(items.get(getLayoutPosition()));
-                    }
+                itemView.setOnClickListener(view -> {
+                    if (listener != null) listener.onItemClick(items.get(getLayoutPosition()));
                 });
             }
         }
@@ -358,11 +278,8 @@ public class OperationMasterActivity extends BaseActivity {
 
                 name = itemView.findViewById(R.id.lbl_in);
 
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (listener != null) listener.onItemClick(items.get(getLayoutPosition()));
-                    }
+                itemView.setOnClickListener(view -> {
+                    if (listener != null) listener.onItemClick(items.get(getLayoutPosition()));
                 });
              }
         }

@@ -1,8 +1,6 @@
 package com.epipasha.cashflow.data;
 
-import android.app.Application;
-import android.arch.lifecycle.LiveData;
-import android.support.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 
 import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.entites.Account;

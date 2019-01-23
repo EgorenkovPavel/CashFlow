@@ -1,6 +1,6 @@
 package com.epipasha.cashflow.data;
 
-import android.arch.persistence.room.TypeConverter;
+import androidx.room.TypeConverter;
 
 import com.epipasha.cashflow.objects.OperationType;
 

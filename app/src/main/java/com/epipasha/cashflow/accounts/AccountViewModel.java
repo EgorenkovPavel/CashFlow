@@ -1,10 +1,10 @@
 package com.epipasha.cashflow.accounts;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.databinding.ObservableBoolean;
-import android.databinding.ObservableField;
-import android.support.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ObservableField;
+import androidx.annotation.NonNull;
 
 import com.epipasha.cashflow.data.DataSource;
 import com.epipasha.cashflow.data.Repository;

@@ -1,9 +1,9 @@
 package com.epipasha.cashflow.data;
 
 import android.app.Application;
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
-import android.support.annotation.NonNull;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.annotation.NonNull;
 
 import com.epipasha.cashflow.accounts.AccountViewModel;
 import com.epipasha.cashflow.accounts.AccountsViewModel;
@@ -40,6 +40,7 @@ public class ViewModelFactory extends ViewModelProvider.AndroidViewModelFactory 
         mRepository = repository;
     }
 
+    @SuppressWarnings("unchecked")
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
