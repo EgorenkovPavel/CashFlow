@@ -4,17 +4,24 @@ package com.epipasha.cashflow;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
+
+import com.epipasha.cashflow.data.ViewModelFactory;
+import com.epipasha.cashflow.data.entites.AccountWithBalance;
+import com.epipasha.cashflow.data.entites.CategoryWithCashflow;
+import com.epipasha.cashflow.objects.OperationType;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.epipasha.cashflow.backup.BackupActivity;
 import com.epipasha.cashflow.accounts.AccountActivity;
@@ -25,9 +32,12 @@ import com.epipasha.cashflow.accounts.AccountsFragment;
 import com.epipasha.cashflow.categories.CategoriesFragment;
 import com.epipasha.cashflow.operations.OperationsFragment;
 
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity {
 
     private TabLayout tabs;
+    private MainViewModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +46,50 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        TextView tvTotalSum = findViewById(R.id.tvTotalSum);
+        TextView tvCashflow = findViewById(R.id.tvCashflow);
+        TextView tvIn = findViewById(R.id.tvIn);
+        TextView tvOut = findViewById(R.id.tvOut);
+
+        model = ViewModelProviders.of(this, ViewModelFactory.getInstance(getApplication()))
+                .get(MainViewModel.class);
+
+        model.getAccounts().observe(this, accounts -> {
+            int sum = 0;
+            for (AccountWithBalance account:accounts){
+                sum += account.getSum();
+            }
+            tvTotalSum.setText(String.format(Locale.getDefault(), "%,d", sum));
+        });
+
+        model.getCategories().observe(this, categories -> {
+            int inBudget = 0;
+            int inFact = 0;
+            int outBudget = 0;
+            int outFact = 0;
+
+            for (CategoryWithCashflow category: categories) {
+
+                OperationType type = category.getType();
+                switch (type){
+                    case IN:{
+                        inBudget += category.getBudget();
+                        inFact += category.getCashflow();
+                        break;
+                    }
+                    case OUT:{
+                        outBudget += category.getBudget();
+                        outFact += category.getCashflow();
+                        break;
+                    }
+                }
+            }
+
+            tvIn.setText(String.format(Locale.getDefault(), "%,d / %,d", inFact, inBudget));
+            tvOut.setText(String.format(Locale.getDefault(), "%,d / %,d", outFact, outBudget));
+            tvCashflow.setText(String.format(Locale.getDefault(), "%,d", inFact - outFact));
+        });
 
         ViewPager viewPager = findViewById(R.id.viewPager);
         FixesTabsPagerAdapter adapter = new FixesTabsPagerAdapter(getSupportFragmentManager());

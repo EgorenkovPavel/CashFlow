@@ -21,7 +21,7 @@ import com.epipasha.cashflow.data.ViewModelFactory;
 
 import java.util.List;
 
-public class CategoriesFragment extends Fragment implements CategoryAdapter.HeaderClickListener, CategoryAdapter.ItemClickListener {
+public class CategoriesFragment extends Fragment implements CategoryAdapter.ItemClickListener {
 
     private RecyclerView rvList;
     private CategoryAdapter mAdapter;
@@ -51,7 +51,7 @@ public class CategoriesFragment extends Fragment implements CategoryAdapter.Head
                 layoutManager.getOrientation());
         rvList.addItemDecoration(mDividerItemDecoration);
 
-        mAdapter = new CategoryAdapter(this, this);
+        mAdapter = new CategoryAdapter(this);
         rvList.setAdapter(mAdapter);
 
     }
@@ -68,11 +68,5 @@ public class CategoriesFragment extends Fragment implements CategoryAdapter.Head
         Intent intent = new Intent(getActivity(), CategoryActivity.class);
         intent.putExtra(CategoryActivity.EXTRA_CATEGORY_ID, itemId);
         startActivity(intent);
-    }
-
-    @Override
-    public void onHeaderClickListener() {
-        Intent i = new Intent(getActivity(), AnalyticActivity.class);
-        startActivity(i);
     }
 }

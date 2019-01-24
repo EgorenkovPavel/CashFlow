@@ -15,78 +15,27 @@ import com.epipasha.cashflow.objects.OperationType;
 import java.util.List;
 import java.util.Locale;
 
-public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
-
-    protected static final int HEADER_ITEM = 234;
-    protected static final int LIST_ITEM = 897;
+public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryHolder>{
 
     private List<CategoryWithCashflow> mCategories;
     private ItemClickListener mItemClickListener;
-    private HeaderClickListener mHeaderClickListener;
 
-    public CategoryAdapter(HeaderClickListener headerClickListener, ItemClickListener itemClickListener) {
+    public CategoryAdapter(ItemClickListener itemClickListener) {
         mItemClickListener = itemClickListener;
-        mHeaderClickListener = headerClickListener;
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        switch (viewType) {
+    public CategoryAdapter.CategoryHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-            case HEADER_ITEM: {
-                return onCreateHeaderViewHolder(parent);
-            }
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_category, parent, false);
 
-            case LIST_ITEM: {
-                return onCreateItemViewHolder(parent);
-            }
-
-            default:
-                throw new IllegalArgumentException("Invalid view type, value of " + viewType);
-        }
+        return new CategoryAdapter.CategoryHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (position == 0) {
-            onBindHeaderViewHolder((HeaderHolder) holder);
-        } else {
-            onBindItemViewHolder((CategoryHolder) holder, position - 1);
-        }
-    }
-
-    @Override
-    public int getItemCount() {
-        if (mCategories == null || mCategories.size() == 0)
-            return 0;
-        else
-            return mCategories.size() + 1;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        if (position == 0){
-            return HEADER_ITEM;
-        } else {
-            return LIST_ITEM;
-        }
-    }
-
-    public interface ItemClickListener {
-        void onItemClickListener(int itemId);
-    }
-
-    public interface HeaderClickListener {
-        void onHeaderClickListener();
-    }
-
-    public void setCategories(List<CategoryWithCashflow> categories){
-        this.mCategories = categories;
-        notifyDataSetChanged();
-    }
-
-    private void onBindItemViewHolder(CategoryHolder holder, int position) {
+    public void onBindViewHolder(@NonNull CategoryAdapter.CategoryHolder holder, int position) {
 
         CategoryWithCashflow category = mCategories.get(position);
 
@@ -113,80 +62,21 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.categoryBudgetView.setText(String.format(Locale.getDefault(), "%,d", budget));
     }
 
-    private void onBindHeaderViewHolder(HeaderHolder holder) {
-
-        int inBudget = 0;
-        int inFact = 0;
-        int outBudget = 0;
-        int outFact = 0;
-
-        for (CategoryWithCashflow category: mCategories) {
-
-            OperationType type = category.getType();
-            switch (type){
-                case IN:{
-                    inBudget += category.getBudget();
-                    inFact += category.getCashflow();
-                    break;
-                }
-                case OUT:{
-                    outBudget += category.getBudget();
-                    outFact += category.getCashflow();
-                    break;
-                }
-            }
-        }
-
-        holder.pbIn.setMax(inBudget);
-        holder.pbIn.setProgress(inFact);
-        holder.lblIn.setText(String.format(Locale.getDefault(), "%,d / %,d", inFact, inBudget));
-
-        holder.pbOut.setMax(outBudget);
-        holder.pbOut.setProgress(outFact);
-        holder.lblOut.setText(String.format(Locale.getDefault(), "%,d / %,d", outFact, outBudget));
-
-        holder.tvCashflow.setText(String.format(Locale.getDefault(), "%,d", inFact - outFact));
-
+    @Override
+    public int getItemCount() {
+        if (mCategories == null || mCategories.size() == 0)
+            return 0;
+        else
+            return mCategories.size();
     }
 
-    private CategoryHolder onCreateItemViewHolder(ViewGroup parent) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_category, parent, false);
-
-        return new CategoryAdapter.CategoryHolder(view);
+    public interface ItemClickListener {
+        void onItemClickListener(int itemId);
     }
 
-    private HeaderHolder onCreateHeaderViewHolder(ViewGroup parent) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_category_header, parent, false);
-
-        return new CategoryAdapter.HeaderHolder(view);
-    }
-
-    class HeaderHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        ProgressBar pbIn, pbOut;
-        TextView lblIn, lblOut;
-        TextView tvCashflow;
-
-        public HeaderHolder(View itemView) {
-            super(itemView);
-
-            pbIn = itemView.findViewById(R.id.pb_in);
-            pbOut = itemView.findViewById(R.id.pb_out);
-
-            lblIn = itemView.findViewById(R.id.tv_progress_in_lbl);
-            lblOut = itemView.findViewById(R.id.tv_progress_out_lbl);
-
-            tvCashflow = itemView.findViewById(R.id.tvCashflow);
-
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            mHeaderClickListener.onHeaderClickListener();
-        }
+    public void setCategories(List<CategoryWithCashflow> categories){
+        this.mCategories = categories;
+        notifyDataSetChanged();
     }
 
     class CategoryHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
