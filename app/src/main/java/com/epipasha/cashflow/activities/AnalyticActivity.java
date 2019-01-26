@@ -61,7 +61,7 @@ public class AnalyticActivity extends BaseActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mChartIn = findViewById(R.id.chart_in);
         mChartPie = findViewById(R.id.chart_pie);
@@ -161,27 +161,6 @@ public class AnalyticActivity extends BaseActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-
-    private void addBudgetLines(Cursor cursor) {
-        YAxis yAxis = mChartIn.getAxisLeft();
-        do{
-            OperationType type = OperationType.toEnum(cursor.getInt(0));
-            if(type == OperationType.IN && !Prefs.AnalyticChartPrefs.showInBudgetGraphic(this))
-                continue;
-            else if (type == OperationType.OUT && !Prefs.AnalyticChartPrefs.showOutBudgetGraphic(this))
-                continue;
-
-            LimitLine line = new LimitLine(cursor.getInt(1));
-            line.setEnabled(true);
-            line.setLineWidth(1);
-            line.setLineColor(getColor(type));
-            line.setTextColor(getColor(type));
-            line.setLabel(getString(R.string.budget) + " " + type.getTitle(this));
-            yAxis.addLimitLine(line);
-        }while(cursor.moveToNext());
-
     }
 
     private int getColor(OperationType type){

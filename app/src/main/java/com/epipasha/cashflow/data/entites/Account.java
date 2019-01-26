@@ -45,7 +45,7 @@ public class Account {
 
     @Override
     public String toString() {
-        return getTitle();
+        return title == null ? "" : title;
     }
 
 }

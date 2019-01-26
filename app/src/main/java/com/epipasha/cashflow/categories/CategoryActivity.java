@@ -49,7 +49,7 @@ public class CategoryActivity extends DetailActivity {
 
         setSupportActionBar(binding.toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         model = ViewModelProviders.of(this, ViewModelFactory.getInstance(getApplication()))
                 .get(CategoryViewModel.class);

@@ -46,6 +46,7 @@ public class CategoryViewModel extends AndroidViewModel{
         public void afterTextChanged(Editable s) {
 
             Category category = mCategory.get();
+            if(category == null) return;
             int budget = (int)Utils.getLong(s.toString());
 
             if(category.getBudget() != budget){
@@ -88,7 +89,9 @@ public class CategoryViewModel extends AndroidViewModel{
     }
 
     public void setOperationType(OperationType type){
-        mCategory.get().setType(type);
+        Category category = mCategory.get();
+        if(category == null) return;
+        category.setType(type);
     }
 
     public ObservableField<Category> getCategory() {

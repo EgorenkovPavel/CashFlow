@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                 case 2:
                     return new OperationsFragment();
                 default:
-                    return null;
+                    throw new IllegalArgumentException("No such page");
             }
         }
 

@@ -39,7 +39,7 @@ public class OperationActivity extends DetailActivity {
                 DataBindingUtil.setContentView(this, R.layout.activity_operation);
 
         setSupportActionBar(binding.toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         model = ViewModelProviders.of(this,
                 ViewModelFactory.getInstance(getApplication()))

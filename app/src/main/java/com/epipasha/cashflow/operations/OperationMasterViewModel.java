@@ -62,21 +62,27 @@ public class OperationMasterViewModel extends AndroidViewModel {
     public void onOperationTypeChanged(OperationType type){
         this.mOperationType.postValue(type);
 
-        mOperation.get().setType(type);
+        Operation operation = mOperation.get();
+        if(operation == null) return;
+        operation.setType(type);
         mOperation.notifyChange();
     }
 
     public void onDigitPressed(int digit){
-        int sum = mOperation.get().getSum();
+        Operation operation = mOperation.get();
+        if(operation == null) return;
+        int sum = operation.getSum();
         sum = sum * 10 + digit;
-        mOperation.get().setSum(sum);
+        operation.setSum(sum);
         mOperation.notifyChange();
     }
 
     public void onDeleteDigit(){
-        int val = mOperation.get().getSum();
+        Operation operation = mOperation.get();
+        if(operation == null) return;
+        int val = operation.getSum();
         val = val/10;
-        mOperation.get().setSum(val);
+        operation.setSum(val);
         mOperation.notifyChange();
     }
 

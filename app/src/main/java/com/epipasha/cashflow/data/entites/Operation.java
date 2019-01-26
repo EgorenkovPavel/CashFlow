@@ -78,6 +78,7 @@ public class Operation{
                 break;
             }
             case TRANSFER:{
+                if(getRecipientAccountId() == null) throw new IllegalArgumentException("Recipient account Id is null");
                 list.add(new Balance(getDate(), getAccountId(), getId(), -1*getSum()));
                 list.add(new Balance(getDate(), getRecipientAccountId(), getId(), getSum()));
                 break;
@@ -91,6 +92,7 @@ public class Operation{
         List<Cashflow> list = new ArrayList<>();
         OperationType type = getType();
         if (type == OperationType.IN || type == OperationType.OUT){
+            if(getCategoryId() == null) throw new IllegalArgumentException("Category id is null");
             list.add(new Cashflow(getDate(), getId(), getAccountId(), getCategoryId(), getSum()));
         }
 

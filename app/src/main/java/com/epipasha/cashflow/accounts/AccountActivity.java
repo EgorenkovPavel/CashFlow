@@ -29,7 +29,7 @@ public class AccountActivity extends DetailActivity {
                 .setContentView(this, R.layout.activity_account);
 
         setSupportActionBar(binding.toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         model = ViewModelProviders.of(this, ViewModelFactory.getInstance(getApplication()))
                 .get(AccountViewModel.class);
