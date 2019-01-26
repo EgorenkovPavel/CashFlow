@@ -23,16 +23,15 @@
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
     <show-object-properties value="true" />
-    <loaded-nodes>
-      <connection connection-id="b176ffc6-5318-46ba-bd6a-efaeaf4454a3">
-        <schema name="main" object-types="table" />
-      </connection>
-    </loaded-nodes>
+    <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="b176ffc6-5318-46ba-bd6a-efaeaf4454a3">
       <console name="Connection" type="STANDARD" schema="main" session="Main" />
     </connection>
+  </component>
+  <component name="DBNavigator.Project.DatabaseFileManager">
+    <open-files />
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="b176ffc6-5318-46ba-bd6a-efaeaf4454a3" />
