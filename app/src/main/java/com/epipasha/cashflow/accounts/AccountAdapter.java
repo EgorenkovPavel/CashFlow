@@ -73,7 +73,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountH
 
         @Override
         public void onClick(View view) {
-            int elementId = mAccounts.get(getAdapterPosition() - 1).getId();
+            int elementId = mAccounts.get(getAdapterPosition()).getId();
             mItemClickListener.onItemClickListener(elementId);
         }
     }
