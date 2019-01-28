@@ -16,10 +16,11 @@
             app:layout_scrollFlags="scroll|snap">
 
              <include
-                layout="@layout/indicators"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_collapseMode="parallax" />
+                 android:id="@+id/indicators"
+                 layout="@layout/indicators"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 app:layout_collapseMode="parallax" />
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
         <androidx.appcompat.widget.Toolbar

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 
+import com.epipasha.cashflow.activities.AnalyticActivity;
 import com.epipasha.cashflow.data.ViewModelFactory;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.CategoryWithCashflow;
@@ -18,9 +19,12 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import android.text.Layout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.backup.BackupActivity;
@@ -47,10 +51,16 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        View indicators = findViewById(R.id.indicators);
         TextView tvTotalSum = findViewById(R.id.tvTotalSum);
         TextView tvCashflow = findViewById(R.id.tvCashflow);
         TextView tvIn = findViewById(R.id.tvIn);
         TextView tvOut = findViewById(R.id.tvOut);
+
+        indicators.setOnClickListener(view -> {
+            Intent i = new Intent(MainActivity.this, AnalyticActivity.class);
+            startActivity(i);
+        });
 
         model = ViewModelProviders.of(this, ViewModelFactory.getInstance(getApplication()))
                 .get(MainViewModel.class);

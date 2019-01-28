@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import com.epipasha.cashflow.MainViewModel;
 import com.epipasha.cashflow.accounts.AccountViewModel;
 import com.epipasha.cashflow.accounts.AccountsViewModel;
+import com.epipasha.cashflow.activities.AnalyticViewModel;
 import com.epipasha.cashflow.backup.BackupViewModel;
 import com.epipasha.cashflow.categories.CategoriesViewModel;
 import com.epipasha.cashflow.categories.CategoryViewModel;
@@ -54,6 +55,8 @@ public class ViewModelFactory extends ViewModelProvider.AndroidViewModelFactory 
 
         else if (modelClass == MainViewModel.class)
             return (T) new MainViewModel(mApplication, mRepository);
+        else if (modelClass == AnalyticViewModel.class)
+            return (T) new AnalyticViewModel(mApplication, mRepository);
 
         else if (modelClass == AccountViewModel.class)
             return (T) new AccountViewModel(mApplication, mRepository);

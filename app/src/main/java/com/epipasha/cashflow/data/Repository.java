@@ -129,4 +129,11 @@ public class Repository implements DataSource{
         return mLocalDataSource.loadMonthCashflow(categoryId);
     }
 
- }
+    public LiveData<List<AnalyticDao.MonthCashflow>> loadAllMonthCashflow() {
+        return mLocalDataSource.loadAllMonthCashflow();
+    }
+
+    public LiveData<List<AnalyticDao.CategoryCashflow>> loadCategoryCashflow(int year, int month, OperationType type) {
+        return mLocalDataSource.loadCategoryCashflow(year, month, type);
+    }
+}

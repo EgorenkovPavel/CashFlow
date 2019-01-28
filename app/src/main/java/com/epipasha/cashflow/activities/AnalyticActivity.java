@@ -9,6 +9,8 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProviders;
+
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,6 +19,7 @@ import com.epipasha.cashflow.Prefs;
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.AppDatabase;
 import com.epipasha.cashflow.data.AppExecutors;
+import com.epipasha.cashflow.data.ViewModelFactory;
 import com.epipasha.cashflow.data.dao.AnalyticDao.CategoryCashflow;
 import com.epipasha.cashflow.data.dao.AnalyticDao.MonthCashflow;
 import com.epipasha.cashflow.objects.OperationType;
@@ -48,10 +51,10 @@ import java.util.Map;
 
 public class AnalyticActivity extends BaseActivity {
 
-    private AppDatabase mDb;
-
     private LineChart mChartIn;
     private PieChart mChartPie;
+
+    private AnalyticViewModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,24 +69,12 @@ public class AnalyticActivity extends BaseActivity {
         mChartIn = findViewById(R.id.chart_in);
         mChartPie = findViewById(R.id.chart_pie);
 
-        //TODO add model
+        model = ViewModelProviders.of(this, ViewModelFactory.getInstance(getApplication()))
+                .get(AnalyticViewModel.class);
 
-        mDb = AppDatabase.getInstance(getApplicationContext());
-        AppExecutors.getInstance().discIO().execute(() -> {
-            LiveData<List<MonthCashflow>> list = mDb.analyticDao().loadAllMonthCashflow();
-            list.observe(AnalyticActivity.this, monthCashflows -> loadChart(monthCashflows));
-        });
+        model.getMonthCashflow().observe(this, this::loadChart);
 
-        mDb = AppDatabase.getInstance(getApplicationContext());
-        AppExecutors.getInstance().discIO().execute(() -> {
-            Calendar cal = Calendar.getInstance();
-
-            LiveData<List<CategoryCashflow>> list = mDb.analyticDao().loadCategoryCashflow(
-                    cal.get(Calendar.YEAR),
-                    cal.get(Calendar.MONTH),
-                    OperationType.OUT);
-            list.observe(AnalyticActivity.this, categoryCashflow -> loadPie(categoryCashflow));
-        });
+        model.getMonthOutCashflow().observe(this, this::loadPie);
     }
 
     private void loadPie(List<CategoryCashflow> categoryCashflow) {
