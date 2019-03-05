@@ -1,6 +1,8 @@
 package com.epipasha.cashflow.categories;
 
 import android.app.Application;
+
+import androidx.databinding.ObservableInt;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.databinding.BindingAdapter;
@@ -29,6 +31,9 @@ public class CategoryViewModel extends AndroidViewModel{
     private DataSource mRepository;
 
     private ObservableField<Category> mCategory = new ObservableField<>();
+    private ObservableInt mParentCategoryPosition = new ObservableInt(0);
+    private ObservableField<List<Category>> mParentCategories = new ObservableField<>();
+
     private LiveData<List<AnalyticDao.MonthCashflow>> mMonthCashflow;
     private ObservableBoolean isNew = new ObservableBoolean(true);
     private TextWatcher mWatcher = new TextWatcher() {
@@ -60,8 +65,7 @@ public class CategoryViewModel extends AndroidViewModel{
         super(application);
 
         mRepository = repository;
-        mCategory.set(new Category("", OperationType.IN, 0));
-
+        mCategory.set(new Category("", OperationType.IN, 0, null));
     }
 
     public void start(int categoryId){
@@ -70,6 +74,7 @@ public class CategoryViewModel extends AndroidViewModel{
             public void onCategoryLoaded(Category category) {
                 mCategory.set(category);
                 isNew.set(false);
+                setParentCategoryPosition();
             }
 
             @Override
@@ -78,8 +83,59 @@ public class CategoryViewModel extends AndroidViewModel{
             }
         });
         mMonthCashflow = mRepository.loadMonthCashflow(categoryId);
+
+        loadParentCategories();
     }
 
+    public void start(){
+        loadParentCategories();
+    }
+
+    private void loadParentCategories(){
+        mRepository.getParentCategories(mCategory.get().getType(), new DataSource.GetCategoriesCallback(){
+
+            @Override
+            public void onCategoriesLoaded(List<Category> categories) {
+                categories.add(0, null);
+                mParentCategories.set(categories);
+                setParentCategoryPosition();
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+
+            }
+        });
+    }
+    //TODO rewrite loading to rx. wait loading and then set parent id
+
+    public ObservableInt getParentCategoryPosition() {
+        return mParentCategoryPosition;
+    }
+
+    public ObservableField<List<Category>> getParentCategories() {
+        return mParentCategories;
+    }
+
+    private void setParentCategoryPosition(){
+        //if(!isNew.get())
+            mParentCategoryPosition.set(getPositionById(mParentCategories.get().toArray(), mCategory.get().getParentId()));
+    }
+
+    private int getPositionById(Object[] list, Integer id){
+
+        for (int i=0; i<list.length;i++){
+            Object category = list[i];
+
+            if(category == null)
+                if(id == null) return i;
+                else continue;
+            if(((Category)category).getId() == id) {
+                return i;
+            }
+        }
+        return 0;
+    }
     public ObservableBoolean getIsNew() {
         return isNew;
     }
@@ -92,6 +148,8 @@ public class CategoryViewModel extends AndroidViewModel{
         Category category = mCategory.get();
         if(category == null) return;
         category.setType(type);
+        category.setParentId(null);
+        loadParentCategories();
     }
 
     public ObservableField<Category> getCategory() {

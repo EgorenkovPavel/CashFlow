@@ -76,6 +76,7 @@
     <string name="pref_analytic_chart_show_delta_graphic" translatable="false">pref_analytic_chart_show_delta_graphic</string>
     <string name="no_type">Select type</string>
     <string name="old_format_restore">Old format restore</string>
+    <string name="parent">Parent</string>
 
 
 </resources>

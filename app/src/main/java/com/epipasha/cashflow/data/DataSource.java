@@ -23,6 +23,11 @@ public interface DataSource {
         void onDataNotAvailable();
     }
 
+    interface GetCategoriesCallback{
+        void onCategoriesLoaded(List<Category> categories);
+        void onDataNotAvailable();
+    }
+
     interface GetOperationCallback{
         void onOperationLoaded(Operation operation);
         void onDataNotAvailable();
@@ -81,6 +86,8 @@ public interface DataSource {
     void updateCategory(Category category);
 
     void getCategoriesByType(OperationType type, GetCategoriesByTypeCallback callback);
+
+    void getParentCategories(OperationType type, GetCategoriesCallback getCategoriesCallback);
 
     LiveData<List<Category>> loadAllCategoriesByType(OperationType type);
 

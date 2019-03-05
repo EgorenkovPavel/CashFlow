@@ -37,8 +37,6 @@ public class CategoryActivity extends DetailActivity {
     private static final int DEFAULT_CATEGORY_ID = -1;
     private CategoryViewModel model;
 
-    private EditText etTitle, etBudget;
-    private RadioGroup rgType;
     private BarChart mChart;
 
     @Override
@@ -62,12 +60,15 @@ public class CategoryActivity extends DetailActivity {
         if(i != null && i.hasExtra(EXTRA_CATEGORY_ID)){
             int mCategoryId = i.getIntExtra(EXTRA_CATEGORY_ID, DEFAULT_CATEGORY_ID);
             model.start(mCategoryId);
+        }else{
+            model.start();
         }
 
-        model.getMonthCashflow().observe(this, monthCashflows -> {
-            if(monthCashflows == null) return;
-            loadChart(monthCashflows);
-        });
+        //TODO
+//        model.getMonthCashflow().observe(this, monthCashflows -> {
+//            if(monthCashflows == null) return;
+//            loadChart(monthCashflows);
+//        });
     }
 
     @Override
@@ -94,7 +95,7 @@ public class CategoryActivity extends DetailActivity {
             column++;
         }
 
-        //TODO addempty sum for date that don't exists in db
+        //TODO add empty sum for date that don't exists in db
 
         BarDataSet set = new BarDataSet(entries, "BarDataSet");
         set.setColor(getResources().getColor(R.color.colorPrimary));

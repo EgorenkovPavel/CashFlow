@@ -56,8 +56,9 @@ public class Backuper {
                     Integer.valueOf(categoryData.get("_id")),
                     categoryData.get("category_title"),
                     OperationType.toEnum(Integer.valueOf(categoryData.get("category_type"))),
-                    categoryData.get("category_budget").isEmpty() ? 0 : Integer.valueOf(categoryData.get("category_budget")));
-
+                    categoryData.get("category_budget").isEmpty() ? 0 : Integer.valueOf(categoryData.get("category_budget")),
+                    null);
+            //TODO add restoring of category parent
             mCategories.add(category);
         }
 

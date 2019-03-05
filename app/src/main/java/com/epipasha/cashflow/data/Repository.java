@@ -87,6 +87,10 @@ public class Repository implements DataSource{
         mLocalDataSource.getCategoriesByType(type, callback);
     }
 
+    public void getParentCategories(OperationType type, GetCategoriesCallback getCategoriesCallback){
+        mLocalDataSource.getParentCategories(type, getCategoriesCallback);
+    }
+
     @Override
     public LiveData<List<Category>> loadAllCategoriesByType(OperationType type) {
         return mLocalDataSource.loadAllCategoriesByType(type);

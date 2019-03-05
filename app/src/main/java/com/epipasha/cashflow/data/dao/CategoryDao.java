@@ -21,6 +21,9 @@ public interface CategoryDao {
     @Query("SELECT * FROM categories ORDER BY title")
     LiveData<List<Category>> loadAllCategories();
 
+    @Query("SELECT * FROM categories WHERE parent_id is null AND type =:type ORDER BY title")
+    List<Category> getParentCategories(OperationType type);
+
     @Query("SELECT categories.id as id, "
             + "categories.title as title, "
             + "categories.type as type, "

@@ -148,6 +148,23 @@ public class LocalDataSource implements DataSource{
     }
 
     @Override
+    public void getParentCategories(OperationType type, GetCategoriesCallback callback) {
+        Runnable runnable = () -> {
+            final List<Category> categories = mDb.categoryDao().getParentCategories(type);
+
+            mAppExecutors.mainThread().execute(() -> {
+                if (categories != null) {
+                    callback.onCategoriesLoaded(categories);
+                } else {
+                    callback.onDataNotAvailable();
+                }
+            });
+        };
+
+        mAppExecutors.discIO().execute(runnable);
+    }
+
+    @Override
     public LiveData<List<Category>> loadAllCategoriesByType(OperationType type) {
         return mDb.categoryDao().loadAllCategoriesByType(type);
     }
