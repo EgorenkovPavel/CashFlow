@@ -37,12 +37,12 @@
     <connection id="b176ffc6-5318-46ba-bd6a-efaeaf4454a3" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
-    <filter-list connection-id="b176ffc6-5318-46ba-bd6a-efaeaf4454a3" dataset="main.balance" active-filter-id="" />
-    <filter-list connection-id="b176ffc6-5318-46ba-bd6a-efaeaf4454a3" dataset="main.cashflow" active-filter-id="8057170b-583d-43fa-b802-952aa375048c">
+    <filter-actions connection-id="b176ffc6-5318-46ba-bd6a-efaeaf4454a3" dataset="main.balance" active-filter-id="" />
+    <filter-actions connection-id="b176ffc6-5318-46ba-bd6a-efaeaf4454a3" dataset="main.cashflow" active-filter-id="8057170b-583d-43fa-b802-952aa375048c">
       <filter id="8057170b-583d-43fa-b802-952aa375048c" name="3" temporary="false" custom-name="false" type="basic" join-type="AND">
         <condition column="category_id" operator="=" value="3" active="true" />
       </filter>
-    </filter-list>
+    </filter-actions>
   </component>
   <component name="DBNavigator.Project.EditorStateManager">
     <last-used-providers />
@@ -85,9 +85,9 @@
             <file path="C:\Users\Pavel\Desktop\cashflow" schema="main" />
           </files>
           <os-authentication value="false" />
-          <empty-password value="false" />
+          <empty-authentication value="false" />
           <user value="" />
-          <password value="" />
+          <deprecated-pwd value="" />
         </database>
         <properties>
           <auto-commit value="false" />
@@ -97,7 +97,7 @@
           <proxy-host value="" />
           <proxy-port value="22" />
           <proxy-user value="" />
-          <proxy-password value="" />
+          <deprecated-proxy-pwd value="" />
           <auth-type value="PASSWORD" />
           <key-file value="" />
           <key-passphrase value="" />
@@ -119,7 +119,7 @@
           <environment-type value="default" />
           <idle-time-to-disconnect value="30" />
           <idle-time-to-disconnect-pool value="5" />
-          <password-expiry-time value="10" />
+          <credential-expiry-time value="10" />
           <max-connection-pool-size value="7" />
           <alternative-statement-delimiter value="" />
         </details>
@@ -258,11 +258,11 @@
         <data-length-threshold value="100" />
         <popup-delay value="1000" />
       </text-editor-popup>
-      <values-list-popup>
+      <values-actions-popup>
         <show-popup-button value="true" />
         <element-count-threshold value="1000" />
         <data-length-threshold value="250" />
-      </values-list-popup>
+      </values-actions-popup>
       <general>
         <fetch-block-size value="100" />
         <fetch-timeout value="30" />
