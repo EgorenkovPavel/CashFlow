@@ -8,6 +8,8 @@ public class CategoryWithCashflow {
 
     @ColumnInfo(name = "id")
     private int id;
+    @ColumnInfo(name = "parent_id")
+    private Integer parentId;
     @ColumnInfo(name = "title")
     private String title;
     @ColumnInfo(name = "type")
@@ -55,5 +57,13 @@ public class CategoryWithCashflow {
 
     public void setCashflow(int cashflow) {
         this.cashflow = cashflow;
+    }
+
+    public Integer getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Integer parentId) {
+        this.parentId = parentId;
     }
 }

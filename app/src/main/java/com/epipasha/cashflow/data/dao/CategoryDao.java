@@ -25,6 +25,7 @@ public interface CategoryDao {
     List<Category> getParentCategories(OperationType type);
 
     @Query("SELECT categories.id as id, "
+            + "categories.parent_id as parent_id, "
             + "categories.title as title, "
             + "categories.type as type, "
             + "categories.budget as budget,"

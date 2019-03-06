@@ -76,7 +76,7 @@ public class CategoryViewModel extends AndroidViewModel{
             public void onCategoryLoaded(Category category) {
                 mCategory.set(category);
                 isNew.set(false);
-                setParentCategoryPosition();
+                loadParentCategories();
             }
 
             @Override
@@ -86,7 +86,7 @@ public class CategoryViewModel extends AndroidViewModel{
         });
         mMonthCashflow = mRepository.loadMonthCashflow(categoryId);
 
-        loadParentCategories();
+
     }
 
     public void start(){
@@ -178,6 +178,8 @@ public class CategoryViewModel extends AndroidViewModel{
         if(category == null){
             return;
         }
+
+        category.setParentId(mParentCategories.get().get(mParentCategoryPosition.get()).getId());
 
         mRepository.insertCategory(category);
     }
