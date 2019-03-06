@@ -1,7 +1,5 @@
 package com.epipasha.cashflow.categories;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,14 +7,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
+import com.epipasha.cashflow.Utils;
 import com.epipasha.cashflow.data.entites.CategoryWithCashflow;
-import com.epipasha.cashflow.objects.OperationType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryHolder>{
 
@@ -65,8 +65,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             holder.pbBudget.setMax(budget);
             holder.pbBudget.setProgress(fact);
         }
-        holder.categoryFactView.setText(String.format(Locale.getDefault(), "%,d", fact));
-        holder.categoryBudgetView.setText(String.format(Locale.getDefault(), "%,d", budget));
+        holder.categoryFactView.setText(Utils.formatNumber(fact));
+        holder.categoryBudgetView.setText(Utils.formatNumber(budget));
     }
 
     @Override
@@ -87,8 +87,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     }
 
     public void setCategories(List<CategoryWithCashflow> categories){
-        //this.mCategories = categories;
-
         List<CategoryWithCashflow> mParentCategories = new ArrayList<>();
         Map<Integer, List<CategoryWithCashflow>> map = new HashMap<>();
         for (CategoryWithCashflow cat:categories) {

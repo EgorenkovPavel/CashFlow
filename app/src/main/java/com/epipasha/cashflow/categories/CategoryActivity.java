@@ -1,27 +1,20 @@
 package com.epipasha.cashflow.categories;
 
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import android.widget.EditText;
-import android.widget.RadioGroup;
 
 import com.epipasha.cashflow.R;
+import com.epipasha.cashflow.Utils;
 import com.epipasha.cashflow.activities.DetailActivity;
-import com.epipasha.cashflow.data.dao.AnalyticDao.MonthCashflow;
 import com.epipasha.cashflow.data.ViewModelFactory;
+import com.epipasha.cashflow.data.dao.AnalyticDao.MonthCashflow;
 import com.epipasha.cashflow.databinding.ActivityCategoryBinding;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -30,11 +23,14 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
+
 public class CategoryActivity extends DetailActivity {
 
     public static final String EXTRA_CATEGORY_ID = "extraCategoryId";
 
-    private static final int DEFAULT_CATEGORY_ID = -1;
     private CategoryViewModel model;
 
     private BarChart mChart;
@@ -46,7 +42,6 @@ public class CategoryActivity extends DetailActivity {
         ActivityCategoryBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_category);
 
         setSupportActionBar(binding.toolbar);
-
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         model = ViewModelProviders.of(this, ViewModelFactory.getInstance(getApplication()))
@@ -58,17 +53,16 @@ public class CategoryActivity extends DetailActivity {
 
         Intent i = getIntent();
         if(i != null && i.hasExtra(EXTRA_CATEGORY_ID)){
-            int mCategoryId = i.getIntExtra(EXTRA_CATEGORY_ID, DEFAULT_CATEGORY_ID);
+            int mCategoryId = i.getIntExtra(EXTRA_CATEGORY_ID, Utils.EMPTY_ID);
             model.start(mCategoryId);
         }else{
             model.start();
         }
 
-        //TODO
-//        model.getMonthCashflow().observe(this, monthCashflows -> {
-//            if(monthCashflows == null) return;
-//            loadChart(monthCashflows);
-//        });
+        model.getMonthCashflow().observe(this, monthCashflows -> {
+            if(monthCashflows == null) return;
+            loadChart(monthCashflows);
+        });
     }
 
     @Override

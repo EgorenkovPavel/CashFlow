@@ -9,6 +9,8 @@ import androidx.databinding.BindingAdapter;
 import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
@@ -35,18 +37,14 @@ public class CategoryViewModel extends AndroidViewModel{
     private ObservableInt mParentCategoryPosition = new ObservableInt(0);
     private ObservableField<List<Category>> mParentCategories = new ObservableField<>();
 
-    private LiveData<List<AnalyticDao.MonthCashflow>> mMonthCashflow;
+    private LiveData<List<AnalyticDao.MonthCashflow>> mMonthCashflow = new MutableLiveData<>();
     private ObservableBoolean isNew = new ObservableBoolean(true);
     private TextWatcher mWatcher = new TextWatcher() {
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
         @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-        }
+        public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
         @Override
         public void afterTextChanged(Editable s) {
@@ -85,8 +83,6 @@ public class CategoryViewModel extends AndroidViewModel{
             }
         });
         mMonthCashflow = mRepository.loadMonthCashflow(categoryId);
-
-
     }
 
     public void start(){
