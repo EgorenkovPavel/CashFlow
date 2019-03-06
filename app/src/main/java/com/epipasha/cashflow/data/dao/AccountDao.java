@@ -68,7 +68,7 @@ public interface AccountDao {
             + "ORDER BY title")
     LiveData<List<AccountWithBalance>> loadAllAccountsWithBalanceExceptId(int id);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAccount(Account account);
 
     @Insert

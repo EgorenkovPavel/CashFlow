@@ -8,15 +8,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
+import com.epipasha.cashflow.Utils;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
 
 import java.util.List;
 import java.util.Locale;
 
 public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountHolder> {
-
-    protected static final int HEADER_ITEM = 234;
-    protected static final int LIST_ITEM = 897;
 
     private List<AccountWithBalance> mAccounts;
     private ItemClickListener mItemClickListener;
@@ -43,7 +41,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountH
 
         holder.itemView.setTag(mAccount.getId());
         holder.accountTitleView.setText(mAccount.getTitle());
-        holder.accountSumView.setText(String.format(Locale.getDefault(), "%,d", mAccount.getSum()));
+        holder.accountSumView.setText(Utils.formatNumber(mAccount.getSum()));
     }
 
     public void setAccounts(List<AccountWithBalance> accounts){
@@ -53,7 +51,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountH
 
     @Override
     public int getItemCount() {
-        if (mAccounts == null || mAccounts.size() == 0)
+        if (mAccounts == null)
             return 0;
         else
             return mAccounts.size();

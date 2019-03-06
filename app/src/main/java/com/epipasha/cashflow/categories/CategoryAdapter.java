@@ -55,16 +55,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         // Determine the values of the wanted data
         final int id = category.getId();
         String title = category.getTitle();
-        OperationType type = category.getType();
         int budget = category.getBudget();
         int fact = category.getCashflow();
-
-        int delta = 0;
-        if (type.equals(OperationType.IN)) {
-            delta = fact - budget;
-        } else if (type.equals(OperationType.OUT)) {
-            delta = budget - fact;
-        }
 
         //Set values
         holder.itemView.setTag(id);

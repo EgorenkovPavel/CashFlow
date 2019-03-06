@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import com.epipasha.cashflow.R;
 
 
+import com.epipasha.cashflow.Utils;
 import com.epipasha.cashflow.activities.ActivityAccountBinding;
 import com.epipasha.cashflow.activities.DetailActivity;
 import com.epipasha.cashflow.data.ViewModelFactory;
@@ -16,8 +17,6 @@ import com.epipasha.cashflow.data.ViewModelFactory;
 public class AccountActivity extends DetailActivity {
 
     public static final String EXTRA_ACCOUNT_ID = "extraAccountId";
-
-    private static final int DEFAULT_ACCOUNT_ID = -1;
 
     private AccountViewModel model;
 
@@ -38,7 +37,7 @@ public class AccountActivity extends DetailActivity {
 
         Intent i = getIntent();
         if(i != null && i.hasExtra(EXTRA_ACCOUNT_ID)){
-            int accountId = i.getIntExtra(EXTRA_ACCOUNT_ID, DEFAULT_ACCOUNT_ID);
+            int accountId = i.getIntExtra(EXTRA_ACCOUNT_ID, Utils.EMPTY_ID);
             model.start(accountId);
         }else{
             model.start();

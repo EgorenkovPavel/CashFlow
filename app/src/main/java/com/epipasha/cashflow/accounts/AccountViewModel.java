@@ -56,11 +56,7 @@ public class AccountViewModel extends AndroidViewModel {
             return;
         }
 
-        if(isNew.get()){
-            mRepository.insertAccount(account);
-        }else{
-            mRepository.updateAccount(account);
-        }
+        mRepository.insertAccount(account);
     }
 
 }
