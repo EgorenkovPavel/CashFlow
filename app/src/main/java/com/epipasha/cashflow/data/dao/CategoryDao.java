@@ -47,7 +47,7 @@ public interface CategoryDao {
     @Query("SELECT * FROM categories WHERE type = :type ORDER BY title")
     List<Category> getAllCategoriesByType(OperationType type);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertCategory(Category category);
 
     @Insert

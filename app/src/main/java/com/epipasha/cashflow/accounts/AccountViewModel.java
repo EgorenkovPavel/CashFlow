@@ -33,9 +33,12 @@ public class AccountViewModel extends AndroidViewModel {
 
             @Override
             public void onDataNotAvailable() {
-                mAccount.set(new Account());
             }
         });
+    }
+
+    public void start() {
+        isNew.set(true);
     }
 
     public ObservableBoolean getIsNew() {

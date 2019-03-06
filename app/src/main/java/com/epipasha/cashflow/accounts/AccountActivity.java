@@ -40,6 +40,8 @@ public class AccountActivity extends DetailActivity {
         if(i != null && i.hasExtra(EXTRA_ACCOUNT_ID)){
             int accountId = i.getIntExtra(EXTRA_ACCOUNT_ID, DEFAULT_ACCOUNT_ID);
             model.start(accountId);
+        }else{
+            model.start();
         }
     }
 

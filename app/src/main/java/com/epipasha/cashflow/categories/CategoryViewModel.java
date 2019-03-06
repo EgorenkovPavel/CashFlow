@@ -23,6 +23,7 @@ import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.YAxis;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -66,6 +67,7 @@ public class CategoryViewModel extends AndroidViewModel{
 
         mRepository = repository;
         mCategory.set(new Category("", OperationType.IN, 0, null));
+        mParentCategories.set(new ArrayList<>());
     }
 
     public void start(int categoryId){
@@ -96,6 +98,15 @@ public class CategoryViewModel extends AndroidViewModel{
 
             @Override
             public void onCategoriesLoaded(List<Category> categories) {
+                if(!isNew.get()){
+                    int id = mCategory.get().getId();
+                    for (Category cat:categories) {
+                        if (cat.getId() == id){
+                            categories.remove(cat);
+                            break;
+                        }
+                    }
+                }
                 categories.add(0, null);
                 mParentCategories.set(categories);
                 setParentCategoryPosition();
@@ -168,11 +179,7 @@ public class CategoryViewModel extends AndroidViewModel{
             return;
         }
 
-        if(isNew.get()){
-            mRepository.insertCategory(category);
-        }else{
-            mRepository.updateCategory(category);
-        }
+        mRepository.insertCategory(category);
     }
 
     @BindingAdapter({"app:budget"})
