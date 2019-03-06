@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
+import com.epipasha.cashflow.Utils;
 import com.epipasha.cashflow.data.entites.OperationWithData;
 
 import java.text.SimpleDateFormat;
@@ -62,7 +63,6 @@ public class OperationAdapter extends RecyclerView.Adapter<OperationAdapter.Oper
 
         OperationWithData operation = mOperations.get(position);
 
-        //Set values
         holder.itemView.setTag(operation.getId());
 
         SimpleDateFormat format = new SimpleDateFormat("MM.yyyy HH:mm", Locale.getDefault());
@@ -75,7 +75,7 @@ public class OperationAdapter extends RecyclerView.Adapter<OperationAdapter.Oper
         holder.tvDayOfWeek.setText(format.format(operation.getDate()));
 
         holder.operationAccountView.setText(operation.getAccount().getTitle());
-        holder.operationSumView.setText(String.format(Locale.getDefault(),"%,d",operation.getSum()));
+        holder.operationSumView.setText(Utils.formatNumber(operation.getSum()));
 
         switch (operation.getType()){
             case IN:{
@@ -132,7 +132,6 @@ public class OperationAdapter extends RecyclerView.Adapter<OperationAdapter.Oper
 
         @Override
         public boolean onLongClick(View view) {
-
             OperationWithData operation = mOperations.get(getAdapterPosition());
             mItemLongClickListener.onItemLongClickListener(operation.getId(), view);
             return true;

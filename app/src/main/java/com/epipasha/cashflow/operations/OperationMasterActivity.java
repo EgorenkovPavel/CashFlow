@@ -1,15 +1,6 @@
 package com.epipasha.cashflow.operations;
 
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,14 +10,21 @@ import android.widget.TextView;
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.activities.BaseActivity;
 import com.epipasha.cashflow.data.AppExecutors;
+import com.epipasha.cashflow.data.ViewModelFactory;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
-import com.epipasha.cashflow.data.ViewModelFactory;
 import com.epipasha.cashflow.databinding.ActivityMasterBinding;
-import com.epipasha.cashflow.objects.OperationType;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 import java.util.Locale;
+
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class OperationMasterActivity extends BaseActivity {
 
@@ -83,7 +81,7 @@ public class OperationMasterActivity extends BaseActivity {
                     rvAnalytics.setAdapter(mRecAccountAdapter);
                     break;
                 }
-            }
+             }
         });
 
         model.getSelectedAccount().observe(this, id -> mAccountAdapter.setSelectedId(id));
@@ -125,7 +123,6 @@ public class OperationMasterActivity extends BaseActivity {
                 }
             }
         });
-
     }
 
     private void initAdapters(){
@@ -165,7 +162,6 @@ public class OperationMasterActivity extends BaseActivity {
             finish();
         });
         btnNext.setOnClickListener(view -> model.saveOperation());
-
     }
 
     private class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountViewHolder>{
@@ -281,7 +277,7 @@ public class OperationMasterActivity extends BaseActivity {
                 itemView.setOnClickListener(view -> {
                     if (listener != null) listener.onItemClick(items.get(getLayoutPosition()));
                 });
-             }
+            }
         }
     }
 

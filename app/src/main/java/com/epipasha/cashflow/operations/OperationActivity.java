@@ -2,16 +2,9 @@ package com.epipasha.cashflow.operations;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import android.view.View;
-import android.widget.DatePicker;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.epipasha.cashflow.R;
@@ -22,6 +15,10 @@ import com.epipasha.cashflow.data.ViewModelFactory;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
 
 public class OperationActivity extends DetailActivity {
 
@@ -84,11 +81,9 @@ public class OperationActivity extends DetailActivity {
                     finish();
                     break;
                 }
-
             }
         });
     }
-
 
     private void chooseDate(){
 

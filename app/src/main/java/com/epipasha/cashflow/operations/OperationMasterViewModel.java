@@ -1,12 +1,6 @@
 package com.epipasha.cashflow.operations;
 
 import android.app.Application;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.databinding.BindingAdapter;
-import androidx.databinding.ObservableField;
-import androidx.annotation.NonNull;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.data.DataSource;
@@ -19,6 +13,13 @@ import com.epipasha.cashflow.objects.OperationType;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import androidx.annotation.NonNull;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.ObservableField;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 public class OperationMasterViewModel extends AndroidViewModel {
 
