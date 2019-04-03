@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.annotation.NonNull;
 
-import com.epipasha.cashflow.MainViewModel;
+import com.epipasha.cashflow.HomeViewModel;
 import com.epipasha.cashflow.accounts.AccountViewModel;
 import com.epipasha.cashflow.accounts.AccountsViewModel;
 import com.epipasha.cashflow.activities.AnalyticViewModel;
@@ -53,8 +53,8 @@ public class ViewModelFactory extends ViewModelProvider.AndroidViewModelFactory 
         else if (modelClass == OperationsViewModel.class)
             return (T) new OperationsViewModel(mApplication, mRepository);
 
-        else if (modelClass == MainViewModel.class)
-            return (T) new MainViewModel(mApplication, mRepository);
+        else if (modelClass == HomeViewModel.class)
+            return (T) new HomeViewModel(mApplication, mRepository);
         else if (modelClass == AnalyticViewModel.class)
             return (T) new AnalyticViewModel(mApplication, mRepository);
 

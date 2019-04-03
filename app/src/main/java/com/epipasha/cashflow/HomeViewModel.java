@@ -3,7 +3,6 @@ package com.epipasha.cashflow;
 import android.app.Application;
 
 import com.epipasha.cashflow.data.Repository;
-import com.epipasha.cashflow.data.entites.Account;
 import com.epipasha.cashflow.data.entites.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.CategoryWithCashflow;
 
@@ -15,13 +14,12 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-public class MainViewModel extends AndroidViewModel {
-
+public class HomeViewModel extends AndroidViewModel {
     private Repository mRepository;
     private LiveData<List<AccountWithBalance>> mAccounts;
     private LiveData<List<CategoryWithCashflow>> mCategories;
 
-    public MainViewModel(@NonNull Application application, Repository repository) {
+    public HomeViewModel(@NonNull Application application, Repository repository) {
         super(application);
 
         mRepository = repository;

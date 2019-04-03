@@ -41,7 +41,6 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
     private TabLayout tabs;
-    private MainViewModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,56 +52,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        View indicators = findViewById(R.id.indicators);
-        TextView tvTotalSum = findViewById(R.id.tvTotalSum);
-        TextView tvCashflow = findViewById(R.id.tvCashflow);
-        TextView tvIn = findViewById(R.id.tvIn);
-        TextView tvOut = findViewById(R.id.tvOut);
-
-        indicators.setOnClickListener(view -> {
-            Intent i = new Intent(MainActivity.this, AnalyticActivity.class);
-            startActivity(i);
-        });
-
-        model = ViewModelProviders.of(this, ViewModelFactory.getInstance(getApplication()))
-                .get(MainViewModel.class);
-
-        model.getAccounts().observe(this, accounts -> {
-            int sum = 0;
-            for (AccountWithBalance account:accounts){
-                sum += account.getSum();
-            }
-            tvTotalSum.setText(String.format(Locale.getDefault(), "%,d", sum));
-        });
-
-        model.getCategories().observe(this, categories -> {
-            int inBudget = 0;
-            int inFact = 0;
-            int outBudget = 0;
-            int outFact = 0;
-
-            for (CategoryWithCashflow category: categories) {
-
-                OperationType type = category.getType();
-                switch (type){
-                    case IN:{
-                        inBudget += category.getBudget();
-                        inFact += category.getCashflow();
-                        break;
-                    }
-                    case OUT:{
-                        outBudget += category.getBudget();
-                        outFact += category.getCashflow();
-                        break;
-                    }
-                }
-            }
-
-            tvIn.setText(String.format(Locale.getDefault(), "%,d / %,d", inFact, inBudget));
-            tvOut.setText(String.format(Locale.getDefault(), "%,d / %,d", outFact, outBudget));
-            tvCashflow.setText(String.format(Locale.getDefault(), "%,d", inFact - outFact));
-        });
-
         ViewPager viewPager = findViewById(R.id.viewPager);
         FixesTabsPagerAdapter adapter = new FixesTabsPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
@@ -113,17 +62,21 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
             switch (tabs.getSelectedTabPosition()){
-                case 0: {
+                case 0:{
+
+                    break;
+                }
+                case 1: {
                     Intent i = new Intent(MainActivity.this, AccountActivity.class);
                     startActivity(i);
                     break;
                 }
-                case 1:{
+                case 2:{
                     Intent i = new Intent(MainActivity.this, CategoryActivity.class);
                     startActivity(i);
                     break;
                 }
-                case 2:{
+                case 3:{
                     Intent i = new Intent(MainActivity.this, OperationMasterActivity.class);
                     startActivity(i);
                     break;
@@ -184,10 +137,12 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position){
                 case 0:
-                    return new AccountsFragment();
+                    return new HomeFragment();
                 case 1:
-                    return new CategoriesFragment();
+                    return new AccountsFragment();
                 case 2:
+                    return new CategoriesFragment();
+                case 3:
                     return new OperationsFragment();
                 default:
                     throw new IllegalArgumentException("No such page");
@@ -196,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
 
         @Nullable
@@ -204,10 +159,12 @@ public class MainActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position){
                 case 0:
-                    return getString(R.string.Accounts);
+                    return "Main";
                 case 1:
-                    return getString(R.string.Categories);
+                    return getString(R.string.Accounts);
                 case 2:
+                    return getString(R.string.Categories);
+                case 3:
                     return getString(R.string.Operations);
                 default:
                     return null;
