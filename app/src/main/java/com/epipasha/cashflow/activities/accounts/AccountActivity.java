@@ -1,6 +1,10 @@
 package com.epipasha.cashflow.activities.accounts;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
+
+import android.app.Activity;
 import android.content.Intent;
 import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -16,9 +20,15 @@ import com.epipasha.cashflow.data.ViewModelFactory;
 
 public class AccountActivity extends DetailActivity {
 
-    public static final String EXTRA_ACCOUNT_ID = "extraAccountId";
+    private static final String EXTRA_ACCOUNT_ID = "extraAccountId";
 
     private AccountViewModel model;
+
+    public static void start(FragmentActivity parentActivity, int id){
+        Intent intent = new Intent(parentActivity, AccountActivity.class);
+        intent.putExtra(AccountActivity.EXTRA_ACCOUNT_ID, id);
+        parentActivity.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

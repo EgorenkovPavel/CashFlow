@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class OperationsFragment extends Fragment implements OperationAdapter.ItemClickListener, OperationAdapter.ItemLongClickListener{
+public class OperationsFragment extends Fragment{
 
     private RecyclerView rvList;
     private OperationAdapter mAdapter;
@@ -35,9 +35,16 @@ public class OperationsFragment extends Fragment implements OperationAdapter.Ite
 
         initRecycledView();
 
-        retrieveItems();
-
         return v;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        model = ViewModelProviders
+                .of(this, ViewModelFactory.getInstance(getActivity().getApplication()))
+                .get(OperationsViewModel.class);
+        model.getOperations().observe(this, operations -> mAdapter.setOperations(operations));
     }
 
     private void initRecycledView(){
@@ -52,28 +59,13 @@ public class OperationsFragment extends Fragment implements OperationAdapter.Ite
                 layoutManager.getOrientation());
         rvList.addItemDecoration(mDividerItemDecoration);
 
-        mAdapter = new OperationAdapter(getContext(), this, this);
+        mAdapter = new OperationAdapter(getContext(),
+                id -> OperationActivity.start(getActivity(), id),
+                this::onItemLongClickListener);
         rvList.setAdapter(mAdapter);
 
     }
 
-    private void retrieveItems() {
-
-        model = ViewModelProviders
-                .of(this, ViewModelFactory.getInstance(getActivity().getApplication()))
-                .get(OperationsViewModel.class);
-        model.getOperations().observe(this, operations -> mAdapter.setOperations(operations));
-    }
-
-    @Override
-    public void onItemClickListener(int itemId) {
-        // Launch AddTaskActivity adding the itemId as an extra in the intent
-        Intent intent = new Intent(getActivity(), OperationActivity.class);
-        intent.putExtra(OperationActivity.EXTRA_OPERATION_ID, itemId);
-        startActivity(intent);
-    }
-
-    @Override
     public void onItemLongClickListener(final int operationId, final View view) {
 
         PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
@@ -83,8 +75,8 @@ public class OperationsFragment extends Fragment implements OperationAdapter.Ite
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                 builder.setMessage(R.string.dialog_delete_operation)
-                        .setPositiveButton(R.string.ok, (dialog, id) -> model.deleteOperation(operationId))
-                        .setNegativeButton(R.string.cancel, (dialog, id) -> mAdapter.notifyDataSetChanged());
+                        .setPositiveButton(android.R.string.ok, (dialog, id) -> model.deleteOperation(operationId))
+                        .setNegativeButton(android.R.string.cancel, (dialog, id) -> mAdapter.notifyDataSetChanged());
                 // Create the AlertDialog object and return it
                 builder.create().show();
 
@@ -95,6 +87,4 @@ public class OperationsFragment extends Fragment implements OperationAdapter.Ite
         });
         popupMenu.show();
     }
-
-
 }

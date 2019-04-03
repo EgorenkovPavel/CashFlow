@@ -25,15 +25,22 @@ import java.util.Locale;
 
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 
 public class CategoryActivity extends DetailActivity {
 
-    public static final String EXTRA_CATEGORY_ID = "extraCategoryId";
+    private static final String EXTRA_CATEGORY_ID = "extraCategoryId";
 
     private CategoryViewModel model;
 
     private BarChart mChart;
+
+    public static void start(FragmentActivity parentActivity, int id){
+        Intent intent = new Intent(parentActivity, CategoryActivity.class);
+        intent.putExtra(CategoryActivity.EXTRA_CATEGORY_ID, id);
+        parentActivity.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

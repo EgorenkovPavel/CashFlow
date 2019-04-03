@@ -29,11 +29,6 @@ public class HomeFragment extends Fragment {
     private TextView tvIn;
     private TextView tvOut;
 
-
-    public static HomeFragment newInstance() {
-        return new HomeFragment();
-    }
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -88,7 +83,6 @@ public class HomeFragment extends Fragment {
             tvOut.setText(String.format(Locale.getDefault(), "%,d / %,d", outFact, outBudget));
             tvCashflow.setText(String.format(Locale.getDefault(), "%,d", inFact - outFact));
         });
-
     }
 
 }

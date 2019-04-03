@@ -1,6 +1,5 @@
 package com.epipasha.cashflow.fragments.categories;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +17,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class CategoriesFragment extends Fragment implements CategoryAdapter.ItemClickListener {
+public class CategoriesFragment extends Fragment{
 
     private RecyclerView rvList;
     private CategoryAdapter mAdapter;
@@ -32,9 +31,15 @@ public class CategoriesFragment extends Fragment implements CategoryAdapter.Item
 
         initRecycledView();
 
-        retrieveItems();
-
         return v;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        CategoriesViewModel viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getActivity().getApplication())).get(CategoriesViewModel.class);
+        viewModel.getCategories().observe(this, categories -> mAdapter.setCategories(categories));
     }
 
     private void initRecycledView(){
@@ -48,22 +53,7 @@ public class CategoriesFragment extends Fragment implements CategoryAdapter.Item
                 layoutManager.getOrientation());
         rvList.addItemDecoration(mDividerItemDecoration);
 
-        mAdapter = new CategoryAdapter(this);
+        mAdapter = new CategoryAdapter(id -> CategoryActivity.start(getActivity(), id));
         rvList.setAdapter(mAdapter);
-
-    }
-
-    private void retrieveItems() {
-
-        CategoriesViewModel viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getActivity().getApplication())).get(CategoriesViewModel.class);
-        viewModel.getCategories().observe(this, categories -> mAdapter.setCategories(categories));
-    }
-
-    @Override
-    public void onItemClickListener(int itemId) {
-        // Launch AddTaskActivity adding the itemId as an extra in the intent
-        Intent intent = new Intent(getActivity(), CategoryActivity.class);
-        intent.putExtra(CategoryActivity.EXTRA_CATEGORY_ID, itemId);
-        startActivity(intent);
     }
 }

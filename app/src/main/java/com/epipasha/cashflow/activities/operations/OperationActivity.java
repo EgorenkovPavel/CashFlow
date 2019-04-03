@@ -18,15 +18,22 @@ import java.util.GregorianCalendar;
 
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 
 public class OperationActivity extends DetailActivity {
 
-    public static final String EXTRA_OPERATION_ID = "extraOperationId";
+    private static final String EXTRA_OPERATION_ID = "extraOperationId";
 
     private static final int DEFAULT_OPERATION_ID = -1;
 
     private OperationViewModel model;
+
+    public static void start(FragmentActivity parentActivity, int id){
+        Intent intent = new Intent(parentActivity, OperationActivity.class);
+        intent.putExtra(OperationActivity.EXTRA_OPERATION_ID, id);
+        parentActivity.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
