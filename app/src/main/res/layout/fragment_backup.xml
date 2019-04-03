@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="8dp"
-    tools:context="com.epipasha.cashflow.backup.BackupFragment">
+    tools:context=".activities.backup.BackupFragment">
 
         <TextView
             android:id="@+id/lblFileSystem"

@@ -5,7 +5,7 @@ import androidx.room.ColumnInfo;
 import androidx.room.Dao;
 import androidx.room.Query;
 
-import com.epipasha.cashflow.objects.OperationType;
+import com.epipasha.cashflow.data.objects.OperationType;
 
 import java.util.List;
 

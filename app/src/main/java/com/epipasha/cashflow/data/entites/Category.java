@@ -6,7 +6,7 @@ import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-import com.epipasha.cashflow.objects.OperationType;
+import com.epipasha.cashflow.data.objects.OperationType;
 
 @Entity(tableName = "categories",
         foreignKeys = {

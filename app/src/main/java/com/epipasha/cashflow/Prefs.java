@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.epipasha.cashflow.objects.OperationType;
+import com.epipasha.cashflow.data.objects.OperationType;
 
 public final class Prefs {
 

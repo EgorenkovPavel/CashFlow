@@ -5,16 +5,16 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.annotation.NonNull;
 
-import com.epipasha.cashflow.HomeViewModel;
-import com.epipasha.cashflow.accounts.AccountViewModel;
-import com.epipasha.cashflow.accounts.AccountsViewModel;
-import com.epipasha.cashflow.activities.AnalyticViewModel;
-import com.epipasha.cashflow.backup.BackupViewModel;
-import com.epipasha.cashflow.categories.CategoriesViewModel;
-import com.epipasha.cashflow.categories.CategoryViewModel;
-import com.epipasha.cashflow.operations.OperationMasterViewModel;
-import com.epipasha.cashflow.operations.OperationViewModel;
-import com.epipasha.cashflow.operations.OperationsViewModel;
+import com.epipasha.cashflow.fragments.home.HomeViewModel;
+import com.epipasha.cashflow.activities.accounts.AccountViewModel;
+import com.epipasha.cashflow.fragments.accounts.AccountsViewModel;
+import com.epipasha.cashflow.activities.analytic.AnalyticViewModel;
+import com.epipasha.cashflow.activities.backup.BackupViewModel;
+import com.epipasha.cashflow.fragments.categories.CategoriesViewModel;
+import com.epipasha.cashflow.activities.categories.CategoryViewModel;
+import com.epipasha.cashflow.activities.operations.OperationMasterViewModel;
+import com.epipasha.cashflow.activities.operations.OperationViewModel;
+import com.epipasha.cashflow.fragments.operations.OperationsViewModel;
 
 public class ViewModelFactory extends ViewModelProvider.AndroidViewModelFactory {
 

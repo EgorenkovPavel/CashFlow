@@ -7,7 +7,7 @@ import com.epipasha.cashflow.data.entites.Account;
 import com.epipasha.cashflow.data.complex.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.entites.Operation;
-import com.epipasha.cashflow.objects.OperationType;
+import com.epipasha.cashflow.data.objects.OperationType;
 
 import java.util.List;
 

@@ -2,7 +2,7 @@ package com.epipasha.cashflow.data.complex;
 
 import androidx.room.ColumnInfo;
 
-import com.epipasha.cashflow.objects.OperationType;
+import com.epipasha.cashflow.data.objects.OperationType;
 
 public class CategoryWithCashflow {
 

@@ -2,7 +2,7 @@ package com.epipasha.cashflow.data;
 
 import androidx.room.TypeConverter;
 
-import com.epipasha.cashflow.objects.OperationType;
+import com.epipasha.cashflow.data.objects.OperationType;
 
 import java.util.Date;
 

@@ -6,10 +6,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="com.epipasha.cashflow.objects.OperationType"/>
+        <import type="com.epipasha.cashflow.data.objects.OperationType"/>
         <variable
             name="viewmodel"
-            type="com.epipasha.cashflow.categories.CategoryViewModel"/>
+            type="com.epipasha.cashflow.activities.categories.CategoryViewModel"/>
     </data>
 
     <LinearLayout
