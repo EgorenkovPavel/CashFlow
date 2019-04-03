@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.annotation.NonNull;
 
 import com.epipasha.cashflow.data.Repository;
-import com.epipasha.cashflow.data.entites.CategoryWithCashflow;
+import com.epipasha.cashflow.data.complex.CategoryWithCashflow;
 
 import java.util.Calendar;
 import java.util.Date;

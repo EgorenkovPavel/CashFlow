@@ -14,8 +14,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.data.ViewModelFactory;
-import com.epipasha.cashflow.data.entites.AccountWithBalance;
-import com.epipasha.cashflow.data.entites.CategoryWithCashflow;
+import com.epipasha.cashflow.data.complex.AccountWithBalance;
+import com.epipasha.cashflow.data.complex.CategoryWithCashflow;
 import com.epipasha.cashflow.objects.OperationType;
 
 import java.util.Locale;

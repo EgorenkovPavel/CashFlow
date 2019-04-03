@@ -9,10 +9,9 @@ import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.Utils;
-import com.epipasha.cashflow.data.entites.AccountWithBalance;
+import com.epipasha.cashflow.data.complex.AccountWithBalance;
 
 import java.util.List;
-import java.util.Locale;
 
 public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountHolder> {
 

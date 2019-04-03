@@ -5,7 +5,7 @@ import android.widget.TextView;
 
 import com.epipasha.cashflow.data.DataSource;
 import com.epipasha.cashflow.data.Repository;
-import com.epipasha.cashflow.data.entites.AccountWithBalance;
+import com.epipasha.cashflow.data.complex.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.entites.Operation;
 import com.epipasha.cashflow.objects.OperationType;

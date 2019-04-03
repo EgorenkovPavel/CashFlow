@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.annotation.NonNull;
 
 import com.epipasha.cashflow.data.Repository;
-import com.epipasha.cashflow.data.entites.AccountWithBalance;
+import com.epipasha.cashflow.data.complex.AccountWithBalance;
 
 import java.util.List;
 

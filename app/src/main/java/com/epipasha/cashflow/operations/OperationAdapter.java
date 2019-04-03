@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.Utils;
-import com.epipasha.cashflow.data.entites.OperationWithData;
+import com.epipasha.cashflow.data.complex.OperationWithData;
 
 import java.text.SimpleDateFormat;
 import java.util.List;

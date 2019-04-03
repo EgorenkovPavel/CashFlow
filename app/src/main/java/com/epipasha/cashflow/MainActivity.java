@@ -1,42 +1,30 @@
 package com.epipasha.cashflow;
 
-
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-
-import com.epipasha.cashflow.activities.AnalyticActivity;
-import com.epipasha.cashflow.data.ViewModelFactory;
-import com.epipasha.cashflow.data.entites.AccountWithBalance;
-import com.epipasha.cashflow.data.entites.CategoryWithCashflow;
-import com.epipasha.cashflow.objects.OperationType;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.tabs.TabLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
-import android.text.Layout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 
-import com.epipasha.cashflow.backup.BackupActivity;
 import com.epipasha.cashflow.accounts.AccountActivity;
+import com.epipasha.cashflow.accounts.AccountsFragment;
+import com.epipasha.cashflow.activities.PreferencesActivity;
+import com.epipasha.cashflow.backup.BackupActivity;
+import com.epipasha.cashflow.categories.CategoriesFragment;
 import com.epipasha.cashflow.categories.CategoryActivity;
 import com.epipasha.cashflow.operations.OperationMasterActivity;
-import com.epipasha.cashflow.activities.PreferencesActivity;
-import com.epipasha.cashflow.accounts.AccountsFragment;
-import com.epipasha.cashflow.categories.CategoriesFragment;
 import com.epipasha.cashflow.operations.OperationsFragment;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.database.annotations.NotNull;
 
-import java.util.Locale;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 public class MainActivity extends AppCompatActivity {
 

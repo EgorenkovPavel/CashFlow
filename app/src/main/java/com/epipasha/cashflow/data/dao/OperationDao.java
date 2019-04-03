@@ -12,7 +12,7 @@ import androidx.room.Update;
 import com.epipasha.cashflow.data.entites.Balance;
 import com.epipasha.cashflow.data.entites.Cashflow;
 import com.epipasha.cashflow.data.entites.Operation;
-import com.epipasha.cashflow.data.entites.OperationWithData;
+import com.epipasha.cashflow.data.complex.OperationWithData;
 
 import java.util.List;
 

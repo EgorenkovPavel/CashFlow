@@ -11,7 +11,7 @@ import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.activities.BaseActivity;
 import com.epipasha.cashflow.data.AppExecutors;
 import com.epipasha.cashflow.data.ViewModelFactory;
-import com.epipasha.cashflow.data.entites.AccountWithBalance;
+import com.epipasha.cashflow.data.complex.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.databinding.ActivityMasterBinding;
 import com.google.android.material.snackbar.Snackbar;

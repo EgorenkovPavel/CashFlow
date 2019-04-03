@@ -1,4 +1,4 @@
-package com.epipasha.cashflow.data.entites;
+package com.epipasha.cashflow.data.complex;
 
 import androidx.room.ColumnInfo;
 

@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData;
 
 import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.entites.Account;
-import com.epipasha.cashflow.data.entites.AccountWithBalance;
+import com.epipasha.cashflow.data.complex.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.entites.Operation;
 import com.epipasha.cashflow.objects.OperationType;

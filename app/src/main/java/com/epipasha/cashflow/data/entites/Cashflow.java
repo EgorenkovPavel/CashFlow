@@ -11,10 +11,12 @@ import java.util.Calendar;
 import java.util.Date;
 
 @Entity(tableName = "cashflow",
-        foreignKeys = {@ForeignKey(entity = Account.class,
-        parentColumns = "id",
-        childColumns = "account_id",
-        onDelete = ForeignKey.CASCADE),
+        foreignKeys = {
+        @ForeignKey(
+                entity = Account.class,
+                parentColumns = "id",
+                childColumns = "account_id",
+                onDelete = ForeignKey.CASCADE),
         @ForeignKey(entity = Category.class,
                 parentColumns = "id",
                 childColumns = "category_id",
@@ -23,7 +25,10 @@ import java.util.Date;
                 parentColumns = "id",
                 childColumns = "operation_id",
                 onDelete = ForeignKey.CASCADE)},
-indices = {@Index("operation_id"),@Index("account_id"),@Index("category_id")})
+indices = {
+        @Index("operation_id"),
+        @Index("account_id"),
+        @Index("category_id")})
 public class Cashflow {
 
     @PrimaryKey(autoGenerate = true)

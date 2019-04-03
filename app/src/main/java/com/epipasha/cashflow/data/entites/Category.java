@@ -8,7 +8,12 @@ import androidx.room.PrimaryKey;
 
 import com.epipasha.cashflow.objects.OperationType;
 
-@Entity(tableName = "categories", foreignKeys = {@ForeignKey(entity = Category.class, parentColumns = "id", childColumns = "parent_id")})
+@Entity(tableName = "categories",
+        foreignKeys = {
+            @ForeignKey(
+                    entity = Category.class,
+                    parentColumns = "id",
+                    childColumns = "parent_id")})
 public class Category{
 
     @PrimaryKey(autoGenerate = true)

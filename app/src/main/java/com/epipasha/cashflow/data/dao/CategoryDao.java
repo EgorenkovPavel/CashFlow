@@ -9,7 +9,7 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import com.epipasha.cashflow.data.entites.Category;
-import com.epipasha.cashflow.data.entites.CategoryWithCashflow;
+import com.epipasha.cashflow.data.complex.CategoryWithCashflow;
 import com.epipasha.cashflow.objects.OperationType;
 
 import java.util.Date;

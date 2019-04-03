@@ -3,8 +3,8 @@ package com.epipasha.cashflow;
 import android.app.Application;
 
 import com.epipasha.cashflow.data.Repository;
-import com.epipasha.cashflow.data.entites.AccountWithBalance;
-import com.epipasha.cashflow.data.entites.CategoryWithCashflow;
+import com.epipasha.cashflow.data.complex.AccountWithBalance;
+import com.epipasha.cashflow.data.complex.CategoryWithCashflow;
 
 import java.util.Calendar;
 import java.util.Date;

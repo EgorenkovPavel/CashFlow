@@ -4,11 +4,11 @@ import androidx.lifecycle.LiveData;
 
 import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.entites.Account;
-import com.epipasha.cashflow.data.entites.AccountWithBalance;
+import com.epipasha.cashflow.data.complex.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
-import com.epipasha.cashflow.data.entites.CategoryWithCashflow;
+import com.epipasha.cashflow.data.complex.CategoryWithCashflow;
 import com.epipasha.cashflow.data.entites.Operation;
-import com.epipasha.cashflow.data.entites.OperationWithData;
+import com.epipasha.cashflow.data.complex.OperationWithData;
 import com.epipasha.cashflow.objects.OperationType;
 
 import java.util.Date;

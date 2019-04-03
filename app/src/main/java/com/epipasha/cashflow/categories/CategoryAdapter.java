@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.Utils;
-import com.epipasha.cashflow.data.entites.CategoryWithCashflow;
+import com.epipasha.cashflow.data.complex.CategoryWithCashflow;
 
 import java.util.ArrayList;
 import java.util.HashMap;

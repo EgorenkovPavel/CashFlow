@@ -1,8 +1,10 @@
-package com.epipasha.cashflow.data.entites;
+package com.epipasha.cashflow.data.complex;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Embedded;
 
+import com.epipasha.cashflow.data.entites.Account;
+import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.objects.OperationType;
 
 import java.util.Date;

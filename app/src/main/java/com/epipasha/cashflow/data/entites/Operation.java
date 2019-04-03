@@ -15,17 +15,24 @@ import java.util.Date;
 import java.util.List;
 
 @Entity(tableName = "operations",
-        foreignKeys = {@ForeignKey(entity = Account.class,
-                                    parentColumns = "id",
-                                    childColumns = {"account_id"},
-                                    onDelete = ForeignKey.CASCADE),
-                        @ForeignKey(entity = Account.class,
-                            parentColumns = "id",
-                            childColumns = {"recipient_account_id"}),
-                        @ForeignKey(entity = Category.class,
-                                parentColumns = "id",
-                                childColumns = "category_id")},
-indices = {@Index("account_id"), @Index("category_id"), @Index("recipient_account_id")})
+        foreignKeys = {
+            @ForeignKey(
+                    entity = Account.class,
+                    parentColumns = "id",
+                    childColumns = {"account_id"},
+                    onDelete = ForeignKey.CASCADE),
+            @ForeignKey(
+                    entity = Account.class,
+                    parentColumns = "id",
+                    childColumns = {"recipient_account_id"}),
+            @ForeignKey(
+                    entity = Category.class,
+                    parentColumns = "id",
+                    childColumns = "category_id")},
+indices = {
+        @Index("account_id"),
+        @Index("category_id"),
+        @Index("recipient_account_id")})
 public class Operation{
 
     @PrimaryKey(autoGenerate = true)
