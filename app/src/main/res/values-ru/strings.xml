@@ -48,4 +48,5 @@
     <string name="time">Время</string>
     <string name="no_type">Выберите тип</string>
     <string name="old_format_restore">Старый формат</string>
+    <string name="parent">Владелец</string>
 </resources>

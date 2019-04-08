@@ -18,10 +18,12 @@ public abstract class DetailActivity extends BaseActivity {
         switch (item.getItemId()){
             case R.id.action_save:{
                 saveObject();
+                finish();
                 return true;
             }
             case android.R.id.home:{
                 finish();
+                return true;
             }
             default:
                 return super.onOptionsItemSelected(item);

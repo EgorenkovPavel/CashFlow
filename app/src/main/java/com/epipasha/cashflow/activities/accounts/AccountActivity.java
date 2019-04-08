@@ -1,22 +1,19 @@
 package com.epipasha.cashflow.activities.accounts;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProviders;
-
-import android.app.Activity;
 import android.content.Intent;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 
 import com.epipasha.cashflow.R;
-
-
 import com.epipasha.cashflow.Utils;
 import com.epipasha.cashflow.activities.ActivityAccountBinding;
 import com.epipasha.cashflow.activities.DetailActivity;
 import com.epipasha.cashflow.data.ViewModelFactory;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProviders;
 
 public class AccountActivity extends DetailActivity {
 
@@ -38,25 +35,28 @@ public class AccountActivity extends DetailActivity {
                 .setContentView(this, R.layout.activity_account);
 
         setSupportActionBar(binding.toolbar);
-        if(getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         model = ViewModelProviders.of(this, ViewModelFactory.getInstance(getApplication()))
                 .get(AccountViewModel.class);
 
         binding.setViewmodel(model);
 
-        Intent i = getIntent();
-        if(i != null && i.hasExtra(EXTRA_ACCOUNT_ID)){
-            int accountId = i.getIntExtra(EXTRA_ACCOUNT_ID, Utils.EMPTY_ID);
-            model.start(accountId);
-        }else{
-            model.start();
+        if(savedInstanceState == null) {
+            Intent i = getIntent();
+            if (i != null && i.hasExtra(EXTRA_ACCOUNT_ID)) {
+                int accountId = i.getIntExtra(EXTRA_ACCOUNT_ID, Utils.EMPTY_ID);
+                model.start(accountId);
+            }
         }
     }
 
     @Override
-    public void saveObject() {
+    public void saveObject(){
         model.saveAccount();
-        finish();
     }
 }

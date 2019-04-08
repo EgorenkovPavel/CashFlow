@@ -75,7 +75,6 @@ public class CategoryActivity extends DetailActivity {
     @Override
     public void saveObject(){
         model.saveObject();
-        finish();
     }
 
     private void loadChart(List<MonthCashflow> monthCashflows){
