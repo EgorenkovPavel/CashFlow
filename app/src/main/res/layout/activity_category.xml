@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
             app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:title="@{viewmodel.isNew ? @string/new_category : @string/category}"/>
+            app:title="@{viewmodel.activityTitle}"/>
 
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -106,40 +106,6 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Button"/>
 
         </RadioGroup>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:labelFor="@id/category_detail_budget"
-            android:paddingTop="8dp"
-            android:text="@string/budget"
-            style="@style/label" />
-
-        <EditText
-            android:id="@+id/category_detail_budget"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/input_field"
-            android:gravity="end"
-            android:inputType="numberDecimal"
-            android:padding="8dp"
-            tools:text="1000"
-            app:budget="@{viewmodel.category.budget}"
-            android:addTextChangedListener="@{viewmodel.watcher}"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:text="@string/chart"
-            style="@style/label" />
-
-        <com.github.mikephil.charting.charts.BarChart
-            android:id="@+id/chart"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:budgetLine="@{viewmodel.category.budget}"/>
-
     </LinearLayout>
 
 </LinearLayout>

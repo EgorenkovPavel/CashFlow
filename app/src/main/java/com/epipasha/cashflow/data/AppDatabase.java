@@ -9,15 +9,17 @@ import android.content.Context;
 import com.epipasha.cashflow.data.dao.AccountDao;
 import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.dao.BackupDao;
+import com.epipasha.cashflow.data.dao.BudgetDao;
 import com.epipasha.cashflow.data.dao.CategoryDao;
 import com.epipasha.cashflow.data.dao.OperationDao;
 import com.epipasha.cashflow.data.entites.Account;
 import com.epipasha.cashflow.data.entites.Balance;
+import com.epipasha.cashflow.data.entites.Budget;
 import com.epipasha.cashflow.data.entites.Cashflow;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.entites.Operation;
 
-@Database(entities = {Account.class, Category.class, Operation.class, Balance.class, Cashflow.class}, version = 1)
+@Database(entities = {Account.class, Category.class, Budget.class, Operation.class, Balance.class, Cashflow.class}, version = 1)
 @TypeConverters(DataConverter.class)
 public abstract class AppDatabase extends RoomDatabase{
 
@@ -40,6 +42,8 @@ public abstract class AppDatabase extends RoomDatabase{
     public abstract AccountDao accountDao();
 
     public abstract CategoryDao categoryDao();
+
+    public abstract BudgetDao budgetDao();
 
     public abstract OperationDao operationDao();
 

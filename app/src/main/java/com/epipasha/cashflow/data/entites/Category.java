@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import com.epipasha.cashflow.data.objects.OperationType;
@@ -13,7 +14,8 @@ import com.epipasha.cashflow.data.objects.OperationType;
             @ForeignKey(
                     entity = Category.class,
                     parentColumns = "id",
-                    childColumns = "parent_id")})
+                    childColumns = "parent_id")},
+        indices = {@Index("parent_id")})
 public class Category{
 
     @PrimaryKey(autoGenerate = true)
