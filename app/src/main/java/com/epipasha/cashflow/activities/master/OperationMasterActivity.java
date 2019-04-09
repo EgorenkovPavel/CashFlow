@@ -147,10 +147,10 @@ public class OperationMasterActivity extends BaseActivity {
         rvAccounts.setHasFixedSize(true);
         rvAnalytics.setHasFixedSize(true);
 
-        rvAccounts.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        rvAnalytics.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        rvAccounts.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+        rvAnalytics.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
 
-        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
+        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(this, LinearLayoutManager.HORIZONTAL);
         rvAccounts.addItemDecoration(mDividerItemDecoration);
         rvAnalytics.addItemDecoration(mDividerItemDecoration);
 
