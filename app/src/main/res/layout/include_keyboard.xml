@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewmodel"
-            type="com.epipasha.cashflow.activities.operations.OperationMasterViewModel"/>
+            type="com.epipasha.cashflow.activities.master.OperationMasterViewModel"/>
     </data>
 
 <GridLayout

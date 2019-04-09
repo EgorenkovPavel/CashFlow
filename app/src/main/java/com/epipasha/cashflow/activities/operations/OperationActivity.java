@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
@@ -43,7 +44,8 @@ public class OperationActivity extends DetailActivity {
                 DataBindingUtil.setContentView(this, R.layout.activity_operation);
 
         setSupportActionBar(binding.toolbar);
-        if(getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
         model = ViewModelProviders.of(this,
                 ViewModelFactory.getInstance(getApplication()))
@@ -56,10 +58,12 @@ public class OperationActivity extends DetailActivity {
         edtDate.setOnClickListener(view -> chooseDate());
         edtTime.setOnClickListener(view -> chooseTime());
 
-        Intent i = getIntent();
-        if(i != null && i.hasExtra(EXTRA_OPERATION_ID)){
-            int mOperationId = i.getIntExtra(EXTRA_OPERATION_ID, DEFAULT_OPERATION_ID);
-            model.start(mOperationId);
+        if(savedInstanceState == null) {
+            Intent i = getIntent();
+            if (i != null && i.hasExtra(EXTRA_OPERATION_ID)) {
+                int mOperationId = i.getIntExtra(EXTRA_OPERATION_ID, DEFAULT_OPERATION_ID);
+                model.start(mOperationId);
+            }
         }
 
         model.getStatus().observe(this, status -> {

@@ -15,7 +15,7 @@ import com.epipasha.cashflow.activities.backup.BackupActivity;
 import com.epipasha.cashflow.fragments.categories.CategoriesFragment;
 import com.epipasha.cashflow.activities.categories.CategoryActivity;
 import com.epipasha.cashflow.fragments.home.HomeFragment;
-import com.epipasha.cashflow.activities.operations.OperationMasterActivity;
+import com.epipasha.cashflow.activities.master.OperationMasterActivity;
 import com.epipasha.cashflow.fragments.operations.OperationsFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;

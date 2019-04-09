@@ -1,19 +1,8 @@
 package com.epipasha.cashflow.activities.operations;
 
 import android.app.Application;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.MutableLiveData;
-import androidx.databinding.BindingAdapter;
-import androidx.databinding.ObservableBoolean;
-import androidx.databinding.ObservableField;
-import androidx.databinding.ObservableInt;
-import androidx.annotation.NonNull;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.widget.EditText;
-import android.widget.TextView;
 
-import com.epipasha.cashflow.Utils;
+import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.DataSource;
 import com.epipasha.cashflow.data.Repository;
 import com.epipasha.cashflow.data.entites.Account;
@@ -21,19 +10,26 @@ import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.entites.Operation;
 import com.epipasha.cashflow.data.objects.OperationType;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
-public class OperationViewModel extends AndroidViewModel implements DataSource.GetOperationCallback, DataSource.GetAccountsCallback, DataSource.GetCategoriesByTypeCallback {
+import androidx.annotation.NonNull;
+import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ObservableField;
+import androidx.databinding.ObservableInt;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.MutableLiveData;
+
+public class OperationViewModel extends AndroidViewModel{
 
     private MutableLiveData<Status> mStatus = new MutableLiveData<>();
 
     private DataSource mRepository;
-    private ObservableField<Operation> mOperation;
+    private ObservableField<Operation> mOperation = new ObservableField<>(
+            new Operation(Calendar.getInstance().getTime(), OperationType.IN, 0, 0, 0, 0));
+    private ObservableInt activityTitle = new ObservableInt(R.string.new_operation);
     private ObservableBoolean isNew = new ObservableBoolean(true);
 
     private ObservableField<List<Account>> mAccounts = new ObservableField<>();
@@ -46,62 +42,108 @@ public class OperationViewModel extends AndroidViewModel implements DataSource.G
     private List<Category> mCategoriesIn = new ArrayList<>();
     private List<Category> mCategoriesOut = new ArrayList<>();
 
-    private TextWatcher mWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-
-            Operation operation = mOperation.get();
-            int sum = (int) Utils.getLong(s.toString());
-
-            if(operation.getSum() != sum){
-                operation.setSum(sum);
-                mOperation.notifyChange();
-            }
-        }
-    };
-
     public OperationViewModel(@NonNull Application application, Repository repository) {
         super(application);
 
         mRepository = repository;
 
-        mOperation = new ObservableField<>(new Operation(Calendar.getInstance().getTime(), OperationType.IN, 0, 0, 0, 0));
+        mRepository.getAllAccounts(new DataSource.GetAccountsCallback() {
+            @Override
+            public void onAccountsLoaded(List<Account> accounts) {
+                mAccounts.set(accounts);
+                setAccountPosition();
 
-        mRepository.getAllAccounts(this);
-        mRepository.getCategoriesByType(OperationType.IN, this);
-        mRepository.getCategoriesByType(OperationType.OUT, this);
-    }
+                setRecAccounts();
+                setAnalyticPosition();
+            }
 
-    public TextWatcher getWatcher() {
-        return mWatcher;
+            @Override
+            public void onDataNotAvailable() {
+
+            }
+        });
+        mRepository.getCategoriesByType(OperationType.IN, new DataSource.GetCategoriesByTypeCallback() {
+            @Override
+            public void onCategoriesByTypeLoaded(List<Category> categories, OperationType type) {
+                mCategoriesIn = categories;
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+
+            }
+        });
+        mRepository.getCategoriesByType(OperationType.OUT, new DataSource.GetCategoriesByTypeCallback() {
+            @Override
+            public void onCategoriesByTypeLoaded(List<Category> categories, OperationType type) {
+                mCategoriesOut = categories;
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+
+            }
+        });
     }
 
     public void start(int operationId){
-        mRepository.getOperationById(operationId, this);
+        mRepository.getOperationById(operationId, new DataSource.GetOperationCallback() {
+            @Override
+            public void onOperationLoaded(Operation operation) {
+                mOperation.set(operation);
+                isNew.set(false);
+                activityTitle.set(R.string.operation);
+
+                setAnalyticEntries();
+                setAccountPosition();
+                setAnalyticPosition();
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+
+            }
+        });
     }
 
     public ObservableField<Operation> getOperation() {
         return mOperation;
     }
 
-    public ObservableBoolean getIsNew() {
-        return isNew;
+    public ObservableInt getActivityTitle() {
+        return activityTitle;
+    }
+
+    public ObservableField<List> getAnalytic() {
+        return mAnalytic;
+    }
+
+    public ObservableField<List<Account>> getAccounts() {
+        return mAccounts;
+    }
+
+    public ObservableInt getAccountPosition() {
+        return mAccountPosition;
+    }
+
+    public ObservableInt getAnalyticPosition() {
+        return mAnalyticPosition;
+    }
+
+    public MutableLiveData<Status> getStatus() {
+        return mStatus;
     }
 
     public void setOperationType(OperationType operationType) {
         mOperation.get().setType(operationType);
         setAnalyticEntries();
     }
+
+    public void setOperationDate(Date date){
+        mOperation.get().setDate(date);
+        mOperation.notifyChange();
+    }
+
 
     private void setAnalyticEntries() {
 
@@ -120,26 +162,6 @@ public class OperationViewModel extends AndroidViewModel implements DataSource.G
                 break;
             }
         }
-    }
-
-    public ObservableField<List> getAnalytic() {
-        return mAnalytic;
-    }
-
-    public MutableLiveData<Status> getStatus() {
-        return mStatus;
-    }
-
-    public ObservableField<List<Account>> getAccounts() {
-        return mAccounts;
-    }
-
-    public ObservableInt getAccountPosition() {
-        return mAccountPosition;
-    }
-
-    public ObservableInt getAnalyticPosition() {
-        return mAnalyticPosition;
     }
 
     public void saveObject(){
@@ -174,32 +196,17 @@ public class OperationViewModel extends AndroidViewModel implements DataSource.G
             }
         }
 
-        if(isNew.get()){
-            mRepository.insertOperation(operation, new DataSource.InsertOperationCallback() {
-                @Override
-                public void onOperationInsertedSuccess(int id) {
-                    mStatus.setValue(Status.OPERATION_SAVED);
-                }
+        mRepository.insertOperation(operation, new DataSource.InsertOperationCallback() {
+            @Override
+            public void onOperationInsertedSuccess(int id) {
+                mStatus.setValue(Status.OPERATION_SAVED);
+            }
 
-                @Override
-                public void onOperationInsertedFailed() {
+            @Override
+            public void onOperationInsertedFailed() {
 
-                }
-            });
-        }else{
-            mRepository.updateOperation(operation, new DataSource.UpdateOperationCallback() {
-                @Override
-                public void onOperationUpdatedSuccess(int updatedCol) {
-                    mStatus.setValue(Status.OPERATION_SAVED);
-                }
-
-                @Override
-                public void onOperationUpdatedFailed() {
-
-                }
-            });
-        }
-
+            }
+        });
     }
 
     public void onAccountSelected(int pos){
@@ -212,66 +219,11 @@ public class OperationViewModel extends AndroidViewModel implements DataSource.G
         return mOperation.get().getDate();
     }
 
-    public void setOperationDate(Date date){
-        mOperation.get().setDate(date);
-        mOperation.notifyChange();
-    }
-
-    @BindingAdapter({"app:sum"})
-    public static void getSum(EditText view, int sum) {
-        view.setText(String.format(Locale.getDefault(),"%,d", sum));
-        view.setSelection(view.getText().toString().length());
-    }
-
-    @BindingAdapter({"app:date"})
-    public static void getDate(TextView view, Date date) {
-        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
-        view.setText(format.format(date));
-    }
-
-    @BindingAdapter({"app:time"})
-    public static void getTime(TextView view, Date date) {
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        view.setText(format.format(date));
-    }
-
-    @Override
-    public void onOperationLoaded(Operation operation) {
-        mOperation.set(operation);
-        isNew.set(false);
-
-        setAnalyticEntries();
-        setAccountPosition();
-        setAnalyticPosition();
-    }
-
-    @Override
-    public void onAccountsLoaded(List<Account> accounts) {
-        mAccounts.set(accounts);
-        setAccountPosition();
-
-        setRecAccounts();
-        setAnalyticPosition();
-
-    }
-
-    @Override
-    public void onCategoriesByTypeLoaded(List<Category> categories, OperationType type) {
-        if (type == OperationType.IN)
-            mCategoriesIn = categories;
-        else
-            mCategoriesOut = categories;
-    }
 
     private void setRecAccounts(){
         List<Account> recAccounts = new ArrayList<>(mAccounts.get());
         recAccounts.remove(mAccountPosition.get());
         mRecAccounts = recAccounts;
-    }
-
-    @Override
-    public void onDataNotAvailable() {
-
     }
 
     public enum Status{

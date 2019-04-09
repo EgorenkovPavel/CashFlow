@@ -5,6 +5,7 @@
 
     <data class="com.epipasha.cashflow.activities.ActivityOperationBinding">
         <import type="com.epipasha.cashflow.data.objects.OperationType" />
+        <import type="com.epipasha.cashflow.activities.BindingsConverter"/>
 
         <variable
             name="viewmodel"
@@ -31,7 +32,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/actionBarSize"
                 app:popupTheme="@style/AppTheme.PopupOverlay"
-                app:title="@{viewmodel.isNew ? @string/new_operation : @string/operation}" />
+                app:title="@{viewmodel.activityTitle}" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -68,7 +69,7 @@
             android:gravity="fill_vertical"
             android:padding="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            app:date="@{viewmodel.operation.date}"
+            android:text="@{BindingsConverter.convertDateToString(viewmodel.operation.date)}"
             app:layout_constraintEnd_toStartOf="@+id/operation_detail_time"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -90,7 +91,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/operation_detail_date"
             app:layout_constraintTop_toTopOf="@+id/operation_detail_date"
-            app:time="@{viewmodel.operation.date}"
+            android:text="@{BindingsConverter.convertTimeToString(viewmodel.operation.date)}"
             tools:text="14.25" />
 
         <TextView
@@ -177,7 +178,6 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:layout_weight="1"
-            android:addTextChangedListener="@{viewmodel.watcher}"
             android:background="@drawable/input_field"
             android:gravity="end"
             android:inputType="numberDecimal"
@@ -185,7 +185,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/lblSum"
             app:layout_constraintTop_toBottomOf="@+id/lblSum"
-            app:sum="@{viewmodel.operation.sum}"
+            android:text="@={BindingsConverter.convertIntToString(viewmodel.operation.sum)}"
             tools:text="1000" />
 
         <RadioGroup

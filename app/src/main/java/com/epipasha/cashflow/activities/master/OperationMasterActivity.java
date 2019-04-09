@@ -1,4 +1,4 @@
-package com.epipasha.cashflow.activities.operations;
+package com.epipasha.cashflow.activities.master;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

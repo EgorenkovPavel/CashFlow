@@ -8,7 +8,7 @@
         <import type="com.epipasha.cashflow.data.objects.OperationType"/>
         <variable
             name="viewmodel"
-            type="com.epipasha.cashflow.activities.operations.OperationMasterViewModel"/>
+            type="com.epipasha.cashflow.activities.master.OperationMasterViewModel"/>
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"

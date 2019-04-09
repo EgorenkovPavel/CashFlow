@@ -12,7 +12,7 @@ import com.epipasha.cashflow.activities.analytic.AnalyticViewModel;
 import com.epipasha.cashflow.activities.backup.BackupViewModel;
 import com.epipasha.cashflow.fragments.categories.CategoriesViewModel;
 import com.epipasha.cashflow.activities.categories.CategoryViewModel;
-import com.epipasha.cashflow.activities.operations.OperationMasterViewModel;
+import com.epipasha.cashflow.activities.master.OperationMasterViewModel;
 import com.epipasha.cashflow.activities.operations.OperationViewModel;
 import com.epipasha.cashflow.fragments.operations.OperationsViewModel;
 
