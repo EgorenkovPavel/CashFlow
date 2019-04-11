@@ -6,6 +6,8 @@
 
     <data>
         <import type="com.epipasha.cashflow.data.objects.OperationType"/>
+        <import type="android.view.View"/>
+        <import type="com.epipasha.cashflow.activities.BindingsConverter"/>
         <variable
             name="viewmodel"
             type="com.epipasha.cashflow.activities.master.OperationMasterViewModel"/>
@@ -77,11 +79,12 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="@string/more"
-            app:layout_constraintBottom_toBottomOf="@+id/editText"
-            app:layout_constraintEnd_toStartOf="@+id/editText"
+            android:onClick="@{view -> viewmodel.onMoreClicked()}"
+            app:layout_constraintBottom_toBottomOf="@+id/etSum"
+            app:layout_constraintEnd_toStartOf="@+id/etSum"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/editText" />
+            app:layout_constraintTop_toTopOf="@+id/etSum" />
 
         <Button
             android:id="@+id/btnNext"
@@ -90,11 +93,12 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:text="@string/next"
-            app:layout_constraintBottom_toBottomOf="@+id/editText"
+            android:onClick="@{view -> viewmodel.saveOperation()}"
+            app:layout_constraintBottom_toBottomOf="@+id/etSum"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/editText"
-            app:layout_constraintTop_toTopOf="@+id/editText" />
+            app:layout_constraintStart_toEndOf="@+id/etSum"
+            app:layout_constraintTop_toTopOf="@+id/etSum" />
 
         <FrameLayout
             android:id="@+id/frameLayout"
@@ -104,57 +108,101 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toTopOf="@+id/editText"
+            app:layout_constraintBottom_toTopOf="@+id/etSum"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lblAnalytic">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvRecAccounts"
-                android:layout_width="wrap_content"
-                android:layout_height="70dp"
-                android:layout_gravity="center_horizontal|top"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/type_normal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/lblAccount"
-                tools:listitem="@layout/item_master_account" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="@{viewmodel.operation.type == OperationType.TRANSFER ? View.VISIBLE : View.INVISIBLE}">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvRecAccounts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center_horizontal|top"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/type_normal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/lblAccount"
+                    tools:listitem="@layout/item_master_account" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:visibility="visible">
+                android:visibility="@{viewmodel.operation.type == OperationType.IN ? View.VISIBLE : View.INVISIBLE}">
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerView"
+                    android:id="@+id/rvInCategories"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginRight="4dp"
                     android:layout_weight="1"
                     android:background="@drawable/type_normal"
-                    app:layout_constraintBottom_toTopOf="@+id/editText"
-                    app:layout_constraintEnd_toStartOf="@+id/rvAnalytics"
+                    app:layout_constraintBottom_toTopOf="@+id/etSum"
+                    app:layout_constraintEnd_toStartOf="@+id/rvInSubcategories"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/lblAnalytic"
-                    app:layout_constraintVertical_bias="0.676" />
+                    app:layout_constraintVertical_bias="0.676"
+                    tools:listitem="@layout/item_master_category" />
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvAnalytics"
+                    android:id="@+id/rvInSubcategories"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="4dp"
                     android:layout_weight="1"
                     android:background="@drawable/type_normal"
-                    app:layout_constraintBottom_toTopOf="@+id/editText"
+                    app:layout_constraintBottom_toTopOf="@+id/etSum"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/recyclerView"
+                    app:layout_constraintStart_toEndOf="@+id/rvInCategories"
+                    app:layout_constraintTop_toBottomOf="@+id/lblAnalytic"
+                    tools:listitem="@layout/item_master_category" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:visibility="@{viewmodel.operation.type == OperationType.OUT ? View.VISIBLE : View.INVISIBLE}">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvOutCategories"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/type_normal"
+                    app:layout_constraintBottom_toTopOf="@+id/etSum"
+                    app:layout_constraintEnd_toStartOf="@+id/rvOutSubcategories"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/lblAnalytic"
+                    app:layout_constraintVertical_bias="0.676"
+                    tools:listitem="@layout/item_master_category" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvOutSubcategories"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/type_normal"
+                    app:layout_constraintBottom_toTopOf="@+id/etSum"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/rvOutCategories"
                     app:layout_constraintTop_toBottomOf="@+id/lblAnalytic"
                     tools:listitem="@layout/item_master_category" />
             </LinearLayout>
@@ -185,7 +233,7 @@
             tools:text="Analytic" />
 
         <EditText
-            android:id="@+id/editText"
+            android:id="@+id/etSum"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -193,6 +241,7 @@
             android:ems="10"
             android:inputType="numberDecimal"
             android:padding="16dp"
+            android:text="@={BindingsConverter.convertIntToString(viewmodel.operation.sum)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnNext"
             app:layout_constraintHorizontal_bias="0.5"

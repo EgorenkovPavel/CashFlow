@@ -16,7 +16,10 @@ import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.BindingAdapter;
+import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableField;
+import androidx.databinding.ObservableInt;
+import androidx.databinding.ObservableList;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -67,29 +70,6 @@ public class OperationMasterViewModel extends AndroidViewModel {
         if(operation == null) return;
         operation.setType(type);
         mOperation.notifyChange();
-    }
-
-    public void onDigitPressed(int digit){
-        Operation operation = mOperation.get();
-        if(operation == null) return;
-        int sum = operation.getSum();
-        sum = sum * 10 + digit;
-        operation.setSum(sum);
-        mOperation.notifyChange();
-    }
-
-    public void onDeleteDigit(){
-        Operation operation = mOperation.get();
-        if(operation == null) return;
-        int val = operation.getSum();
-        val = val/10;
-        operation.setSum(val);
-        mOperation.notifyChange();
-    }
-
-    @BindingAdapter("app:sum")
-    public static void onSumChanged(TextView view, int sum){
-        view.setText(String.format(Locale.getDefault(),"%,d",sum));
     }
 
     public LiveData<List<AccountWithBalance>> getAccounts() {
@@ -202,6 +182,10 @@ public class OperationMasterViewModel extends AndroidViewModel {
         });
     }
 
+    public void onMoreClicked(){
+        mStatus.setValue(Status.CLOSE);
+    }
+
     public LiveData<Status> getStatus() {
         return mStatus;
     }
@@ -228,7 +212,8 @@ public class OperationMasterViewModel extends AndroidViewModel {
         EMPTY_ACCOUNT,
         EMPTY_SUM,
         OPERATION_SAVED,
-        OPERATION_DELETED
+        OPERATION_DELETED,
+        CLOSE
     }
 
 }

@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.epipasha.cashflow.R;
@@ -36,7 +35,11 @@ public class OperationMasterActivity extends BaseActivity {
     private AccountAdapter mRecAccountAdapter;
 
     private RecyclerView rvAccounts;
-    private RecyclerView rvAnalytics;
+    private RecyclerView rvInCategories;
+    private RecyclerView rvInSubcategories;
+    private RecyclerView rvOutCategories;
+    private RecyclerView rvOutSubcategories;
+    private RecyclerView rvRecAccounts;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,10 +48,6 @@ public class OperationMasterActivity extends BaseActivity {
         ActivityMasterBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_master);
 
         findViews();
-
-        initAdapters();
-
-        rvAccounts.setAdapter(mAccountAdapter);
 
         model = ViewModelProviders.of(this,
                 ViewModelFactory.getInstance(getApplication()))
@@ -64,25 +63,6 @@ public class OperationMasterActivity extends BaseActivity {
         model.getCategoriesIn().observe(this, categories -> mCategoryInAdapter.setItems(categories));
 
         model.getCategoriesOut().observe(this, categories -> mCategoryOutAdapter.setItems(categories));
-
-        model.getOperationType().observe(this, type -> {
-            if(type == null) return;
-
-             switch (type){
-                case IN:{
-                    rvAnalytics.setAdapter(mCategoryInAdapter);
-                    break;
-                }
-                case OUT:{
-                    rvAnalytics.setAdapter(mCategoryOutAdapter);
-                    break;
-                }
-                case TRANSFER: {
-                    rvAnalytics.setAdapter(mRecAccountAdapter);
-                    break;
-                }
-             }
-        });
 
         model.getSelectedAccount().observe(this, id -> mAccountAdapter.setSelectedId(id));
 
@@ -121,47 +101,64 @@ public class OperationMasterActivity extends BaseActivity {
                     Snackbar.make(rvAccounts, R.string.operation_deleted, Snackbar.LENGTH_LONG).show();
                     break;
                 }
+                case CLOSE:{
+                    setResult(RESULT_OK);
+                    finish();
+                    break;
+                }
             }
         });
-    }
-
-    private void initAdapters(){
-        mAccountAdapter = new AccountAdapter();
-        mAccountAdapter.setListener(item -> model.selectAccount(item));
-
-        mCategoryInAdapter = new CategoryAdapter();
-        mCategoryInAdapter.setListener(item -> model.selectInCategory(item));
-
-        mCategoryOutAdapter = new CategoryAdapter();
-        mCategoryOutAdapter.setListener(item -> model.selectOutCategory(item));
-
-        mRecAccountAdapter = new AccountAdapter();
-        mRecAccountAdapter.setListener(item -> model.selectRepAccount(item));
     }
 
     private void findViews() {
 
         rvAccounts = findViewById(R.id.rvAccounts);
-        rvAnalytics = findViewById(R.id.rvAnalytics);
+        rvInCategories = findViewById(R.id.rvInCategories);
+        rvInSubcategories = findViewById(R.id.rvInSubcategories);
+        rvOutCategories = findViewById(R.id.rvOutCategories);
+        rvOutSubcategories = findViewById(R.id.rvOutSubcategories);
+        rvRecAccounts = findViewById(R.id.rvRecAccounts);
 
         rvAccounts.setHasFixedSize(true);
-        rvAnalytics.setHasFixedSize(true);
+        rvInCategories.setHasFixedSize(true);
+        rvInSubcategories.setHasFixedSize(true);
+        rvOutCategories.setHasFixedSize(true);
+        rvOutSubcategories.setHasFixedSize(true);
+        rvRecAccounts.setHasFixedSize(true);
 
         rvAccounts.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-        rvAnalytics.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+        rvRecAccounts.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
 
-        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(this, LinearLayoutManager.HORIZONTAL);
-        rvAccounts.addItemDecoration(mDividerItemDecoration);
-        rvAnalytics.addItemDecoration(mDividerItemDecoration);
+        rvInCategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        rvInSubcategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        rvOutCategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        rvOutSubcategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
 
-        Button btnMore = findViewById(R.id.btnMore);
-        Button btnNext = findViewById(R.id.btnNext);
+        DividerItemDecoration mAccountDividerItemDecoration = new DividerItemDecoration(this, LinearLayoutManager.HORIZONTAL);
+        rvAccounts.addItemDecoration(mAccountDividerItemDecoration);
+        rvRecAccounts.addItemDecoration(mAccountDividerItemDecoration);
 
-        btnMore.setOnClickListener(view -> {
-            setResult(RESULT_OK);
-            finish();
-        });
-        btnNext.setOnClickListener(view -> model.saveOperation());
+        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
+        rvInCategories.addItemDecoration(mDividerItemDecoration);
+        rvInSubcategories.addItemDecoration(mDividerItemDecoration);
+        rvOutCategories.addItemDecoration(mDividerItemDecoration);
+        rvOutSubcategories.addItemDecoration(mDividerItemDecoration);
+
+        mAccountAdapter = new AccountAdapter();
+        mAccountAdapter.setListener(item -> model.selectAccount(item));
+        rvAccounts.setAdapter(mAccountAdapter);
+
+        mCategoryInAdapter = new CategoryAdapter();
+        mCategoryInAdapter.setListener(item -> model.selectInCategory(item));
+        rvInCategories.setAdapter(mCategoryInAdapter);
+
+        mCategoryOutAdapter = new CategoryAdapter();
+        mCategoryOutAdapter.setListener(item -> model.selectOutCategory(item));
+        rvOutCategories.setAdapter(mCategoryOutAdapter);
+
+        mRecAccountAdapter = new AccountAdapter();
+        mRecAccountAdapter.setListener(item -> model.selectRepAccount(item));
+        rvRecAccounts.setAdapter(mRecAccountAdapter);
     }
 
     private class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountViewHolder>{
