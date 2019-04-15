@@ -139,17 +139,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:visibility="@{viewmodel.operation.type == OperationType.IN ? View.VISIBLE : View.INVISIBLE}">
+                android:visibility="@{viewmodel.operation.type == OperationType.IN || viewmodel.operation.type == OperationType.OUT ? View.VISIBLE : View.INVISIBLE}">
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvInCategories"
+                    android:id="@+id/rvCategories"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginRight="4dp"
                     android:layout_weight="1"
                     android:background="@drawable/type_normal"
                     app:layout_constraintBottom_toTopOf="@+id/etSum"
-                    app:layout_constraintEnd_toStartOf="@+id/rvInSubcategories"
+                    app:layout_constraintEnd_toStartOf="@+id/rvSubcategories"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/lblAnalytic"
@@ -157,7 +157,7 @@
                     tools:listitem="@layout/item_master_category" />
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvInSubcategories"
+                    android:id="@+id/rvSubcategories"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="4dp"
@@ -166,43 +166,7 @@
                     app:layout_constraintBottom_toTopOf="@+id/etSum"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/rvInCategories"
-                    app:layout_constraintTop_toBottomOf="@+id/lblAnalytic"
-                    tools:listitem="@layout/item_master_category" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:visibility="@{viewmodel.operation.type == OperationType.OUT ? View.VISIBLE : View.INVISIBLE}">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvOutCategories"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="4dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/type_normal"
-                    app:layout_constraintBottom_toTopOf="@+id/etSum"
-                    app:layout_constraintEnd_toStartOf="@+id/rvOutSubcategories"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/lblAnalytic"
-                    app:layout_constraintVertical_bias="0.676"
-                    tools:listitem="@layout/item_master_category" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvOutSubcategories"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="4dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/type_normal"
-                    app:layout_constraintBottom_toTopOf="@+id/etSum"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/rvOutCategories"
+                    app:layout_constraintStart_toEndOf="@+id/rvCategories"
                     app:layout_constraintTop_toBottomOf="@+id/lblAnalytic"
                     tools:listitem="@layout/item_master_category" />
             </LinearLayout>

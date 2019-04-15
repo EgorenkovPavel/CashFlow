@@ -48,6 +48,15 @@ public interface CategoryDao {
     @Query("SELECT * FROM categories WHERE type = :type ORDER BY title")
     List<Category> getAllCategoriesByType(OperationType type);
 
+    @Query("SELECT * FROM categories WHERE type = :type AND parent_id IS NULL ORDER BY title")
+    LiveData<List<Category>> loadCategoriesByType(OperationType type);
+
+    @Query("SELECT * FROM categories WHERE type = :type AND parent_id IS NOT NULL ORDER BY title")
+    LiveData<List<Category>> loadSubcategoriesByType(OperationType type);
+
+    @Query("SELECT * FROM categories WHERE parent_id = :parentId ORDER BY title")
+    LiveData<List<Category>> loadSubcategoriesByParent(int parentId);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertCategory(Category category);
 

@@ -30,15 +30,13 @@ public class OperationMasterActivity extends BaseActivity {
     private OperationMasterViewModel model;
 
     private AccountAdapter mAccountAdapter;
-    private CategoryAdapter mCategoryInAdapter;
-    private CategoryAdapter mCategoryOutAdapter;
+    private CategoryAdapter mCategoryAdapter;
+    private CategoryAdapter mSubcategoryAdapter;
     private AccountAdapter mRecAccountAdapter;
 
     private RecyclerView rvAccounts;
-    private RecyclerView rvInCategories;
-    private RecyclerView rvInSubcategories;
-    private RecyclerView rvOutCategories;
-    private RecyclerView rvOutSubcategories;
+    private RecyclerView rvCategories;
+    private RecyclerView rvSubcategories;
     private RecyclerView rvRecAccounts;
 
     @Override
@@ -60,15 +58,15 @@ public class OperationMasterActivity extends BaseActivity {
             mRecAccountAdapter.setItems(accounts);
         });
 
-        model.getCategoriesIn().observe(this, categories -> mCategoryInAdapter.setItems(categories));
+        model.getCategories().observe(this, categories -> mCategoryAdapter.setItems(categories));
 
-        model.getCategoriesOut().observe(this, categories -> mCategoryOutAdapter.setItems(categories));
+        model.getSubcategories().observe(this, categories -> mSubcategoryAdapter.setItems(categories));
 
         model.getSelectedAccount().observe(this, id -> mAccountAdapter.setSelectedId(id));
 
-        model.getSelectedInCategory().observe(this, id -> mCategoryInAdapter.setSelectedId(id));
+        model.getSelectedCategory().observe(this, id -> mCategoryAdapter.setSelectedId(id));
 
-        model.getSelectedOutCategory().observe(this, id -> mCategoryOutAdapter.setSelectedId(id));
+        model.getSelectedSubcategory().observe(this, id -> mSubcategoryAdapter.setSelectedId(id));
 
         model.getSelectedRepAccount().observe(this, id -> mRecAccountAdapter.setSelectedId(id));
 
@@ -113,48 +111,40 @@ public class OperationMasterActivity extends BaseActivity {
     private void findViews() {
 
         rvAccounts = findViewById(R.id.rvAccounts);
-        rvInCategories = findViewById(R.id.rvInCategories);
-        rvInSubcategories = findViewById(R.id.rvInSubcategories);
-        rvOutCategories = findViewById(R.id.rvOutCategories);
-        rvOutSubcategories = findViewById(R.id.rvOutSubcategories);
+        rvCategories = findViewById(R.id.rvCategories);
+        rvSubcategories = findViewById(R.id.rvSubcategories);
         rvRecAccounts = findViewById(R.id.rvRecAccounts);
 
         rvAccounts.setHasFixedSize(true);
-        rvInCategories.setHasFixedSize(true);
-        rvInSubcategories.setHasFixedSize(true);
-        rvOutCategories.setHasFixedSize(true);
-        rvOutSubcategories.setHasFixedSize(true);
+        rvCategories.setHasFixedSize(true);
+        rvSubcategories.setHasFixedSize(true);
         rvRecAccounts.setHasFixedSize(true);
 
         rvAccounts.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
         rvRecAccounts.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
 
-        rvInCategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        rvInSubcategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        rvOutCategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        rvOutSubcategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        rvCategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        rvSubcategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
 
         DividerItemDecoration mAccountDividerItemDecoration = new DividerItemDecoration(this, LinearLayoutManager.HORIZONTAL);
         rvAccounts.addItemDecoration(mAccountDividerItemDecoration);
         rvRecAccounts.addItemDecoration(mAccountDividerItemDecoration);
 
         DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
-        rvInCategories.addItemDecoration(mDividerItemDecoration);
-        rvInSubcategories.addItemDecoration(mDividerItemDecoration);
-        rvOutCategories.addItemDecoration(mDividerItemDecoration);
-        rvOutSubcategories.addItemDecoration(mDividerItemDecoration);
+        rvCategories.addItemDecoration(mDividerItemDecoration);
+        rvSubcategories.addItemDecoration(mDividerItemDecoration);
 
         mAccountAdapter = new AccountAdapter();
         mAccountAdapter.setListener(item -> model.selectAccount(item));
         rvAccounts.setAdapter(mAccountAdapter);
 
-        mCategoryInAdapter = new CategoryAdapter();
-        mCategoryInAdapter.setListener(item -> model.selectInCategory(item));
-        rvInCategories.setAdapter(mCategoryInAdapter);
+        mCategoryAdapter = new CategoryAdapter();
+        mCategoryAdapter.setListener(item -> model.selectCategory(item));
+        rvCategories.setAdapter(mCategoryAdapter);
 
-        mCategoryOutAdapter = new CategoryAdapter();
-        mCategoryOutAdapter.setListener(item -> model.selectOutCategory(item));
-        rvOutCategories.setAdapter(mCategoryOutAdapter);
+        mSubcategoryAdapter = new CategoryAdapter();
+        mSubcategoryAdapter.setListener(item -> model.selectSubcategory(item));
+        rvSubcategories.setAdapter(mSubcategoryAdapter);
 
         mRecAccountAdapter = new AccountAdapter();
         mRecAccountAdapter.setListener(item -> model.selectRepAccount(item));

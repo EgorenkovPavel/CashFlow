@@ -22,7 +22,7 @@ public abstract class OperationDao {
     @Query("SELECT * FROM operations ORDER BY Date DESC")
     public abstract LiveData<List<Operation>> loadAllOperations();
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long insertOperation(Operation operation);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)

@@ -91,6 +91,12 @@ public interface DataSource {
 
     LiveData<List<Category>> loadAllCategoriesByType(OperationType type);
 
+    LiveData<List<Category>> loadCategoriesByType(OperationType type);
+
+    LiveData<List<Category>> loadSubcategoriesByType(OperationType type);
+
+    LiveData<List<Category>> loadSubcategoriesByParent(Category category);
+
     // OPERATIONS
     void getOperationById(int id, GetOperationCallback callback);
 

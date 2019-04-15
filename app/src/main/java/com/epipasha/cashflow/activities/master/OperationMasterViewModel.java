@@ -1,7 +1,6 @@
 package com.epipasha.cashflow.activities.master;
 
 import android.app.Application;
-import android.widget.TextView;
 
 import com.epipasha.cashflow.data.DataSource;
 import com.epipasha.cashflow.data.Repository;
@@ -10,53 +9,49 @@ import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.entites.Operation;
 import com.epipasha.cashflow.data.objects.OperationType;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import androidx.annotation.NonNull;
-import androidx.databinding.BindingAdapter;
-import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableField;
-import androidx.databinding.ObservableInt;
-import androidx.databinding.ObservableList;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 public class OperationMasterViewModel extends AndroidViewModel {
 
     private DataSource mRepository;
 
-    private LiveData<List<AccountWithBalance>> accounts;
-    private LiveData<List<Category>> categoriesIn;
-    private LiveData<List<Category>> categoriesOut;
+    private LiveData<List<AccountWithBalance>> mAccounts;
+    private LiveData<List<Category>> mAllCategories;
+    private LiveData<List<Category>> mAllSubcategories;
+    private MediatorLiveData<List<Category>> mCategories = new MediatorLiveData<>();
+    private MediatorLiveData<List<Category>> mSubcategories = new MediatorLiveData<>();;
 
     private MutableLiveData<Integer> selectedAccount = new MutableLiveData<>();
-    private MutableLiveData<Integer> selectedInCategory = new MutableLiveData<>();
-    private MutableLiveData<Integer> selectedOutCategory = new MutableLiveData<>();
+    private MutableLiveData<Integer> selectedCategory = new MutableLiveData<>();
+    private MutableLiveData<Integer> selectedSubcategory = new MutableLiveData<>();
     private MutableLiveData<Integer> selectedRepAccount = new MutableLiveData<>();
 
-    private MutableLiveData<OperationType> mOperationType = new MutableLiveData<>();
-
-    private MutableLiveData<Status> mStatus;
+    private MutableLiveData<Status> mStatus = new MutableLiveData<>();
 
     private Operation operation;
 
     private ObservableField<Operation> mOperation = new ObservableField<>(new Operation(new Date(), OperationType.IN, 0,0,0,0));
+
 
     public OperationMasterViewModel(@NonNull Application application, Repository repository) {
         super(application);
 
         mRepository = repository;
 
-        mOperationType.postValue(OperationType.IN);
+        mAccounts = mRepository.loadAllAccountsWithBalance();
+        mAllCategories = mRepository.loadCategoriesByType(mOperation.get().getType());
 
-        mStatus = new MutableLiveData<>();
-
-        accounts = mRepository.loadAllAccountsWithBalance();
-        categoriesIn = mRepository.loadAllCategoriesByType(OperationType.IN);
-        categoriesOut = mRepository.loadAllCategoriesByType(OperationType.OUT);
+        reloadCategories(mOperation.get().getType());
     }
 
     public ObservableField<Operation> getOperation() {
@@ -64,28 +59,35 @@ public class OperationMasterViewModel extends AndroidViewModel {
     }
 
     public void onOperationTypeChanged(OperationType type){
-        this.mOperationType.postValue(type);
-
         Operation operation = mOperation.get();
         if(operation == null) return;
         operation.setType(type);
         mOperation.notifyChange();
+
+        reloadCategories(type);
+    }
+
+    private void reloadCategories(OperationType type){
+
+        mCategories.removeSource(mAllCategories);
+
+        mAllCategories = mRepository.loadCategoriesByType(type);
+        mCategories.addSource(mAllCategories, categories -> mCategories.setValue(categories));
+
+        mSubcategories.removeSource(mAllSubcategories);
+        mSubcategories.setValue(new ArrayList<>());
     }
 
     public LiveData<List<AccountWithBalance>> getAccounts() {
-        return accounts;
+        return mAccounts;
     }
 
-    public LiveData<List<Category>> getCategoriesIn() {
-        return categoriesIn;
+    public LiveData<List<Category>> getCategories() {
+        return mCategories;
     }
 
-    public LiveData<List<Category>> getCategoriesOut() {
-        return categoriesOut;
-    }
-
-    public LiveData<OperationType> getOperationType() {
-        return mOperationType;
+    public LiveData<List<Category>> getSubcategories() {
+        return mSubcategories;
     }
 
     public void selectAccount(AccountWithBalance account){
@@ -94,14 +96,6 @@ public class OperationMasterViewModel extends AndroidViewModel {
         Integer repAccountId = selectedRepAccount.getValue();
         if(repAccountId != null && repAccountId == account.getId())
             selectedRepAccount.setValue(null);
-    }
-
-    public void selectInCategory(Category category){
-        selectedInCategory.setValue(category.getId());
-    }
-
-    public void selectOutCategory(Category category){
-        selectedOutCategory.setValue(category.getId());
     }
 
     public void selectRepAccount(AccountWithBalance account){
@@ -113,20 +107,16 @@ public class OperationMasterViewModel extends AndroidViewModel {
     public void saveOperation(){
 
         Integer accountId = selectedAccount.getValue();
-        Integer categoryInId = selectedInCategory.getValue();
-        Integer categoryOutId = selectedOutCategory.getValue();
+        Integer categoryId = selectedSubcategory.getValue();
         Integer repAccountId = selectedRepAccount.getValue();
 
         OperationType type = mOperation.get().getType();
-        Integer categoryId = null;
 
         switch (type){
             case IN:{
-                categoryId = categoryInId;
                 repAccountId = null;
                 break;
             }case OUT:{
-                categoryId = categoryOutId;
                 repAccountId = null;
                 break;
             }case TRANSFER:{
@@ -194,16 +184,34 @@ public class OperationMasterViewModel extends AndroidViewModel {
         return selectedAccount;
     }
 
-    public MutableLiveData<Integer> getSelectedInCategory() {
-        return selectedInCategory;
+    public MutableLiveData<Integer> getSelectedCategory() {
+        return selectedCategory;
     }
 
-    public MutableLiveData<Integer> getSelectedOutCategory() {
-        return selectedOutCategory;
+    public MutableLiveData<Integer> getSelectedSubcategory() {
+        return selectedSubcategory;
     }
 
     public MutableLiveData<Integer> getSelectedRepAccount() {
         return selectedRepAccount;
+    }
+
+    public void selectCategory(Category category) {
+        selectedCategory.setValue(category.getId());
+
+        mSubcategories.removeSource(mAllSubcategories);
+
+        mAllSubcategories = mRepository.loadSubcategoriesByParent(category);
+        mSubcategories.addSource(mAllSubcategories, categories -> mSubcategories.setValue(categories));
+    }
+
+    public void selectSubcategory(Category category) {
+        selectedSubcategory.setValue(category.getId());
+
+        Operation operation = mOperation.get();
+        if(operation == null) return;
+        operation.setCategoryId(category.getId());
+        mOperation.notifyChange();
     }
 
     public enum Status{

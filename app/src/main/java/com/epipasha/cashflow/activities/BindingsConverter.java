@@ -9,6 +9,8 @@ import androidx.databinding.InverseMethod;
 public class BindingsConverter {
     @InverseMethod("convertIntToString")
     public static int convertStringToInt(String value) {
+        if(value.isEmpty()) return 0;
+
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
@@ -17,6 +19,9 @@ public class BindingsConverter {
     }
 
     public static String convertIntToString(int value) {
+        if(value == 0){
+            return "";
+        }
         return String.valueOf(value);
     }
 

@@ -96,6 +96,21 @@ public class Repository implements DataSource{
         return mLocalDataSource.loadAllCategoriesByType(type);
     }
 
+    @Override
+    public LiveData<List<Category>> loadCategoriesByType(OperationType type) {
+        return mLocalDataSource.loadCategoriesByType(type);
+    }
+
+    @Override
+    public LiveData<List<Category>> loadSubcategoriesByType(OperationType type) {
+        return mLocalDataSource.loadSubcategoriesByType(type);
+    }
+
+    @Override
+    public LiveData<List<Category>> loadSubcategoriesByParent(Category category) {
+        return mLocalDataSource.loadSubcategoriesByParent(category);
+    }
+
     public LiveData<List<CategoryWithCashflow>> loadAllCategoriesWithCashflow(Date start, Date end) {
         return mLocalDataSource.loadAllCategoriesWithCashflow(start, end);
     }

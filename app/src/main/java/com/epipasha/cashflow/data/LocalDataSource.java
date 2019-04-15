@@ -169,6 +169,21 @@ public class LocalDataSource implements DataSource{
         return mDb.categoryDao().loadAllCategoriesByType(type);
     }
 
+    @Override
+    public LiveData<List<Category>> loadCategoriesByType(OperationType type) {
+        return mDb.categoryDao().loadCategoriesByType(type);
+    }
+
+    @Override
+    public LiveData<List<Category>> loadSubcategoriesByType(OperationType type) {
+        return mDb.categoryDao().loadSubcategoriesByType(type);
+    }
+
+    @Override
+    public LiveData<List<Category>> loadSubcategoriesByParent(Category category) {
+        return mDb.categoryDao().loadSubcategoriesByParent(category.getId());
+    }
+
     public LiveData<List<CategoryWithCashflow>> loadAllCategoriesWithCashflow(Date start, Date end) {
         return mDb.categoryDao().loadAllCategoriesWithCashflow(start, end);
     }

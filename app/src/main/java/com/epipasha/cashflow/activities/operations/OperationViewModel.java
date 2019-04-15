@@ -196,17 +196,31 @@ public class OperationViewModel extends AndroidViewModel{
             }
         }
 
-        mRepository.insertOperation(operation, new DataSource.InsertOperationCallback() {
-            @Override
-            public void onOperationInsertedSuccess(int id) {
-                mStatus.setValue(Status.OPERATION_SAVED);
-            }
+        if(isNew.get()) {
+            mRepository.insertOperation(operation, new DataSource.InsertOperationCallback() {
+                @Override
+                public void onOperationInsertedSuccess(int id) {
+                    mStatus.setValue(Status.OPERATION_SAVED);
+                }
 
-            @Override
-            public void onOperationInsertedFailed() {
+                @Override
+                public void onOperationInsertedFailed() {
 
-            }
-        });
+                }
+            });
+        }else{
+            mRepository.updateOperation(operation, new DataSource.UpdateOperationCallback() {
+                @Override
+                public void onOperationUpdatedSuccess(int updatedCol) {
+                    mStatus.setValue(Status.OPERATION_SAVED);
+                }
+
+                @Override
+                public void onOperationUpdatedFailed() {
+
+                }
+            });
+        }
     }
 
     public void onAccountSelected(int pos){
