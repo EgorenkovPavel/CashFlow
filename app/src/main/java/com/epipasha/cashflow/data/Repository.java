@@ -14,6 +14,9 @@ import com.epipasha.cashflow.data.objects.OperationType;
 import java.util.Date;
 import java.util.List;
 
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+
 public class Repository implements DataSource{
 
     private volatile static Repository INSTANCE = null;
@@ -47,6 +50,14 @@ public class Repository implements DataSource{
     @Override
     public void getAccountById(int id, GetAccountCallback callback) {
         mLocalDataSource.getAccountById(id, callback);
+    }
+
+    public Flowable<Account> getAccountById(int id) {
+        return mLocalDataSource.getAccountById(id);
+    }
+
+    public Completable insertOrUpdateAccount(Account account) {
+        return mLocalDataSource.insertOrUpdateAccount(account);
     }
 
     @Override

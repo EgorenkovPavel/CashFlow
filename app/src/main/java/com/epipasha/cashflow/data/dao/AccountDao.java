@@ -13,6 +13,9 @@ import com.epipasha.cashflow.data.complex.AccountWithBalance;
 
 import java.util.List;
 
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+
 @Dao
 public interface AccountDao {
 
@@ -89,4 +92,10 @@ public interface AccountDao {
     @Query("SELECT * FROM accounts WHERE id = :id")
     Account getAccountById(int id);
 
+    //RX
+    @Query("SELECT * FROM accounts WHERE id = :id")
+    Flowable<Account> getRxAccountById(int id);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    Completable insertRxAccount(Account account);
 }

@@ -15,6 +15,9 @@ import com.epipasha.cashflow.data.objects.OperationType;
 import java.util.Date;
 import java.util.List;
 
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+
 public class LocalDataSource implements DataSource{
 
     private static volatile LocalDataSource INSTANCE;
@@ -39,6 +42,14 @@ public class LocalDataSource implements DataSource{
     }
 
     // ACCOUNTS
+    public Flowable<Account> getAccountById(int id){
+        return mDb.accountDao().getRxAccountById(id);
+    }
+
+    public Completable insertOrUpdateAccount(Account account) {
+        return mDb.accountDao().insertRxAccount(account);
+    }
+
     public void getAccountById(final int id, final DataSource.GetAccountCallback callback){
         Runnable runnable = () -> {
             final Account account = mDb.accountDao().getAccountById(id);

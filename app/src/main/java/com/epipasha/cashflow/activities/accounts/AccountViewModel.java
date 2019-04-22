@@ -2,20 +2,24 @@ package com.epipasha.cashflow.activities.accounts;
 
 import android.app.Application;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableInt;
 import androidx.lifecycle.AndroidViewModel;
-import androidx.databinding.ObservableBoolean;
-import androidx.databinding.ObservableField;
-import androidx.annotation.NonNull;
 
 import com.epipasha.cashflow.R;
-import com.epipasha.cashflow.data.DataSource;
 import com.epipasha.cashflow.data.Repository;
 import com.epipasha.cashflow.data.entites.Account;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+
 public class AccountViewModel extends AndroidViewModel {
 
-    private final DataSource mRepository;
+    private final Repository mRepository;
+
+    private final CompositeDisposable mDisposable = new CompositeDisposable();
 
     private ObservableField<Account> mAccount = new ObservableField<>();
     private ObservableInt activityTitle = new ObservableInt(R.string.new_account);
@@ -27,17 +31,13 @@ public class AccountViewModel extends AndroidViewModel {
     }
 
     public void start(int accountId){
-        mRepository.getAccountById(accountId, new DataSource.GetAccountCallback() {
-            @Override
-            public void onAccountLoaded(Account account) {
-                mAccount.set(account);
-                activityTitle.set(R.string.account);
-            }
+        mDisposable.add(mRepository.getAccountById(accountId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(account -> {mAccount.set(account);
+                            activityTitle.set(R.string.account);},
+                        throwable -> {}));
 
-            @Override
-            public void onDataNotAvailable() {
-            }
-        });
     }
 
     public ObservableInt getActivityTitle() {
@@ -55,6 +55,15 @@ public class AccountViewModel extends AndroidViewModel {
             return;
         }
 
-        mRepository.insertAccount(account);
+        mDisposable.add(mRepository.insertOrUpdateAccount(account)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe());
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        mDisposable.clear();
     }
 }
