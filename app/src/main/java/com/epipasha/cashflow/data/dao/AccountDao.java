@@ -96,6 +96,9 @@ public interface AccountDao {
     @Query("SELECT * FROM accounts WHERE id = :id")
     Flowable<AccountEntity> getRxAccountById(int id);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     Completable insertRxAccount(AccountEntity account);
+
+    @Update
+    Completable updateRxAccount(AccountEntity account);
 }

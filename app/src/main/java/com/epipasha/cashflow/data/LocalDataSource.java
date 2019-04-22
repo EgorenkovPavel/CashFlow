@@ -47,7 +47,10 @@ public class LocalDataSource implements DataSource{
     }
 
     public Completable insertOrUpdateAccount(AccountEntity account) {
-        return mDb.accountDao().insertRxAccount(account);
+        if(account.getId() == 0)
+            return mDb.accountDao().insertRxAccount(account);
+        else
+            return mDb.accountDao().updateRxAccount(account);
     }
 
     public void getAccountById(final int id, final DataSource.GetAccountCallback callback){

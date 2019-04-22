@@ -9,6 +9,7 @@ import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.complex.CategoryWithCashflow;
 import com.epipasha.cashflow.data.entites.Operation;
 import com.epipasha.cashflow.data.complex.OperationWithData;
+import com.epipasha.cashflow.data.objects.Account;
 import com.epipasha.cashflow.data.objects.OperationType;
 
 import java.util.Date;
@@ -52,14 +53,14 @@ public class Repository implements DataSource{
         mLocalDataSource.getAccountById(id, callback);
     }
 
-    public Flowable<AccountEntity> getAccountById(int id) {
-        //TODO rename account -> AccountEntity
-        //TODO return account from objects. transform
-        return mLocalDataSource.getAccountById(id);
+    public Flowable<Account> getAccountById(int id) {
+        //TODO get sum for account
+        Flowable<AccountEntity> p = mLocalDataSource.getAccountById(id);
+        return p.map(accountEntity -> new Account(accountEntity.getId(), accountEntity.getTitle(), 0));
     }
 
-    public Completable insertOrUpdateAccount(AccountEntity account) {
-        return mLocalDataSource.insertOrUpdateAccount(account);
+    public Completable insertOrUpdateAccount(Account account) {
+         return mLocalDataSource.insertOrUpdateAccount(new AccountEntity(account.getId(), account.getTitle()));
     }
 
     @Override
