@@ -3,7 +3,7 @@ package com.epipasha.cashflow.data;
 import androidx.lifecycle.LiveData;
 
 import com.epipasha.cashflow.data.dao.AnalyticDao;
-import com.epipasha.cashflow.data.entites.Account;
+import com.epipasha.cashflow.data.entites.AccountEntity;
 import com.epipasha.cashflow.data.complex.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.complex.CategoryWithCashflow;
@@ -39,11 +39,11 @@ public class Repository implements DataSource{
     }
 
     // ACCOUNTS
-    public void insertAccount(Account account){
+    public void insertAccount(AccountEntity account){
         mLocalDataSource.insertAccount(account);
     }
 
-    public void updateAccount(Account account){
+    public void updateAccount(AccountEntity account){
         mLocalDataSource.updateAccount(account);
     }
 
@@ -52,11 +52,13 @@ public class Repository implements DataSource{
         mLocalDataSource.getAccountById(id, callback);
     }
 
-    public Flowable<Account> getAccountById(int id) {
+    public Flowable<AccountEntity> getAccountById(int id) {
+        //TODO rename account -> AccountEntity
+        //TODO return account from objects. transform
         return mLocalDataSource.getAccountById(id);
     }
 
-    public Completable insertOrUpdateAccount(Account account) {
+    public Completable insertOrUpdateAccount(AccountEntity account) {
         return mLocalDataSource.insertOrUpdateAccount(account);
     }
 

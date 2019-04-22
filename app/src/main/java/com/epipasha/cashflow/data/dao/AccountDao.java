@@ -8,7 +8,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.epipasha.cashflow.data.entites.Account;
+import com.epipasha.cashflow.data.entites.AccountEntity;
 import com.epipasha.cashflow.data.complex.AccountWithBalance;
 
 import java.util.List;
@@ -20,13 +20,13 @@ import io.reactivex.Flowable;
 public interface AccountDao {
 
     @Query("SELECT * FROM accounts ORDER BY title")
-    LiveData<List<Account>> loadAllAccounts();
+    LiveData<List<AccountEntity>> loadAllAccounts();
 
     @Query("SELECT * FROM accounts ORDER BY title")
-    List<Account> getAllAccounts();
+    List<AccountEntity> getAllAccounts();
 
     @Query("SELECT * FROM accounts WHERE id != :id ORDER BY title")
-    LiveData<List<Account>> loadAllAccountsExceptId(int id);
+    LiveData<List<AccountEntity>> loadAllAccountsExceptId(int id);
 
     @Query("SELECT accounts.id as id, "
             + "accounts.title as title, "
@@ -72,30 +72,30 @@ public interface AccountDao {
     LiveData<List<AccountWithBalance>> loadAllAccountsWithBalanceExceptId(int id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAccount(Account account);
+    void insertAccount(AccountEntity account);
 
     @Insert
-    void insertAccounts(List<Account> accounts);
+    void insertAccounts(List<AccountEntity> accounts);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    void updateAccount(Account account);
+    void updateAccount(AccountEntity account);
 
     @Delete
-    void deleteAccount(Account account);
+    void deleteAccount(AccountEntity account);
 
     @Query("DELETE FROM accounts")
     void deleteAll();
 
     @Query("SELECT * FROM accounts WHERE id = :id")
-    LiveData<Account> loadAccountById(int id);
+    LiveData<AccountEntity> loadAccountById(int id);
 
     @Query("SELECT * FROM accounts WHERE id = :id")
-    Account getAccountById(int id);
+    AccountEntity getAccountById(int id);
 
     //RX
     @Query("SELECT * FROM accounts WHERE id = :id")
-    Flowable<Account> getRxAccountById(int id);
+    Flowable<AccountEntity> getRxAccountById(int id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Completable insertRxAccount(Account account);
+    Completable insertRxAccount(AccountEntity account);
 }

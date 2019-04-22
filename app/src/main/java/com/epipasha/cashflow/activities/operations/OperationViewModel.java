@@ -5,7 +5,7 @@ import android.app.Application;
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.DataSource;
 import com.epipasha.cashflow.data.Repository;
-import com.epipasha.cashflow.data.entites.Account;
+import com.epipasha.cashflow.data.entites.AccountEntity;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.entites.Operation;
 import com.epipasha.cashflow.data.objects.OperationType;
@@ -32,13 +32,13 @@ public class OperationViewModel extends AndroidViewModel{
     private ObservableInt activityTitle = new ObservableInt(R.string.new_operation);
     private ObservableBoolean isNew = new ObservableBoolean(true);
 
-    private ObservableField<List<Account>> mAccounts = new ObservableField<>();
+    private ObservableField<List<AccountEntity>> mAccounts = new ObservableField<>();
     private ObservableField<List> mAnalytic = new ObservableField<>();
 
     private ObservableInt mAccountPosition = new ObservableInt(0);
     private ObservableInt mAnalyticPosition = new ObservableInt(0);
 
-    private List<Account> mRecAccounts = new ArrayList<>();
+    private List<AccountEntity> mRecAccounts = new ArrayList<>();
     private List<Category> mCategoriesIn = new ArrayList<>();
     private List<Category> mCategoriesOut = new ArrayList<>();
 
@@ -49,7 +49,7 @@ public class OperationViewModel extends AndroidViewModel{
 
         mRepository.getAllAccounts(new DataSource.GetAccountsCallback() {
             @Override
-            public void onAccountsLoaded(List<Account> accounts) {
+            public void onAccountsLoaded(List<AccountEntity> accounts) {
                 mAccounts.set(accounts);
                 setAccountPosition();
 
@@ -118,7 +118,7 @@ public class OperationViewModel extends AndroidViewModel{
         return mAnalytic;
     }
 
-    public ObservableField<List<Account>> getAccounts() {
+    public ObservableField<List<AccountEntity>> getAccounts() {
         return mAccounts;
     }
 
@@ -235,7 +235,7 @@ public class OperationViewModel extends AndroidViewModel{
 
 
     private void setRecAccounts(){
-        List<Account> recAccounts = new ArrayList<>(mAccounts.get());
+        List<AccountEntity> recAccounts = new ArrayList<>(mAccounts.get());
         recAccounts.remove(mAccountPosition.get());
         mRecAccounts = recAccounts;
     }
@@ -252,7 +252,7 @@ public class OperationViewModel extends AndroidViewModel{
         for (int i=0; i<list.length;i++){
             Object object = list[i];
 
-            if(object instanceof Account && ((Account) object).getId() == id){
+            if(object instanceof AccountEntity && ((AccountEntity) object).getId() == id){
                 return i;
             }else if(object instanceof Category && ((Category) object).getId() == id) {
                 return i;

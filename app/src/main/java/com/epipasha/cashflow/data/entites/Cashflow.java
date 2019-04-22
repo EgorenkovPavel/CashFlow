@@ -13,7 +13,7 @@ import java.util.Date;
 @Entity(tableName = "cashflow",
         foreignKeys = {
         @ForeignKey(
-                entity = Account.class,
+                entity = AccountEntity.class,
                 parentColumns = "id",
                 childColumns = "account_id",
                 onDelete = ForeignKey.CASCADE),

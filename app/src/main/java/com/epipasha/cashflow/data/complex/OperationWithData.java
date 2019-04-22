@@ -3,7 +3,7 @@ package com.epipasha.cashflow.data.complex;
 import androidx.room.ColumnInfo;
 import androidx.room.Embedded;
 
-import com.epipasha.cashflow.data.entites.Account;
+import com.epipasha.cashflow.data.entites.AccountEntity;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.objects.OperationType;
 
@@ -21,13 +21,13 @@ public class OperationWithData {
     private int sum;
 
     @Embedded(prefix = "account_")
-    private Account account;
+    private AccountEntity account;
 
     @Embedded(prefix = "category_")
     private Category category;
 
     @Embedded(prefix = "recipient_account_")
-    private Account repAccount;
+    private AccountEntity repAccount;
 
     public int getId() {
         return id;
@@ -61,11 +61,11 @@ public class OperationWithData {
         this.sum = sum;
     }
 
-    public Account getAccount() {
+    public AccountEntity getAccount() {
         return account;
     }
 
-    public void setAccount(Account account) {
+    public void setAccount(AccountEntity account) {
         this.account = account;
     }
 
@@ -77,11 +77,11 @@ public class OperationWithData {
         this.category = category;
     }
 
-    public Account getRepAccount() {
+    public AccountEntity getRepAccount() {
         return repAccount;
     }
 
-    public void setRepAccount(Account repAccount) {
+    public void setRepAccount(AccountEntity repAccount) {
         this.repAccount = repAccount;
     }
 

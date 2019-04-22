@@ -3,7 +3,7 @@ package com.epipasha.cashflow.data;
 import androidx.lifecycle.LiveData;
 
 import com.epipasha.cashflow.data.dao.AnalyticDao;
-import com.epipasha.cashflow.data.entites.Account;
+import com.epipasha.cashflow.data.entites.AccountEntity;
 import com.epipasha.cashflow.data.complex.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.entites.Operation;
@@ -14,7 +14,7 @@ import java.util.List;
 public interface DataSource {
 
     interface GetAccountCallback {
-        void onAccountLoaded(Account account);
+        void onAccountLoaded(AccountEntity account);
         void onDataNotAvailable();
     }
 
@@ -34,7 +34,7 @@ public interface DataSource {
     }
 
     interface GetAccountsCallback{
-        void onAccountsLoaded(List<Account> accounts);
+        void onAccountsLoaded(List<AccountEntity> accounts);
         void onDataNotAvailable();
     }
 
@@ -66,9 +66,9 @@ public interface DataSource {
     // ACCOUNTS
     void getAccountById(int id, GetAccountCallback callback);
 
-    void insertAccount(Account account);
+    void insertAccount(AccountEntity account);
 
-    void updateAccount(Account account);
+    void updateAccount(AccountEntity account);
 
     void getAllAccounts(GetAccountsCallback callback);
 

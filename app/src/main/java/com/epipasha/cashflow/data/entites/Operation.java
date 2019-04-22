@@ -17,12 +17,12 @@ import java.util.List;
 @Entity(tableName = "operations",
         foreignKeys = {
             @ForeignKey(
-                    entity = Account.class,
+                    entity = AccountEntity.class,
                     parentColumns = "id",
                     childColumns = {"account_id"},
                     onDelete = ForeignKey.CASCADE),
             @ForeignKey(
-                    entity = Account.class,
+                    entity = AccountEntity.class,
                     parentColumns = "id",
                     childColumns = {"recipient_account_id"}),
             @ForeignKey(

@@ -11,7 +11,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 @Entity(tableName = "balance",
-        foreignKeys = {@ForeignKey(entity = Account.class,
+        foreignKeys = {@ForeignKey(entity = AccountEntity.class,
                                     parentColumns = "id",
                                     childColumns = "account_id",
                                     onDelete = ForeignKey.CASCADE),

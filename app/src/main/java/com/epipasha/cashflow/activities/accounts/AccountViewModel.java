@@ -9,7 +9,7 @@ import androidx.lifecycle.AndroidViewModel;
 
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.Repository;
-import com.epipasha.cashflow.data.entites.Account;
+import com.epipasha.cashflow.data.entites.AccountEntity;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -21,13 +21,13 @@ public class AccountViewModel extends AndroidViewModel {
 
     private final CompositeDisposable mDisposable = new CompositeDisposable();
 
-    private ObservableField<Account> mAccount = new ObservableField<>();
+    private ObservableField<AccountEntity> mAccount = new ObservableField<>();
     private ObservableInt activityTitle = new ObservableInt(R.string.new_account);
 
     public AccountViewModel(@NonNull Application application, Repository repository) {
         super(application);
         mRepository = repository;
-        mAccount.set(new Account());
+        mAccount.set(new AccountEntity());
     }
 
     public void start(int accountId){
@@ -44,12 +44,12 @@ public class AccountViewModel extends AndroidViewModel {
         return activityTitle;
     }
 
-    public ObservableField<Account> getAccount() {
+    public ObservableField<AccountEntity> getAccount() {
         return mAccount;
     }
 
     public void saveAccount(){
-        Account account = mAccount.get();
+        AccountEntity account = mAccount.get();
 
         if (account == null){
             return;

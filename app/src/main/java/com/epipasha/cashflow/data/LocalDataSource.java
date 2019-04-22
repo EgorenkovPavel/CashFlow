@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData;
 import androidx.annotation.NonNull;
 
 import com.epipasha.cashflow.data.dao.AnalyticDao;
-import com.epipasha.cashflow.data.entites.Account;
 import com.epipasha.cashflow.data.complex.AccountWithBalance;
+import com.epipasha.cashflow.data.entites.AccountEntity;
 import com.epipasha.cashflow.data.entites.Category;
 import com.epipasha.cashflow.data.complex.CategoryWithCashflow;
 import com.epipasha.cashflow.data.entites.Operation;
@@ -42,17 +42,17 @@ public class LocalDataSource implements DataSource{
     }
 
     // ACCOUNTS
-    public Flowable<Account> getAccountById(int id){
+    public Flowable<AccountEntity> getAccountById(int id){
         return mDb.accountDao().getRxAccountById(id);
     }
 
-    public Completable insertOrUpdateAccount(Account account) {
+    public Completable insertOrUpdateAccount(AccountEntity account) {
         return mDb.accountDao().insertRxAccount(account);
     }
 
     public void getAccountById(final int id, final DataSource.GetAccountCallback callback){
         Runnable runnable = () -> {
-            final Account account = mDb.accountDao().getAccountById(id);
+            final AccountEntity account = mDb.accountDao().getAccountById(id);
 
             mAppExecutors.mainThread().execute(() -> {
                 if (account != null) {
@@ -66,17 +66,17 @@ public class LocalDataSource implements DataSource{
         mAppExecutors.discIO().execute(runnable);
     }
 
-    public void insertAccount(final Account account){
+    public void insertAccount(final AccountEntity account){
         mAppExecutors.discIO().execute(() -> mDb.accountDao().insertAccount(account));
     }
 
-    public void updateAccount(final Account account){
+    public void updateAccount(final AccountEntity account){
         mAppExecutors.discIO().execute(() -> mDb.accountDao().updateAccount(account));
     }
 
     public void getAllAccounts(final GetAccountsCallback callback){
         Runnable runnable = () -> {
-            final List<Account> accounts = mDb.accountDao().getAllAccounts();
+            final List<AccountEntity> accounts = mDb.accountDao().getAllAccounts();
 
             mAppExecutors.mainThread().execute(() -> {
                 if (accounts != null) {

@@ -6,7 +6,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "accounts")
-public class Account {
+public class AccountEntity {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -14,15 +14,15 @@ public class Account {
     private String title;
 
     @Ignore
-    public Account(String title) {
+    public AccountEntity(String title) {
         this.title = title;
     }
 
     @Ignore
-    public Account() {
+    public AccountEntity() {
     }
 
-    public Account(int id, String title) {
+    public AccountEntity(int id, String title) {
         this.id = id;
         this.title = title;
     }
