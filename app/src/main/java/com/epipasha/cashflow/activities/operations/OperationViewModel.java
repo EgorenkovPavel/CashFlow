@@ -22,11 +22,18 @@ import androidx.databinding.ObservableInt;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+
 public class OperationViewModel extends AndroidViewModel{
+
+    private CompositeDisposable mDisposable = new CompositeDisposable();
+
 
     private MutableLiveData<Status> mStatus = new MutableLiveData<>();
 
-    private DataSource mRepository;
+    private Repository mRepository;
     private ObservableField<Operation> mOperation = new ObservableField<>(
             new Operation(Calendar.getInstance().getTime(), OperationType.IN, 0, 0, 0, 0));
     private ObservableInt activityTitle = new ObservableInt(R.string.new_operation);
@@ -47,21 +54,17 @@ public class OperationViewModel extends AndroidViewModel{
 
         mRepository = repository;
 
-        mRepository.getAllAccounts(new DataSource.GetAccountsCallback() {
-            @Override
-            public void onAccountsLoaded(List<AccountEntity> accounts) {
-                mAccounts.set(accounts);
-                setAccountPosition();
+        mDisposable.add(mRepository.getAllAccounts()
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(accountEntities -> {
+            mAccounts.set(accountEntities);
+            setAccountPosition();
 
-                setRecAccounts();
-                setAnalyticPosition();
-            }
+            setRecAccounts();
+            setAnalyticPosition();
+        }, throwable -> {}));
 
-            @Override
-            public void onDataNotAvailable() {
-
-            }
-        });
         mRepository.getCategoriesByType(OperationType.IN, new DataSource.GetCategoriesByTypeCallback() {
             @Override
             public void onCategoriesByTypeLoaded(List<Category> categories, OperationType type) {
@@ -87,23 +90,18 @@ public class OperationViewModel extends AndroidViewModel{
     }
 
     public void start(int operationId){
-        mRepository.getOperationById(operationId, new DataSource.GetOperationCallback() {
-            @Override
-            public void onOperationLoaded(Operation operation) {
-                mOperation.set(operation);
-                isNew.set(false);
-                activityTitle.set(R.string.operation);
+        mDisposable.add(mRepository.getOperationById(operationId)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(operation -> {
+            mOperation.set(operation);
+            isNew.set(false);
+            activityTitle.set(R.string.operation);
 
-                setAnalyticEntries();
-                setAccountPosition();
-                setAnalyticPosition();
-            }
-
-            @Override
-            public void onDataNotAvailable() {
-
-            }
-        });
+            setAnalyticEntries();
+            setAccountPosition();
+            setAnalyticPosition();
+        }, throwable -> {}));
     }
 
     public ObservableField<Operation> getOperation() {
@@ -285,4 +283,9 @@ public class OperationViewModel extends AndroidViewModel{
         }
     }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        mDisposable.clear();
+    }
 }

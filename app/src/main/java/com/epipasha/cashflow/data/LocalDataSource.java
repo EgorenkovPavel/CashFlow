@@ -54,6 +54,11 @@ public class LocalDataSource implements DataSource{
             return mDb.accountDao().updateRxAccount(account);
     }
 
+    public Flowable<List<AccountEntity>> getAllAccounts(){
+        return mDb.accountDao().getRxAllAccounts();
+    }
+
+
     public void getAccountById(final int id, final DataSource.GetAccountCallback callback){
         Runnable runnable = () -> {
             final AccountEntity account = mDb.accountDao().getAccountById(id);
@@ -221,6 +226,10 @@ public class LocalDataSource implements DataSource{
     }
 
     // OPERATIONS
+    public Flowable<Operation> getOperationById(final int id){
+        return mDb.operationDao().getRxOperationById(id);
+    }
+
     public void getOperationById(final int id, final DataSource.GetOperationCallback callback){
         Runnable runnable = () -> {
             final Operation operation = mDb.operationDao().getOperationById(id);

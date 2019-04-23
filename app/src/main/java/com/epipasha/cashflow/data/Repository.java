@@ -42,6 +42,22 @@ public class Repository implements DataSource{
     }
 
     // ACCOUNTS
+    public Flowable<Account> getAccountById(int id) {
+        //TODO get sum for account
+        Flowable<AccountEntity> p = mLocalDataSource.getAccountById(id);
+        return p.map(accountEntity -> new Account(accountEntity.getId(), accountEntity.getTitle(), 0));
+    }
+
+    public Completable insertOrUpdateAccount(Account account) {
+         return mLocalDataSource.insertOrUpdateAccount(new AccountEntity(account.getId(), account.getTitle()));
+    }
+
+    public Flowable<List<AccountEntity>> getAllAccounts() {
+        return mLocalDataSource.getAllAccounts();
+    }
+
+
+
     public void insertAccount(AccountEntity account){
         mLocalDataSource.insertAccount(account);
     }
@@ -50,19 +66,9 @@ public class Repository implements DataSource{
         mLocalDataSource.updateAccount(account);
     }
 
-    public Flowable<Account> getAccountById(int id) {
-        //TODO get sum for account
-        Flowable<AccountEntity> p = mLocalDataSource.getAccountById(id);
-        return p.map(accountEntity -> new Account(accountEntity.getId(), accountEntity.getTitle(), 0));
-    }
-
     @Override
     public void getAccountById(int id, GetAccountCallback callback) {
         mLocalDataSource.getAccountById(id, callback);
-    }
-
-    public Completable insertOrUpdateAccount(Account account) {
-         return mLocalDataSource.insertOrUpdateAccount(new AccountEntity(account.getId(), account.getTitle()));
     }
 
     @Override
@@ -145,6 +151,11 @@ public class Repository implements DataSource{
     }
 
     // OPERATIONS
+    public Flowable<Operation> getOperationById(int id){
+        return mLocalDataSource.getOperationById(id);
+    }
+
+
     public void getOperationById(int id, GetOperationCallback callback){
         mLocalDataSource.getOperationById(id, callback);
     }

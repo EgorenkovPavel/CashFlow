@@ -16,6 +16,8 @@ import com.epipasha.cashflow.data.complex.OperationWithData;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+
 @Dao
 public abstract class OperationDao {
 
@@ -127,5 +129,10 @@ public abstract class OperationDao {
 
     @Query("DELETE FROM cashflow")
     public abstract void deleteAllCashflow();
+
+    //RX
+
+    @Query("SELECT * FROM operations WHERE id = :id")
+    public abstract Flowable<Operation> getRxOperationById(int id);
 
 }

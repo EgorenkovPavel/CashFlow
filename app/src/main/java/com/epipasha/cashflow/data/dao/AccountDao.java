@@ -101,4 +101,7 @@ public interface AccountDao {
 
     @Update
     Completable updateRxAccount(AccountEntity account);
+
+    @Query("SELECT * FROM accounts ORDER BY title")
+    Flowable<List<AccountEntity>> getRxAllAccounts();
 }
