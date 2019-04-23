@@ -1,6 +1,7 @@
 package com.epipasha.cashflow.activities.categories;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.DataSource;
@@ -16,10 +17,20 @@ import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableInt;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.MutableLiveData;
+
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class CategoryViewModel extends AndroidViewModel{
 
-    private DataSource mRepository;
+    private Repository mRepository;
+
+    private MutableLiveData<Boolean> shouldClose = new MutableLiveData<>(false);
+
+    private CompositeDisposable mDisposable = new CompositeDisposable();
 
     private ObservableInt activityTitle = new ObservableInt(R.string.new_category);
     private ObservableField<Category> mCategory = new ObservableField<>(
@@ -37,20 +48,16 @@ public class CategoryViewModel extends AndroidViewModel{
     }
 
     public void start(int categoryId){
-        mRepository.getCategoryById(categoryId, new DataSource.GetCategoryCallback() {
-            @Override
-            public void onCategoryLoaded(Category category) {
-                mCategory.set(category);
-                isNew.set(false);
-                activityTitle.set(R.string.category);
-                loadParentCategories();
-            }
+        mDisposable.add(mRepository.getCategoryById(categoryId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(category -> {
+                    mCategory.set(category);
+                    isNew.set(false);
+                    activityTitle.set(R.string.category);
+                    loadParentCategories();
+                }, throwable -> {}));
 
-            @Override
-            public void onDataNotAvailable() {
-
-            }
-        });
     }
 
     public void start(){
@@ -58,29 +65,26 @@ public class CategoryViewModel extends AndroidViewModel{
     }
 
     private void loadParentCategories(){
-        mRepository.getParentCategories(mCategory.get().getType(), new DataSource.GetCategoriesCallback(){
-
-            @Override
-            public void onCategoriesLoaded(List<Category> categories) {
-                if(!isNew.get()){
-                    int id = mCategory.get().getId();
-                    for (Category cat:categories) {
-                        if (cat.getId() == id){
-                            categories.remove(cat);
-                            break;
+        mDisposable.add(mRepository.getParentCategories(mCategory.get().getType())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(categories -> {
+                    if (!isNew.get()) {
+                        int id = mCategory.get().getId();
+                        for (Category cat : categories) {
+                            if (cat.getId() == id) {
+                                categories.remove(cat);
+                                break;
+                            }
                         }
                     }
-                }
-                categories.add(0, null);
-                mParentCategories.set(categories);
-                mParentCategoryPosition.set(getPositionById(categories.toArray(), mCategory.get().getParentId()));
-            }
+                    categories.add(0, null);
+                    mParentCategories.set(categories);
+                    mParentCategoryPosition.set(getPositionById(categories.toArray(), mCategory.get().getParentId()));
 
-            @Override
-            public void onDataNotAvailable() {
+                }, throwable -> {
+                }));
 
-            }
-        });
     }
     //TODO rewrite loading to rx. wait loading and then set parent id
 
@@ -98,6 +102,10 @@ public class CategoryViewModel extends AndroidViewModel{
 
     public ObservableInt getActivityTitle() {
         return activityTitle;
+    }
+
+    public MutableLiveData<Boolean> getShouldClose() {
+        return shouldClose;
     }
 
     private int getPositionById(Object[] list, Integer id){
@@ -126,11 +134,6 @@ public class CategoryViewModel extends AndroidViewModel{
     public void saveObject(){
         Category category = mCategory.get();
 
-        //TODO add check fields
-        if(category == null){
-            return;
-        }
-
         List<Category> parentCategories = mParentCategories.get();
         int position = mParentCategoryPosition.get();
         if(parentCategories != null) {
@@ -141,6 +144,16 @@ public class CategoryViewModel extends AndroidViewModel{
                 category.setParentId(null);
         }
 
-        mRepository.insertCategory(category);
+        mDisposable.add(mRepository.insertOrUpdateCategory(category)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(() -> shouldClose.setValue(true), throwable -> {}));
+
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        mDisposable.clear();
     }
 }

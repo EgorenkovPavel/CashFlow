@@ -61,6 +61,8 @@ public class CategoryActivity extends DetailActivity {
         }else{
             model.start();
         }
+
+        model.getShouldClose().observe(this, bool -> {if (bool) finish();});
     }
 
     @Override

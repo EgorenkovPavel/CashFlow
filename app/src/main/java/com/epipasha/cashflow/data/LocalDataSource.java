@@ -17,6 +17,7 @@ import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 public class LocalDataSource implements DataSource{
 
@@ -121,6 +122,23 @@ public class LocalDataSource implements DataSource{
     }
 
     // CATEGORIES
+    public Flowable<Category> getCategoryById(int id){
+        return mDb.categoryDao().getRxCategoryById(id);
+    }
+
+    public Flowable<List<Category>> getParentCategories(OperationType type) {
+        return mDb.categoryDao().getRxParentCategories(type);
+    }
+
+    public Completable insertOrUpdateCategory(Category category) {
+        if(category.getId() == 0)
+            return mDb.categoryDao().insertRxCategory(category);
+        else
+            return mDb.categoryDao().updateRxCategory(category);
+    }
+
+
+
     public void getCategoryById(final int id, final DataSource.GetCategoryCallback callback){
         Runnable runnable = () -> {
             final Category category = mDb.categoryDao().getCategoryById(id);

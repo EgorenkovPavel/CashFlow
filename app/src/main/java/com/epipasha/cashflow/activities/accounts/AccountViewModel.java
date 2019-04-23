@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableInt;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.MutableLiveData;
 
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.Repository;
@@ -19,6 +20,7 @@ import io.reactivex.schedulers.Schedulers;
 public class AccountViewModel extends AndroidViewModel {
 
     private final Repository mRepository;
+    private final MutableLiveData<Boolean> shouldClose = new MutableLiveData<>(false);
 
     private final CompositeDisposable mDisposable = new CompositeDisposable();
 
@@ -49,6 +51,10 @@ public class AccountViewModel extends AndroidViewModel {
         return mAccount;
     }
 
+    public MutableLiveData<Boolean> getShouldClose() {
+        return shouldClose;
+    }
+
     public void saveAccount(){
         Account account = mAccount.get();
 
@@ -59,7 +65,7 @@ public class AccountViewModel extends AndroidViewModel {
         mDisposable.add(mRepository.insertOrUpdateAccount(account)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe());
+                .subscribe(() -> shouldClose.setValue(true)));
     }
 
     @Override

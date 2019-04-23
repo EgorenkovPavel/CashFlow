@@ -15,6 +15,10 @@ import com.epipasha.cashflow.data.objects.OperationType;
 import java.util.Date;
 import java.util.List;
 
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+
 @Dao
 public interface CategoryDao {
 
@@ -77,4 +81,17 @@ public interface CategoryDao {
 
     @Query("SELECT * FROM categories WHERE id = :id")
     Category getCategoryById(int id);
+
+    //RX
+    @Query("SELECT * FROM categories WHERE id =:id")
+    Flowable<Category> getRxCategoryById(int id);
+
+    @Query("SELECT * FROM categories WHERE parent_id is null AND type =:type ORDER BY title")
+    Flowable<List<Category>> getRxParentCategories(OperationType type);
+
+    @Insert
+    Completable insertRxCategory(Category category);
+
+    @Update
+    Completable updateRxCategory(Category category);
 }

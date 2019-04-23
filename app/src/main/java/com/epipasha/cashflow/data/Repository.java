@@ -14,9 +14,11 @@ import com.epipasha.cashflow.data.objects.OperationType;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Observable;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 public class Repository implements DataSource{
 
@@ -48,15 +50,15 @@ public class Repository implements DataSource{
         mLocalDataSource.updateAccount(account);
     }
 
-    @Override
-    public void getAccountById(int id, GetAccountCallback callback) {
-        mLocalDataSource.getAccountById(id, callback);
-    }
-
     public Flowable<Account> getAccountById(int id) {
         //TODO get sum for account
         Flowable<AccountEntity> p = mLocalDataSource.getAccountById(id);
         return p.map(accountEntity -> new Account(accountEntity.getId(), accountEntity.getTitle(), 0));
+    }
+
+    @Override
+    public void getAccountById(int id, GetAccountCallback callback) {
+        mLocalDataSource.getAccountById(id, callback);
     }
 
     public Completable insertOrUpdateAccount(Account account) {
@@ -84,6 +86,19 @@ public class Repository implements DataSource{
     }
 
     // CATEGORIES
+    public Flowable<Category> getCategoryById(int id){
+        return mLocalDataSource.getCategoryById(id);
+    }
+
+    public Flowable<List<Category>> getParentCategories(OperationType type){
+        return mLocalDataSource.getParentCategories(type);
+    }
+
+    public Completable insertOrUpdateCategory(Category category) {
+        return mLocalDataSource.insertOrUpdateCategory(category);
+    }
+
+
     public void getCategoryById(int id, GetCategoryCallback callback){
         mLocalDataSource.getCategoryById(id, callback);
     }

@@ -53,6 +53,10 @@ public class AccountActivity extends DetailActivity {
                 model.start(accountId);
             }
         }
+
+        model.getShouldClose().observe(this, bool -> {
+            if (bool) finish();
+        });
     }
 
     @Override
