@@ -49,59 +49,52 @@ public class OperationViewModel extends AndroidViewModel{
     private List<Category> mCategoriesIn = new ArrayList<>();
     private List<Category> mCategoriesOut = new ArrayList<>();
 
+    //TODO rewrite to OrerationObject
+    //TODO Add 1 observer for analytics and onNext(type) get analytic
+    //TODO add model to spinner adapters
+
     public OperationViewModel(@NonNull Application application, Repository repository) {
         super(application);
 
         mRepository = repository;
 
         mDisposable.add(mRepository.getAllAccounts()
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(accountEntities -> {
-            mAccounts.set(accountEntities);
-            setAccountPosition();
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(accountEntities -> {
+                    mAccounts.set(accountEntities);
+                    setAccountPosition();
 
-            setRecAccounts();
-            setAnalyticPosition();
-        }, throwable -> {}));
+                    setRecAccounts();
+                    setAnalyticPosition();
+                }, throwable -> {
+                }));
 
-        mRepository.getCategoriesByType(OperationType.IN, new DataSource.GetCategoriesByTypeCallback() {
-            @Override
-            public void onCategoriesByTypeLoaded(List<Category> categories, OperationType type) {
-                mCategoriesIn = categories;
-            }
+        mDisposable.add(mRepository.getCategoriesByType(OperationType.IN)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(categories -> mCategoriesIn = categories, throwable -> {}));
 
-            @Override
-            public void onDataNotAvailable() {
-
-            }
-        });
-        mRepository.getCategoriesByType(OperationType.OUT, new DataSource.GetCategoriesByTypeCallback() {
-            @Override
-            public void onCategoriesByTypeLoaded(List<Category> categories, OperationType type) {
-                mCategoriesOut = categories;
-            }
-
-            @Override
-            public void onDataNotAvailable() {
-
-            }
-        });
+        mDisposable.add(mRepository.getCategoriesByType(OperationType.OUT)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(categories -> mCategoriesOut = categories, throwable -> {}));
     }
 
-    public void start(int operationId){
+    public void start(int operationId) {
         mDisposable.add(mRepository.getOperationById(operationId)
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(operation -> {
-            mOperation.set(operation);
-            isNew.set(false);
-            activityTitle.set(R.string.operation);
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(operation -> {
+                    mOperation.set(operation);
+                    isNew.set(false);
+                    activityTitle.set(R.string.operation);
 
-            setAnalyticEntries();
-            setAccountPosition();
-            setAnalyticPosition();
-        }, throwable -> {}));
+                    setAnalyticEntries();
+                    setAccountPosition();
+                    setAnalyticPosition();
+                }, throwable -> {
+                }));
     }
 
     public ObservableField<Operation> getOperation() {

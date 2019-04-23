@@ -131,6 +131,10 @@ public class LocalDataSource implements DataSource{
         return mDb.categoryDao().getRxCategoryById(id);
     }
 
+    public Flowable<List<Category>> getCategoriesByType(final OperationType type) {
+        return mDb.categoryDao().getRxAllCategoriesByType(type);
+    }
+
     public Flowable<List<Category>> getParentCategories(OperationType type) {
         return mDb.categoryDao().getRxParentCategories(type);
     }

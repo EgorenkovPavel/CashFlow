@@ -96,6 +96,10 @@ public class Repository implements DataSource{
         return mLocalDataSource.getCategoryById(id);
     }
 
+    public Flowable<List<Category>> getCategoriesByType(OperationType type) {
+        return mLocalDataSource.getCategoriesByType(type);
+    }
+
     public Flowable<List<Category>> getParentCategories(OperationType type){
         return mLocalDataSource.getParentCategories(type);
     }

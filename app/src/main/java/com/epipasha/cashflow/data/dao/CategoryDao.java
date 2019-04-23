@@ -86,6 +86,9 @@ public interface CategoryDao {
     @Query("SELECT * FROM categories WHERE id =:id")
     Flowable<Category> getRxCategoryById(int id);
 
+    @Query("SELECT * FROM categories WHERE type = :type ORDER BY title")
+    Flowable<List<Category>> getRxAllCategoriesByType(OperationType type);
+
     @Query("SELECT * FROM categories WHERE parent_id is null AND type =:type ORDER BY title")
     Flowable<List<Category>> getRxParentCategories(OperationType type);
 
