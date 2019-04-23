@@ -29,6 +29,7 @@ public class OperationActivity extends DetailActivity {
     private static final int DEFAULT_OPERATION_ID = -1;
 
     private OperationViewModel model;
+    private ActivityOperationBinding binding;
 
     public static void start(FragmentActivity parentActivity, int id){
         Intent intent = new Intent(parentActivity, OperationActivity.class);
@@ -40,8 +41,7 @@ public class OperationActivity extends DetailActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final ActivityOperationBinding binding =
-                DataBindingUtil.setContentView(this, R.layout.activity_operation);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_operation);
 
         setSupportActionBar(binding.toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -53,10 +53,7 @@ public class OperationActivity extends DetailActivity {
 
         binding.setViewmodel(model);
 
-        TextView edtDate = binding.operationDetailDate;
-        TextView edtTime = binding.operationDetailTime;
-        edtDate.setOnClickListener(view -> chooseDate());
-        edtTime.setOnClickListener(view -> chooseTime());
+        findViews();
 
         if(savedInstanceState == null) {
             Intent i = getIntent();
@@ -66,34 +63,14 @@ public class OperationActivity extends DetailActivity {
             }
         }
 
-        model.getStatus().observe(this, status -> {
-            if(status == null) return;
+        model.getStatus().observe(this, this::onStatusChanged);
+    }
 
-            switch (status){
-                case EMPTY_SUM: {
-                    binding.operationDetailSum.setError(getString(R.string.error_fill_sum));
-                    break;
-                }
-                case EMPTY_ACCOUNT:{
-                    Toast.makeText(OperationActivity.this,
-                            getString(R.string.error_choose_account),
-                            Toast.LENGTH_SHORT)
-                            .show();
-                    break;
-                }
-                case EMPTY_ANALYTIC:{
-                    Toast.makeText(OperationActivity.this,
-                            getString(R.string.no_analytic_selected),
-                            Toast.LENGTH_SHORT)
-                            .show();
-                    break;
-                }
-                case OPERATION_SAVED:{
-                    finish();
-                    break;
-                }
-            }
-        });
+    private void findViews(){
+        TextView edtDate = binding.operationDetailDate;
+        TextView edtTime = binding.operationDetailTime;
+        edtDate.setOnClickListener(view -> chooseDate());
+        edtTime.setOnClickListener(view -> chooseTime());
     }
 
     private void chooseDate(){
@@ -134,6 +111,35 @@ public class OperationActivity extends DetailActivity {
                 calendar.get(Calendar.MINUTE),
                 true);
         dialog.show();
+    }
+
+    private void onStatusChanged(OperationViewModel.Status status){
+        if(status == null) return;
+
+        switch (status){
+            case EMPTY_SUM: {
+                binding.operationDetailSum.setError(getString(R.string.error_fill_sum));
+                break;
+            }
+            case EMPTY_ACCOUNT:{
+                Toast.makeText(OperationActivity.this,
+                        getString(R.string.error_choose_account),
+                        Toast.LENGTH_SHORT)
+                        .show();
+                break;
+            }
+            case EMPTY_ANALYTIC:{
+                Toast.makeText(OperationActivity.this,
+                        getString(R.string.no_analytic_selected),
+                        Toast.LENGTH_SHORT)
+                        .show();
+                break;
+            }
+            case OPERATION_SAVED:{
+                finish();
+                break;
+            }
+        }
     }
 
     @Override

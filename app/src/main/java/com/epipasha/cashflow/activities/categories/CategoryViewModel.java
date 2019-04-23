@@ -40,6 +40,8 @@ public class CategoryViewModel extends AndroidViewModel{
 
     private ObservableBoolean isNew = new ObservableBoolean(true);
 
+    //TODO Rewrite to CategoryObject
+
     public CategoryViewModel(@NonNull Application application, Repository repository) {
         super(application);
 
