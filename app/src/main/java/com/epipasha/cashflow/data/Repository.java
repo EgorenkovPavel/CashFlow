@@ -159,6 +159,9 @@ public class Repository implements DataSource{
         return mLocalDataSource.getOperationById(id);
     }
 
+    public Single<Integer> insertOrUpdateOperation(Operation operation) {
+        return mLocalDataSource.insertOrUpdateOperation(operation);
+    }
 
     public void getOperationById(int id, GetOperationCallback callback){
         mLocalDataSource.getOperationById(id, callback);

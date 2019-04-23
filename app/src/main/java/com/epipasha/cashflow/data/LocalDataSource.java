@@ -234,6 +234,16 @@ public class LocalDataSource implements DataSource{
         return mDb.operationDao().getRxOperationById(id);
     }
 
+    public Single<Integer> insertOrUpdateOperation(Operation operation) {
+        Single<Integer> res = Single.create(emitter -> {
+            if(operation.getId() == 0)
+                emitter.onSuccess((int)mDb.operationDao().insertOperationWithAnalytic(operation));
+            else
+                emitter.onSuccess(mDb.operationDao().updateOperationWithAnalytic(operation));
+        });
+        return res;
+    }
+
     public void getOperationById(final int id, final DataSource.GetOperationCallback callback){
         Runnable runnable = () -> {
             final Operation operation = mDb.operationDao().getOperationById(id);

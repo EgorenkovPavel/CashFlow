@@ -16,7 +16,10 @@ import com.epipasha.cashflow.data.complex.OperationWithData;
 
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
 
 @Dao
 public abstract class OperationDao {

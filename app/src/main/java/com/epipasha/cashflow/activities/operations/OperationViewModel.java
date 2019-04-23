@@ -187,31 +187,13 @@ public class OperationViewModel extends AndroidViewModel{
             }
         }
 
-        if(isNew.get()) {
-            mRepository.insertOperation(operation, new DataSource.InsertOperationCallback() {
-                @Override
-                public void onOperationInsertedSuccess(int id) {
-                    mStatus.setValue(Status.OPERATION_SAVED);
-                }
+        mDisposable.add(mRepository.insertOrUpdateOperation(operation)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(integer -> {
+            mStatus.setValue(Status.OPERATION_SAVED);
+        }, throwable -> {}));
 
-                @Override
-                public void onOperationInsertedFailed() {
-
-                }
-            });
-        }else{
-            mRepository.updateOperation(operation, new DataSource.UpdateOperationCallback() {
-                @Override
-                public void onOperationUpdatedSuccess(int updatedCol) {
-                    mStatus.setValue(Status.OPERATION_SAVED);
-                }
-
-                @Override
-                public void onOperationUpdatedFailed() {
-
-                }
-            });
-        }
     }
 
     public void onAccountSelected(int pos){
