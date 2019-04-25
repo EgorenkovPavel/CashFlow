@@ -25,11 +25,7 @@ public interface CategoryDao {
     @Query("SELECT * FROM categories ORDER BY title")
     LiveData<List<CategoryEntity>> loadAllCategories();
 
-    @Query("SELECT * FROM categories WHERE parent_id is null AND type =:type ORDER BY title")
-    List<CategoryEntity> getParentCategories(OperationType type);
-
     @Query("SELECT categories.id as id, "
-            + "categories.parent_id as parent_id, "
             + "categories.title as title, "
             + "categories.type as type, "
             + "categories.budget as budget,"
@@ -52,14 +48,8 @@ public interface CategoryDao {
     @Query("SELECT * FROM categories WHERE type = :type ORDER BY title")
     List<CategoryEntity> getAllCategoriesByType(OperationType type);
 
-    @Query("SELECT * FROM categories WHERE type = :type AND parent_id IS NULL ORDER BY title")
+    @Query("SELECT * FROM categories WHERE type = :type ORDER BY title")
     LiveData<List<CategoryEntity>> loadCategoriesByType(OperationType type);
-
-    @Query("SELECT * FROM categories WHERE type = :type AND parent_id IS NOT NULL ORDER BY title")
-    LiveData<List<CategoryEntity>> loadSubcategoriesByType(OperationType type);
-
-    @Query("SELECT * FROM categories WHERE parent_id = :parentId ORDER BY title")
-    LiveData<List<CategoryEntity>> loadSubcategoriesByParent(int parentId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertCategory(CategoryEntity category);
@@ -88,9 +78,6 @@ public interface CategoryDao {
 
     @Query("SELECT * FROM categories WHERE type = :type ORDER BY title")
     Flowable<List<CategoryEntity>> getRxAllCategoriesByType(OperationType type);
-
-    @Query("SELECT * FROM categories WHERE parent_id is null AND type =:type ORDER BY title")
-    Flowable<List<CategoryEntity>> getRxParentCategories(OperationType type);
 
     @Insert
     Completable insertRxCategory(CategoryEntity category);

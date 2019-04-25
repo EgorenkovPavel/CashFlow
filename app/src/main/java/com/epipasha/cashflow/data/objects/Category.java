@@ -5,7 +5,17 @@ public class Category {
     private int id;
     private String title;
     private OperationType type;
-    private Category parent;
+
+    public Category(int id, String title, OperationType type) {
+        this.id = id;
+        this.title = title;
+        this.type = type;
+    }
+
+    public Category(String title, OperationType type) {
+        this.title = title;
+        this.type = type;
+    }
 
     public int getId() {
         return id;
@@ -25,13 +35,5 @@ public class Category {
 
     public void setType(OperationType type) {
         this.type = type;
-    }
-
-    public Category getParent() {
-        return parent;
-    }
-
-    public void setParent(Category parent) {
-        this.parent = parent;
     }
 }

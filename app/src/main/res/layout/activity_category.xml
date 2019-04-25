@@ -58,23 +58,6 @@
             android:text="@={viewmodel.category.title}"/>
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:labelFor="@id/category_detail_parent"
-            android:text="@string/parent"
-            android:paddingTop="8dp"
-            style="@style/label" />
-
-        <Spinner
-            android:id="@+id/category_detail_parent"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/input_field"
-            android:dropDownWidth="match_parent"
-            android:entries="@{viewmodel.parentCategories}"
-            android:selectedItemPosition="@={viewmodel.parentCategoryPosition}" />
-
-        <TextView
             style="@style/label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

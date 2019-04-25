@@ -135,10 +135,6 @@ public class LocalDataSource implements DataSource{
         return mDb.categoryDao().getRxAllCategoriesByType(type);
     }
 
-    public Flowable<List<CategoryEntity>> getParentCategories(OperationType type) {
-        return mDb.categoryDao().getRxParentCategories(type);
-    }
-
     public Completable insertOrUpdateCategory(CategoryEntity category) {
         if(category.getId() == 0)
             return mDb.categoryDao().insertRxCategory(category);
@@ -189,23 +185,6 @@ public class LocalDataSource implements DataSource{
     }
 
     @Override
-    public void getParentCategories(OperationType type, GetCategoriesCallback callback) {
-        Runnable runnable = () -> {
-            final List<CategoryEntity> categories = mDb.categoryDao().getParentCategories(type);
-
-            mAppExecutors.mainThread().execute(() -> {
-                if (categories != null) {
-                    callback.onCategoriesLoaded(categories);
-                } else {
-                    callback.onDataNotAvailable();
-                }
-            });
-        };
-
-        mAppExecutors.discIO().execute(runnable);
-    }
-
-    @Override
     public LiveData<List<CategoryEntity>> loadAllCategoriesByType(OperationType type) {
         return mDb.categoryDao().loadAllCategoriesByType(type);
     }
@@ -213,16 +192,6 @@ public class LocalDataSource implements DataSource{
     @Override
     public LiveData<List<CategoryEntity>> loadCategoriesByType(OperationType type) {
         return mDb.categoryDao().loadCategoriesByType(type);
-    }
-
-    @Override
-    public LiveData<List<CategoryEntity>> loadSubcategoriesByType(OperationType type) {
-        return mDb.categoryDao().loadSubcategoriesByType(type);
-    }
-
-    @Override
-    public LiveData<List<CategoryEntity>> loadSubcategoriesByParent(CategoryEntity category) {
-        return mDb.categoryDao().loadSubcategoriesByParent(category.getId());
     }
 
     public LiveData<List<CategoryWithCashflow>> loadAllCategoriesWithCashflow(Date start, Date end) {

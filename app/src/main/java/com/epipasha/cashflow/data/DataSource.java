@@ -87,15 +87,9 @@ public interface DataSource {
 
     void getCategoriesByType(OperationType type, GetCategoriesByTypeCallback callback);
 
-    void getParentCategories(OperationType type, GetCategoriesCallback getCategoriesCallback);
-
     LiveData<List<CategoryEntity>> loadAllCategoriesByType(OperationType type);
 
     LiveData<List<CategoryEntity>> loadCategoriesByType(OperationType type);
-
-    LiveData<List<CategoryEntity>> loadSubcategoriesByType(OperationType type);
-
-    LiveData<List<CategoryEntity>> loadSubcategoriesByParent(CategoryEntity category);
 
     // OPERATIONS
     void getOperationById(int id, GetOperationCallback callback);

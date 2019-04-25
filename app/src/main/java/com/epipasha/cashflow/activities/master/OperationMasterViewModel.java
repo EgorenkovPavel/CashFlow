@@ -201,7 +201,7 @@ public class OperationMasterViewModel extends AndroidViewModel {
 
         mSubcategories.removeSource(mAllSubcategories);
 
-        mAllSubcategories = mRepository.loadSubcategoriesByParent(category);
+//        mAllSubcategories = mRepository.loadSubcategoriesByParent(category);
         mSubcategories.addSource(mAllSubcategories, categories -> mSubcategories.setValue(categories));
     }
 

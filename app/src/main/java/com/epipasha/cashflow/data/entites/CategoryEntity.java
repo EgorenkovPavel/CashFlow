@@ -9,20 +9,11 @@ import androidx.room.PrimaryKey;
 
 import com.epipasha.cashflow.data.objects.OperationType;
 
-@Entity(tableName = "categories",
-        foreignKeys = {
-            @ForeignKey(
-                    entity = CategoryEntity.class,
-                    parentColumns = "id",
-                    childColumns = "parent_id")},
-        indices = {@Index("parent_id")})
+@Entity(tableName = "categories")
 public class CategoryEntity{
 
     @PrimaryKey(autoGenerate = true)
     private int id;
-
-    @ColumnInfo(name = "parent_id")
-    private Integer parentId;
 
     @ColumnInfo(name = "title")
     private String title;
@@ -32,23 +23,18 @@ public class CategoryEntity{
     private int budget;
 
     @Ignore
-    public CategoryEntity(String title, OperationType type, int budget, CategoryEntity parentCategory) {
+    public CategoryEntity(String title, OperationType type, int budget) {
         this.title = title;
         this.type = type;
+        //TODO delete budget
         this.budget = budget;
-
-        if(parentCategory == null)
-            this.parentId = null;
-        else
-            this.parentId = parentCategory.getId();
     }
 
-    public CategoryEntity(int id, String title, OperationType type, int budget, Integer parentId) {
+    public CategoryEntity(int id, String title, OperationType type, int budget) {
         this.id = id;
         this.title = title;
         this.type = type;
         this.budget = budget;
-        this.parentId = parentId;
     }
 
     public int getId() {
@@ -81,14 +67,6 @@ public class CategoryEntity{
 
     public void setBudget(int budget) {
         this.budget = budget;
-    }
-
-    public Integer getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Integer parentId) {
-        this.parentId = parentId;
     }
 
     @Override
