@@ -16,10 +16,10 @@ import com.epipasha.cashflow.data.entites.AccountEntity;
 import com.epipasha.cashflow.data.entites.Balance;
 import com.epipasha.cashflow.data.entites.Budget;
 import com.epipasha.cashflow.data.entites.Cashflow;
-import com.epipasha.cashflow.data.entites.Category;
+import com.epipasha.cashflow.data.entites.CategoryEntity;
 import com.epipasha.cashflow.data.entites.Operation;
 
-@Database(entities = {AccountEntity.class, Category.class, Budget.class, Operation.class, Balance.class, Cashflow.class}, version = 1)
+@Database(entities = {AccountEntity.class, CategoryEntity.class, Budget.class, Operation.class, Balance.class, Cashflow.class}, version = 1)
 @TypeConverters(DataConverter.class)
 public abstract class AppDatabase extends RoomDatabase{
 

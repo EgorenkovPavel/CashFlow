@@ -6,7 +6,7 @@ import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.DataSource;
 import com.epipasha.cashflow.data.Repository;
 import com.epipasha.cashflow.data.entites.AccountEntity;
-import com.epipasha.cashflow.data.entites.Category;
+import com.epipasha.cashflow.data.entites.CategoryEntity;
 import com.epipasha.cashflow.data.entites.Operation;
 import com.epipasha.cashflow.data.objects.OperationType;
 
@@ -46,8 +46,8 @@ public class OperationViewModel extends AndroidViewModel{
     private ObservableInt mAnalyticPosition = new ObservableInt(0);
 
     private List<AccountEntity> mRecAccounts = new ArrayList<>();
-    private List<Category> mCategoriesIn = new ArrayList<>();
-    private List<Category> mCategoriesOut = new ArrayList<>();
+    private List<CategoryEntity> mCategoriesIn = new ArrayList<>();
+    private List<CategoryEntity> mCategoriesOut = new ArrayList<>();
 
     //TODO rewrite to OrerationObject
     //TODO Add 1 observer for analytics and onNext(type) get analytic
@@ -227,7 +227,7 @@ public class OperationViewModel extends AndroidViewModel{
 
             if(object instanceof AccountEntity && ((AccountEntity) object).getId() == id){
                 return i;
-            }else if(object instanceof Category && ((Category) object).getId() == id) {
+            }else if(object instanceof CategoryEntity && ((CategoryEntity) object).getId() == id) {
                 return i;
             }
         }

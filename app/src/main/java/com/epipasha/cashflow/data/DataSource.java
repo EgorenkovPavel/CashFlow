@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData;
 import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.entites.AccountEntity;
 import com.epipasha.cashflow.data.complex.AccountWithBalance;
-import com.epipasha.cashflow.data.entites.Category;
+import com.epipasha.cashflow.data.entites.CategoryEntity;
 import com.epipasha.cashflow.data.entites.Operation;
 import com.epipasha.cashflow.data.objects.OperationType;
 
@@ -19,12 +19,12 @@ public interface DataSource {
     }
 
     interface GetCategoryCallback{
-        void onCategoryLoaded(Category category);
+        void onCategoryLoaded(CategoryEntity category);
         void onDataNotAvailable();
     }
 
     interface GetCategoriesCallback{
-        void onCategoriesLoaded(List<Category> categories);
+        void onCategoriesLoaded(List<CategoryEntity> categories);
         void onDataNotAvailable();
     }
 
@@ -44,7 +44,7 @@ public interface DataSource {
     }
 
     interface GetCategoriesByTypeCallback{
-        void onCategoriesByTypeLoaded(List<Category> categories, OperationType type);
+        void onCategoriesByTypeLoaded(List<CategoryEntity> categories, OperationType type);
         void onDataNotAvailable();
     }
 
@@ -81,21 +81,21 @@ public interface DataSource {
     // CATEGORIES
     void getCategoryById(int id, GetCategoryCallback callback);
 
-    void insertCategory(Category category);
+    void insertCategory(CategoryEntity category);
 
-    void updateCategory(Category category);
+    void updateCategory(CategoryEntity category);
 
     void getCategoriesByType(OperationType type, GetCategoriesByTypeCallback callback);
 
     void getParentCategories(OperationType type, GetCategoriesCallback getCategoriesCallback);
 
-    LiveData<List<Category>> loadAllCategoriesByType(OperationType type);
+    LiveData<List<CategoryEntity>> loadAllCategoriesByType(OperationType type);
 
-    LiveData<List<Category>> loadCategoriesByType(OperationType type);
+    LiveData<List<CategoryEntity>> loadCategoriesByType(OperationType type);
 
-    LiveData<List<Category>> loadSubcategoriesByType(OperationType type);
+    LiveData<List<CategoryEntity>> loadSubcategoriesByType(OperationType type);
 
-    LiveData<List<Category>> loadSubcategoriesByParent(Category category);
+    LiveData<List<CategoryEntity>> loadSubcategoriesByParent(CategoryEntity category);
 
     // OPERATIONS
     void getOperationById(int id, GetOperationCallback callback);

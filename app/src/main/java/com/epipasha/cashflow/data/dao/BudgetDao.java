@@ -1,12 +1,11 @@
 package com.epipasha.cashflow.data.dao;
 
-import com.epipasha.cashflow.data.entites.Budget;
-import com.epipasha.cashflow.data.entites.Category;
-
-import java.util.List;
-
 import androidx.room.Dao;
 import androidx.room.Query;
+
+import com.epipasha.cashflow.data.entites.Budget;
+
+import java.util.List;
 
 @Dao
 public interface BudgetDao {

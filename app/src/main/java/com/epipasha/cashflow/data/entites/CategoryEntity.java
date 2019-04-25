@@ -12,11 +12,11 @@ import com.epipasha.cashflow.data.objects.OperationType;
 @Entity(tableName = "categories",
         foreignKeys = {
             @ForeignKey(
-                    entity = Category.class,
+                    entity = CategoryEntity.class,
                     parentColumns = "id",
                     childColumns = "parent_id")},
         indices = {@Index("parent_id")})
-public class Category{
+public class CategoryEntity{
 
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -32,7 +32,7 @@ public class Category{
     private int budget;
 
     @Ignore
-    public Category(String title, OperationType type, int budget, Category parentCategory) {
+    public CategoryEntity(String title, OperationType type, int budget, CategoryEntity parentCategory) {
         this.title = title;
         this.type = type;
         this.budget = budget;
@@ -43,7 +43,7 @@ public class Category{
             this.parentId = parentCategory.getId();
     }
 
-    public Category(int id, String title, OperationType type, int budget, Integer parentId) {
+    public CategoryEntity(int id, String title, OperationType type, int budget, Integer parentId) {
         this.id = id;
         this.title = title;
         this.type = type;

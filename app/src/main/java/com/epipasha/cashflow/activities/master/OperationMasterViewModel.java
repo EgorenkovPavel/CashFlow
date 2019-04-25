@@ -5,7 +5,7 @@ import android.app.Application;
 import com.epipasha.cashflow.data.DataSource;
 import com.epipasha.cashflow.data.Repository;
 import com.epipasha.cashflow.data.complex.AccountWithBalance;
-import com.epipasha.cashflow.data.entites.Category;
+import com.epipasha.cashflow.data.entites.CategoryEntity;
 import com.epipasha.cashflow.data.entites.Operation;
 import com.epipasha.cashflow.data.objects.OperationType;
 
@@ -26,10 +26,10 @@ public class OperationMasterViewModel extends AndroidViewModel {
     private DataSource mRepository;
 
     private LiveData<List<AccountWithBalance>> mAccounts;
-    private LiveData<List<Category>> mAllCategories;
-    private LiveData<List<Category>> mAllSubcategories;
-    private MediatorLiveData<List<Category>> mCategories = new MediatorLiveData<>();
-    private MediatorLiveData<List<Category>> mSubcategories = new MediatorLiveData<>();;
+    private LiveData<List<CategoryEntity>> mAllCategories;
+    private LiveData<List<CategoryEntity>> mAllSubcategories;
+    private MediatorLiveData<List<CategoryEntity>> mCategories = new MediatorLiveData<>();
+    private MediatorLiveData<List<CategoryEntity>> mSubcategories = new MediatorLiveData<>();;
 
     private MutableLiveData<Integer> selectedAccount = new MutableLiveData<>();
     private MutableLiveData<Integer> selectedCategory = new MutableLiveData<>();
@@ -82,11 +82,11 @@ public class OperationMasterViewModel extends AndroidViewModel {
         return mAccounts;
     }
 
-    public LiveData<List<Category>> getCategories() {
+    public LiveData<List<CategoryEntity>> getCategories() {
         return mCategories;
     }
 
-    public LiveData<List<Category>> getSubcategories() {
+    public LiveData<List<CategoryEntity>> getSubcategories() {
         return mSubcategories;
     }
 
@@ -196,7 +196,7 @@ public class OperationMasterViewModel extends AndroidViewModel {
         return selectedRepAccount;
     }
 
-    public void selectCategory(Category category) {
+    public void selectCategory(CategoryEntity category) {
         selectedCategory.setValue(category.getId());
 
         mSubcategories.removeSource(mAllSubcategories);
@@ -205,7 +205,7 @@ public class OperationMasterViewModel extends AndroidViewModel {
         mSubcategories.addSource(mAllSubcategories, categories -> mSubcategories.setValue(categories));
     }
 
-    public void selectSubcategory(Category category) {
+    public void selectSubcategory(CategoryEntity category) {
         selectedSubcategory.setValue(category.getId());
 
         Operation operation = mOperation.get();

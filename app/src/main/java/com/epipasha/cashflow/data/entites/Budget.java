@@ -10,7 +10,7 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "budgets", foreignKeys = {
         @ForeignKey(
-                entity = Category.class,
+                entity = CategoryEntity.class,
                 parentColumns = "id",
                 childColumns = "category_id",
                 onDelete = ForeignKey.CASCADE)},

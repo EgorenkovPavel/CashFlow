@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData;
 import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.entites.AccountEntity;
 import com.epipasha.cashflow.data.complex.AccountWithBalance;
-import com.epipasha.cashflow.data.entites.Category;
+import com.epipasha.cashflow.data.entites.CategoryEntity;
 import com.epipasha.cashflow.data.complex.CategoryWithCashflow;
 import com.epipasha.cashflow.data.entites.Operation;
 import com.epipasha.cashflow.data.complex.OperationWithData;
@@ -92,19 +92,19 @@ public class Repository implements DataSource{
     }
 
     // CATEGORIES
-    public Flowable<Category> getCategoryById(int id){
+    public Flowable<CategoryEntity> getCategoryById(int id){
         return mLocalDataSource.getCategoryById(id);
     }
 
-    public Flowable<List<Category>> getCategoriesByType(OperationType type) {
+    public Flowable<List<CategoryEntity>> getCategoriesByType(OperationType type) {
         return mLocalDataSource.getCategoriesByType(type);
     }
 
-    public Flowable<List<Category>> getParentCategories(OperationType type){
+    public Flowable<List<CategoryEntity>> getParentCategories(OperationType type){
         return mLocalDataSource.getParentCategories(type);
     }
 
-    public Completable insertOrUpdateCategory(Category category) {
+    public Completable insertOrUpdateCategory(CategoryEntity category) {
         return mLocalDataSource.insertOrUpdateCategory(category);
     }
 
@@ -113,11 +113,11 @@ public class Repository implements DataSource{
         mLocalDataSource.getCategoryById(id, callback);
     }
 
-    public void insertCategory(Category category){
+    public void insertCategory(CategoryEntity category){
         mLocalDataSource.insertCategory(category);
     }
 
-    public void updateCategory(Category category){
+    public void updateCategory(CategoryEntity category){
         mLocalDataSource.updateCategory(category);
     }
 
@@ -131,22 +131,22 @@ public class Repository implements DataSource{
     }
 
     @Override
-    public LiveData<List<Category>> loadAllCategoriesByType(OperationType type) {
+    public LiveData<List<CategoryEntity>> loadAllCategoriesByType(OperationType type) {
         return mLocalDataSource.loadAllCategoriesByType(type);
     }
 
     @Override
-    public LiveData<List<Category>> loadCategoriesByType(OperationType type) {
+    public LiveData<List<CategoryEntity>> loadCategoriesByType(OperationType type) {
         return mLocalDataSource.loadCategoriesByType(type);
     }
 
     @Override
-    public LiveData<List<Category>> loadSubcategoriesByType(OperationType type) {
+    public LiveData<List<CategoryEntity>> loadSubcategoriesByType(OperationType type) {
         return mLocalDataSource.loadSubcategoriesByType(type);
     }
 
     @Override
-    public LiveData<List<Category>> loadSubcategoriesByParent(Category category) {
+    public LiveData<List<CategoryEntity>> loadSubcategoriesByParent(CategoryEntity category) {
         return mLocalDataSource.loadSubcategoriesByParent(category);
     }
 

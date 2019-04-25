@@ -6,7 +6,7 @@ import android.util.Log;
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.DataSource;
 import com.epipasha.cashflow.data.Repository;
-import com.epipasha.cashflow.data.entites.Category;
+import com.epipasha.cashflow.data.entites.CategoryEntity;
 import com.epipasha.cashflow.data.objects.OperationType;
 
 import java.util.ArrayList;
@@ -33,10 +33,10 @@ public class CategoryViewModel extends AndroidViewModel{
     private CompositeDisposable mDisposable = new CompositeDisposable();
 
     private ObservableInt activityTitle = new ObservableInt(R.string.new_category);
-    private ObservableField<Category> mCategory = new ObservableField<>(
-            new Category("", OperationType.IN, 0, null));
+    private ObservableField<CategoryEntity> mCategory = new ObservableField<>(
+            new CategoryEntity("", OperationType.IN, 0, null));
     private ObservableInt mParentCategoryPosition = new ObservableInt(0);
-    private ObservableField<List<Category>> mParentCategories = new ObservableField<>();
+    private ObservableField<List<CategoryEntity>> mParentCategories = new ObservableField<>();
 
     private ObservableBoolean isNew = new ObservableBoolean(true);
 
@@ -73,7 +73,7 @@ public class CategoryViewModel extends AndroidViewModel{
                 .subscribe(categories -> {
                     if (!isNew.get()) {
                         int id = mCategory.get().getId();
-                        for (Category cat : categories) {
+                        for (CategoryEntity cat : categories) {
                             if (cat.getId() == id) {
                                 categories.remove(cat);
                                 break;
@@ -94,11 +94,11 @@ public class CategoryViewModel extends AndroidViewModel{
         return mParentCategoryPosition;
     }
 
-    public ObservableField<List<Category>> getParentCategories() {
+    public ObservableField<List<CategoryEntity>> getParentCategories() {
         return mParentCategories;
     }
 
-    public ObservableField<Category> getCategory() {
+    public ObservableField<CategoryEntity> getCategory() {
         return mCategory;
     }
 
@@ -118,7 +118,7 @@ public class CategoryViewModel extends AndroidViewModel{
             if(category == null)
                 if(id == null) return i;
                 else continue;
-            if(((Category)category).getId() == id) {
+            if(((CategoryEntity)category).getId() == id) {
                 return i;
             }
         }
@@ -126,7 +126,7 @@ public class CategoryViewModel extends AndroidViewModel{
     }
 
     public void setOperationType(OperationType type){
-        Category category = mCategory.get();
+        CategoryEntity category = mCategory.get();
         if(category == null) return;
         category.setType(type);
         category.setParentId(null);
@@ -134,12 +134,12 @@ public class CategoryViewModel extends AndroidViewModel{
     }
 
     public void saveObject(){
-        Category category = mCategory.get();
+        CategoryEntity category = mCategory.get();
 
-        List<Category> parentCategories = mParentCategories.get();
+        List<CategoryEntity> parentCategories = mParentCategories.get();
         int position = mParentCategoryPosition.get();
         if(parentCategories != null) {
-            Category parentCategory = parentCategories.get(position);
+            CategoryEntity parentCategory = parentCategories.get(position);
             if(parentCategory != null)
                 category.setParentId(parentCategory.getId());
             else

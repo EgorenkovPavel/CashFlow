@@ -26,7 +26,7 @@ import java.util.List;
                     parentColumns = "id",
                     childColumns = {"recipient_account_id"}),
             @ForeignKey(
-                    entity = Category.class,
+                    entity = CategoryEntity.class,
                     parentColumns = "id",
                     childColumns = "category_id")},
 indices = {

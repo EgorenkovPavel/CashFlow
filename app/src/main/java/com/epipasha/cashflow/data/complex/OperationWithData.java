@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo;
 import androidx.room.Embedded;
 
 import com.epipasha.cashflow.data.entites.AccountEntity;
-import com.epipasha.cashflow.data.entites.Category;
+import com.epipasha.cashflow.data.entites.CategoryEntity;
 import com.epipasha.cashflow.data.objects.OperationType;
 
 import java.util.Date;
@@ -24,7 +24,7 @@ public class OperationWithData {
     private AccountEntity account;
 
     @Embedded(prefix = "category_")
-    private Category category;
+    private CategoryEntity category;
 
     @Embedded(prefix = "recipient_account_")
     private AccountEntity repAccount;
@@ -69,11 +69,11 @@ public class OperationWithData {
         this.account = account;
     }
 
-    public Category getCategory() {
+    public CategoryEntity getCategory() {
         return category;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(CategoryEntity category) {
         this.category = category;
     }
 

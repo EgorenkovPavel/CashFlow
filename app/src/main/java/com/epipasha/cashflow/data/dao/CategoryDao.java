@@ -8,7 +8,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.epipasha.cashflow.data.entites.Category;
+import com.epipasha.cashflow.data.entites.CategoryEntity;
 import com.epipasha.cashflow.data.complex.CategoryWithCashflow;
 import com.epipasha.cashflow.data.objects.OperationType;
 
@@ -23,10 +23,10 @@ import io.reactivex.Single;
 public interface CategoryDao {
 
     @Query("SELECT * FROM categories ORDER BY title")
-    LiveData<List<Category>> loadAllCategories();
+    LiveData<List<CategoryEntity>> loadAllCategories();
 
     @Query("SELECT * FROM categories WHERE parent_id is null AND type =:type ORDER BY title")
-    List<Category> getParentCategories(OperationType type);
+    List<CategoryEntity> getParentCategories(OperationType type);
 
     @Query("SELECT categories.id as id, "
             + "categories.parent_id as parent_id, "
@@ -47,54 +47,54 @@ public interface CategoryDao {
     LiveData<List<CategoryWithCashflow>> loadAllCategoriesWithCashflow(Date start, Date end);
 
     @Query("SELECT * FROM categories WHERE type = :type ORDER BY title")
-    LiveData<List<Category>> loadAllCategoriesByType(OperationType type);
+    LiveData<List<CategoryEntity>> loadAllCategoriesByType(OperationType type);
 
     @Query("SELECT * FROM categories WHERE type = :type ORDER BY title")
-    List<Category> getAllCategoriesByType(OperationType type);
+    List<CategoryEntity> getAllCategoriesByType(OperationType type);
 
     @Query("SELECT * FROM categories WHERE type = :type AND parent_id IS NULL ORDER BY title")
-    LiveData<List<Category>> loadCategoriesByType(OperationType type);
+    LiveData<List<CategoryEntity>> loadCategoriesByType(OperationType type);
 
     @Query("SELECT * FROM categories WHERE type = :type AND parent_id IS NOT NULL ORDER BY title")
-    LiveData<List<Category>> loadSubcategoriesByType(OperationType type);
+    LiveData<List<CategoryEntity>> loadSubcategoriesByType(OperationType type);
 
     @Query("SELECT * FROM categories WHERE parent_id = :parentId ORDER BY title")
-    LiveData<List<Category>> loadSubcategoriesByParent(int parentId);
+    LiveData<List<CategoryEntity>> loadSubcategoriesByParent(int parentId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertCategory(Category category);
+    void insertCategory(CategoryEntity category);
 
     @Insert
-    void insertCategories(List<Category> categories);
+    void insertCategories(List<CategoryEntity> categories);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    void updateCategory(Category category);
+    void updateCategory(CategoryEntity category);
 
     @Delete
-    void deleteCategory(Category category);
+    void deleteCategory(CategoryEntity category);
 
     @Query("DELETE FROM categories")
     void deleteAll();
 
     @Query("SELECT * FROM categories WHERE id = :id")
-    LiveData<Category> loadCategoryById(int id);
+    LiveData<CategoryEntity> loadCategoryById(int id);
 
     @Query("SELECT * FROM categories WHERE id = :id")
-    Category getCategoryById(int id);
+    CategoryEntity getCategoryById(int id);
 
     //RX
     @Query("SELECT * FROM categories WHERE id =:id")
-    Flowable<Category> getRxCategoryById(int id);
+    Flowable<CategoryEntity> getRxCategoryById(int id);
 
     @Query("SELECT * FROM categories WHERE type = :type ORDER BY title")
-    Flowable<List<Category>> getRxAllCategoriesByType(OperationType type);
+    Flowable<List<CategoryEntity>> getRxAllCategoriesByType(OperationType type);
 
     @Query("SELECT * FROM categories WHERE parent_id is null AND type =:type ORDER BY title")
-    Flowable<List<Category>> getRxParentCategories(OperationType type);
+    Flowable<List<CategoryEntity>> getRxParentCategories(OperationType type);
 
     @Insert
-    Completable insertRxCategory(Category category);
+    Completable insertRxCategory(CategoryEntity category);
 
     @Update
-    Completable updateRxCategory(Category category);
+    Completable updateRxCategory(CategoryEntity category);
 }

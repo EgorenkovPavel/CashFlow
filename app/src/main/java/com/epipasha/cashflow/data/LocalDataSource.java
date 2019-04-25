@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.complex.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.AccountEntity;
-import com.epipasha.cashflow.data.entites.Category;
+import com.epipasha.cashflow.data.entites.CategoryEntity;
 import com.epipasha.cashflow.data.complex.CategoryWithCashflow;
 import com.epipasha.cashflow.data.entites.Operation;
 import com.epipasha.cashflow.data.complex.OperationWithData;
@@ -127,19 +127,19 @@ public class LocalDataSource implements DataSource{
     }
 
     // CATEGORIES
-    public Flowable<Category> getCategoryById(int id){
+    public Flowable<CategoryEntity> getCategoryById(int id){
         return mDb.categoryDao().getRxCategoryById(id);
     }
 
-    public Flowable<List<Category>> getCategoriesByType(final OperationType type) {
+    public Flowable<List<CategoryEntity>> getCategoriesByType(final OperationType type) {
         return mDb.categoryDao().getRxAllCategoriesByType(type);
     }
 
-    public Flowable<List<Category>> getParentCategories(OperationType type) {
+    public Flowable<List<CategoryEntity>> getParentCategories(OperationType type) {
         return mDb.categoryDao().getRxParentCategories(type);
     }
 
-    public Completable insertOrUpdateCategory(Category category) {
+    public Completable insertOrUpdateCategory(CategoryEntity category) {
         if(category.getId() == 0)
             return mDb.categoryDao().insertRxCategory(category);
         else
@@ -150,7 +150,7 @@ public class LocalDataSource implements DataSource{
 
     public void getCategoryById(final int id, final DataSource.GetCategoryCallback callback){
         Runnable runnable = () -> {
-            final Category category = mDb.categoryDao().getCategoryById(id);
+            final CategoryEntity category = mDb.categoryDao().getCategoryById(id);
 
             mAppExecutors.mainThread().execute(() -> {
                 if (category != null) {
@@ -164,17 +164,17 @@ public class LocalDataSource implements DataSource{
         mAppExecutors.discIO().execute(runnable);
     }
 
-    public void insertCategory(final Category category){
+    public void insertCategory(final CategoryEntity category){
         mAppExecutors.discIO().execute(() -> mDb.categoryDao().insertCategory(category));
     }
 
-    public void updateCategory(final Category category){
+    public void updateCategory(final CategoryEntity category){
         mAppExecutors.discIO().execute(() -> mDb.categoryDao().updateCategory(category));
     }
 
     public void getCategoriesByType(final OperationType type, final GetCategoriesByTypeCallback callback) {
         Runnable runnable = () -> {
-            final List<Category> categories = mDb.categoryDao().getAllCategoriesByType(type);
+            final List<CategoryEntity> categories = mDb.categoryDao().getAllCategoriesByType(type);
 
             mAppExecutors.mainThread().execute(() -> {
                 if (categories != null) {
@@ -191,7 +191,7 @@ public class LocalDataSource implements DataSource{
     @Override
     public void getParentCategories(OperationType type, GetCategoriesCallback callback) {
         Runnable runnable = () -> {
-            final List<Category> categories = mDb.categoryDao().getParentCategories(type);
+            final List<CategoryEntity> categories = mDb.categoryDao().getParentCategories(type);
 
             mAppExecutors.mainThread().execute(() -> {
                 if (categories != null) {
@@ -206,22 +206,22 @@ public class LocalDataSource implements DataSource{
     }
 
     @Override
-    public LiveData<List<Category>> loadAllCategoriesByType(OperationType type) {
+    public LiveData<List<CategoryEntity>> loadAllCategoriesByType(OperationType type) {
         return mDb.categoryDao().loadAllCategoriesByType(type);
     }
 
     @Override
-    public LiveData<List<Category>> loadCategoriesByType(OperationType type) {
+    public LiveData<List<CategoryEntity>> loadCategoriesByType(OperationType type) {
         return mDb.categoryDao().loadCategoriesByType(type);
     }
 
     @Override
-    public LiveData<List<Category>> loadSubcategoriesByType(OperationType type) {
+    public LiveData<List<CategoryEntity>> loadSubcategoriesByType(OperationType type) {
         return mDb.categoryDao().loadSubcategoriesByType(type);
     }
 
     @Override
-    public LiveData<List<Category>> loadSubcategoriesByParent(Category category) {
+    public LiveData<List<CategoryEntity>> loadSubcategoriesByParent(CategoryEntity category) {
         return mDb.categoryDao().loadSubcategoriesByParent(category.getId());
     }
 

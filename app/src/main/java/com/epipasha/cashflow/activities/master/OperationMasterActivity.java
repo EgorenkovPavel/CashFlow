@@ -11,7 +11,7 @@ import com.epipasha.cashflow.activities.BaseActivity;
 import com.epipasha.cashflow.data.AppExecutors;
 import com.epipasha.cashflow.data.ViewModelFactory;
 import com.epipasha.cashflow.data.complex.AccountWithBalance;
-import com.epipasha.cashflow.data.entites.Category;
+import com.epipasha.cashflow.data.entites.CategoryEntity;
 import com.epipasha.cashflow.databinding.ActivityMasterBinding;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -213,9 +213,9 @@ public class OperationMasterActivity extends BaseActivity {
 
     private class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>{
 
-        private List<Category> items;
+        private List<CategoryEntity> items;
         private Integer selectedId;
-        private ItemClickListener<Category> listener;
+        private ItemClickListener<CategoryEntity> listener;
 
         @NonNull
         @Override
@@ -226,7 +226,7 @@ public class OperationMasterActivity extends BaseActivity {
 
         @Override
         public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
-            Category category = items.get(position);
+            CategoryEntity category = items.get(position);
 
             holder.name.setText(category.getTitle());
 
@@ -238,12 +238,12 @@ public class OperationMasterActivity extends BaseActivity {
             return items == null ? 0 : items.size();
         }
 
-        public void setItems(List<Category> items){
+        public void setItems(List<CategoryEntity> items){
             this.items = items;
             notifyDataSetChanged();
         }
 
-        public void setListener(ItemClickListener<Category> listener) {
+        public void setListener(ItemClickListener<CategoryEntity> listener) {
             this.listener = listener;
         }
 
