@@ -6,7 +6,7 @@ import com.epipasha.cashflow.data.DataSource;
 import com.epipasha.cashflow.data.Repository;
 import com.epipasha.cashflow.data.complex.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.CategoryEntity;
-import com.epipasha.cashflow.data.entites.Operation;
+import com.epipasha.cashflow.data.entites.OperationEntity;
 import com.epipasha.cashflow.data.objects.OperationType;
 
 import java.util.ArrayList;
@@ -38,9 +38,9 @@ public class OperationMasterViewModel extends AndroidViewModel {
 
     private MutableLiveData<Status> mStatus = new MutableLiveData<>();
 
-    private Operation operation;
+    private OperationEntity operation;
 
-    private ObservableField<Operation> mOperation = new ObservableField<>(new Operation(new Date(), OperationType.IN, 0,0,0,0));
+    private ObservableField<OperationEntity> mOperation = new ObservableField<>(new OperationEntity(new Date(), OperationType.IN, 0,0,0,0));
 
 
     public OperationMasterViewModel(@NonNull Application application, Repository repository) {
@@ -54,12 +54,12 @@ public class OperationMasterViewModel extends AndroidViewModel {
         reloadCategories(mOperation.get().getType());
     }
 
-    public ObservableField<Operation> getOperation() {
+    public ObservableField<OperationEntity> getOperation() {
         return mOperation;
     }
 
     public void onOperationTypeChanged(OperationType type){
-        Operation operation = mOperation.get();
+        OperationEntity operation = mOperation.get();
         if(operation == null) return;
         operation.setType(type);
         mOperation.notifyChange();
@@ -141,7 +141,7 @@ public class OperationMasterViewModel extends AndroidViewModel {
             return;
         }
 
-        operation = new Operation(new Date(), type, accountId, categoryId, repAccountId, sum);
+        operation = new OperationEntity(new Date(), type, accountId, categoryId, repAccountId, sum);
         mRepository.insertOperation(operation, new DataSource.InsertOperationCallback() {
             @Override
             public void onOperationInsertedSuccess(int id) {
@@ -208,7 +208,7 @@ public class OperationMasterViewModel extends AndroidViewModel {
     public void selectSubcategory(CategoryEntity category) {
         selectedSubcategory.setValue(category.getId());
 
-        Operation operation = mOperation.get();
+        OperationEntity operation = mOperation.get();
         if(operation == null) return;
         operation.setCategoryId(category.getId());
         mOperation.notifyChange();

@@ -33,7 +33,7 @@ indices = {
         @Index("account_id"),
         @Index("category_id"),
         @Index("recipient_account_id")})
-public class Operation{
+public class OperationEntity{
 
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -53,7 +53,7 @@ public class Operation{
     private int sum;
 
     @Ignore
-    public Operation(Date date, OperationType type, int accountId, @Nullable Integer categoryId, @Nullable Integer recipientAccountId, int sum) {
+    public OperationEntity(Date date, OperationType type, int accountId, @Nullable Integer categoryId, @Nullable Integer recipientAccountId, int sum) {
         this.date = date;
         this.type = type;
         this.accountId = accountId;
@@ -62,7 +62,7 @@ public class Operation{
         this.sum = sum;
     }
 
-    public Operation(int id, Date date, OperationType type, int accountId, @Nullable Integer categoryId, @Nullable Integer recipientAccountId, int sum) {
+    public OperationEntity(int id, Date date, OperationType type, int accountId, @Nullable Integer categoryId, @Nullable Integer recipientAccountId, int sum) {
         this.id = id;
         this.date = date;
         this.type = type;

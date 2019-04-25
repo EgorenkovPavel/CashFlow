@@ -8,7 +8,7 @@ import com.epipasha.cashflow.data.complex.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.AccountEntity;
 import com.epipasha.cashflow.data.entites.CategoryEntity;
 import com.epipasha.cashflow.data.complex.CategoryWithCashflow;
-import com.epipasha.cashflow.data.entites.Operation;
+import com.epipasha.cashflow.data.entites.OperationEntity;
 import com.epipasha.cashflow.data.complex.OperationWithData;
 import com.epipasha.cashflow.data.objects.OperationType;
 
@@ -199,11 +199,11 @@ public class LocalDataSource implements DataSource{
     }
 
     // OPERATIONS
-    public Flowable<Operation> getOperationById(final int id){
+    public Flowable<OperationEntity> getOperationById(final int id){
         return mDb.operationDao().getRxOperationById(id);
     }
 
-    public Single<Integer> insertOrUpdateOperation(Operation operation) {
+    public Single<Integer> insertOrUpdateOperation(OperationEntity operation) {
         Single<Integer> res = Single.create(emitter -> {
             if(operation.getId() == 0)
                 emitter.onSuccess((int)mDb.operationDao().insertOperationWithAnalytic(operation));
@@ -215,7 +215,7 @@ public class LocalDataSource implements DataSource{
 
     public void getOperationById(final int id, final DataSource.GetOperationCallback callback){
         Runnable runnable = () -> {
-            final Operation operation = mDb.operationDao().getOperationById(id);
+            final OperationEntity operation = mDb.operationDao().getOperationById(id);
 
             mAppExecutors.mainThread().execute(() -> {
                 if (operation != null) {
@@ -229,7 +229,7 @@ public class LocalDataSource implements DataSource{
         mAppExecutors.discIO().execute(runnable);
     }
 
-    public void insertOperation(final Operation operation, final InsertOperationCallback callback){
+    public void insertOperation(final OperationEntity operation, final InsertOperationCallback callback){
         mAppExecutors.discIO().execute(() -> {
             final int id = (int)mDb.operationDao().insertOperationWithAnalytic(operation);
 
@@ -243,7 +243,7 @@ public class LocalDataSource implements DataSource{
         });
     }
 
-    public void updateOperation(final Operation operation, final UpdateOperationCallback callback){
+    public void updateOperation(final OperationEntity operation, final UpdateOperationCallback callback){
         mAppExecutors.discIO().execute(() -> {
             final int updatedCol = mDb.operationDao().updateOperationWithAnalytic(operation);
 
@@ -258,7 +258,7 @@ public class LocalDataSource implements DataSource{
     }
 
     @Override
-    public void deleteOperation(final Operation operation, final DeleteOperationCallback callback) {
+    public void deleteOperation(final OperationEntity operation, final DeleteOperationCallback callback) {
         Runnable runnable = () -> {
             final int numCol = mDb.operationDao().deleteOperation(operation);
 

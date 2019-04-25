@@ -11,7 +11,7 @@ import androidx.room.Update;
 
 import com.epipasha.cashflow.data.entites.Balance;
 import com.epipasha.cashflow.data.entites.Cashflow;
-import com.epipasha.cashflow.data.entites.Operation;
+import com.epipasha.cashflow.data.entites.OperationEntity;
 import com.epipasha.cashflow.data.complex.OperationWithData;
 
 import java.util.List;
@@ -25,25 +25,25 @@ import io.reactivex.SingleObserver;
 public abstract class OperationDao {
 
     @Query("SELECT * FROM operations ORDER BY Date DESC")
-    public abstract LiveData<List<Operation>> loadAllOperations();
+    public abstract LiveData<List<OperationEntity>> loadAllOperations();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public abstract long insertOperation(Operation operation);
+    public abstract long insertOperation(OperationEntity operation);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    public abstract void updateOperation(Operation operation);
+    public abstract void updateOperation(OperationEntity operation);
 
     @Delete
-    public abstract int deleteOperation(Operation operation);
+    public abstract int deleteOperation(OperationEntity operation);
 
     @Query("DELETE FROM operations WHERE id == :id")
     public abstract int deleteOperationById(int id);
 
     @Query("SELECT * FROM operations WHERE id = :id")
-    public abstract LiveData<Operation> loadOperationById(int id);
+    public abstract LiveData<OperationEntity> loadOperationById(int id);
 
     @Query("SELECT * FROM operations WHERE id = :id")
-    public abstract Operation getOperationById(int id);
+    public abstract OperationEntity getOperationById(int id);
 
     @Query("SELECT operations.id as id, "
             + "operations.date as date, "
@@ -90,7 +90,7 @@ public abstract class OperationDao {
     public abstract LiveData<OperationWithData> loadOperationWithDataById(int id);
 
     @Transaction
-    public long insertOperationWithAnalytic(final Operation operation){
+    public long insertOperationWithAnalytic(final OperationEntity operation){
         long id = insertOperation(operation);
         if(id != -1){
             operation.setId((int)id);
@@ -101,7 +101,7 @@ public abstract class OperationDao {
     }
 
     @Transaction
-    public int updateOperationWithAnalytic(Operation operation){
+    public int updateOperationWithAnalytic(OperationEntity operation){
         int numDeletedCol = deleteOperation(operation);
         if(numDeletedCol > 0){
             insertOperationWithAnalytic(operation);
@@ -134,6 +134,6 @@ public abstract class OperationDao {
     //RX
 
     @Query("SELECT * FROM operations WHERE id = :id")
-    public abstract Flowable<Operation> getRxOperationById(int id);
+    public abstract Flowable<OperationEntity> getRxOperationById(int id);
 
 }

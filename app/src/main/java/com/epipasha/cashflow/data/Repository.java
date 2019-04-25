@@ -7,7 +7,7 @@ import com.epipasha.cashflow.data.entites.AccountEntity;
 import com.epipasha.cashflow.data.complex.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.CategoryEntity;
 import com.epipasha.cashflow.data.complex.CategoryWithCashflow;
-import com.epipasha.cashflow.data.entites.Operation;
+import com.epipasha.cashflow.data.entites.OperationEntity;
 import com.epipasha.cashflow.data.complex.OperationWithData;
 import com.epipasha.cashflow.data.objects.Account;
 import com.epipasha.cashflow.data.objects.Category;
@@ -153,11 +153,11 @@ public class Repository implements DataSource{
     }
 
     // OPERATIONS
-    public Flowable<Operation> getOperationById(int id){
+    public Flowable<OperationEntity> getOperationById(int id){
         return mLocalDataSource.getOperationById(id);
     }
 
-    public Single<Integer> insertOrUpdateOperation(Operation operation) {
+    public Single<Integer> insertOrUpdateOperation(OperationEntity operation) {
         return mLocalDataSource.insertOrUpdateOperation(operation);
     }
 
@@ -165,16 +165,16 @@ public class Repository implements DataSource{
         mLocalDataSource.getOperationById(id, callback);
     }
 
-    public void insertOperation(Operation operation, InsertOperationCallback callback){
+    public void insertOperation(OperationEntity operation, InsertOperationCallback callback){
         mLocalDataSource.insertOperation(operation, callback);
     }
 
-    public void updateOperation(Operation operation, UpdateOperationCallback callback){
+    public void updateOperation(OperationEntity operation, UpdateOperationCallback callback){
         mLocalDataSource.updateOperation(operation, callback);
     }
 
     @Override
-    public void deleteOperation(Operation operation, DeleteOperationCallback callback) {
+    public void deleteOperation(OperationEntity operation, DeleteOperationCallback callback) {
         mLocalDataSource.deleteOperation(operation, callback);
     }
 

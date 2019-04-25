@@ -6,7 +6,7 @@ import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.entites.AccountEntity;
 import com.epipasha.cashflow.data.complex.AccountWithBalance;
 import com.epipasha.cashflow.data.entites.CategoryEntity;
-import com.epipasha.cashflow.data.entites.Operation;
+import com.epipasha.cashflow.data.entites.OperationEntity;
 import com.epipasha.cashflow.data.objects.OperationType;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public interface DataSource {
     }
 
     interface GetOperationCallback{
-        void onOperationLoaded(Operation operation);
+        void onOperationLoaded(OperationEntity operation);
         void onDataNotAvailable();
     }
 
@@ -94,11 +94,11 @@ public interface DataSource {
     // OPERATIONS
     void getOperationById(int id, GetOperationCallback callback);
 
-    void insertOperation(Operation operation, InsertOperationCallback callback);
+    void insertOperation(OperationEntity operation, InsertOperationCallback callback);
 
-    void updateOperation(Operation operation, UpdateOperationCallback callback);
+    void updateOperation(OperationEntity operation, UpdateOperationCallback callback);
 
-    void deleteOperation(Operation operation, DeleteOperationCallback callback);
+    void deleteOperation(OperationEntity operation, DeleteOperationCallback callback);
 
     //ANALYTIC
     LiveData<List<AnalyticDao.MonthCashflow>> loadMonthCashflow(int categoryId);

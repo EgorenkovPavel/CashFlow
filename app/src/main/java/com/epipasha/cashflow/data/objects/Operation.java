@@ -1,7 +1,5 @@
 package com.epipasha.cashflow.data.objects;
 
-import com.epipasha.cashflow.data.entites.CategoryEntity;
-
 import java.util.Date;
 
 public class Operation {
@@ -10,7 +8,7 @@ public class Operation {
     private Date date;
     private OperationType type;
     private Account account;
-    private CategoryEntity category;
+    private Category category;
     private Account recAccount;
     private int sum;
 
@@ -46,11 +44,11 @@ public class Operation {
         this.account = account;
     }
 
-    public CategoryEntity getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(CategoryEntity category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 

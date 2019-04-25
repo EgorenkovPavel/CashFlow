@@ -7,7 +7,7 @@ import com.epipasha.cashflow.data.DataSource;
 import com.epipasha.cashflow.data.Repository;
 import com.epipasha.cashflow.data.entites.AccountEntity;
 import com.epipasha.cashflow.data.entites.CategoryEntity;
-import com.epipasha.cashflow.data.entites.Operation;
+import com.epipasha.cashflow.data.entites.OperationEntity;
 import com.epipasha.cashflow.data.objects.OperationType;
 
 import java.util.ArrayList;
@@ -34,8 +34,8 @@ public class OperationViewModel extends AndroidViewModel{
     private MutableLiveData<Status> mStatus = new MutableLiveData<>();
 
     private Repository mRepository;
-    private ObservableField<Operation> mOperation = new ObservableField<>(
-            new Operation(Calendar.getInstance().getTime(), OperationType.IN, 0, 0, 0, 0));
+    private ObservableField<OperationEntity> mOperation = new ObservableField<>(
+            new OperationEntity(Calendar.getInstance().getTime(), OperationType.IN, 0, 0, 0, 0));
     private ObservableInt activityTitle = new ObservableInt(R.string.new_operation);
     private ObservableBoolean isNew = new ObservableBoolean(true);
 
@@ -97,7 +97,7 @@ public class OperationViewModel extends AndroidViewModel{
                 }));
     }
 
-    public ObservableField<Operation> getOperation() {
+    public ObservableField<OperationEntity> getOperation() {
         return mOperation;
     }
 
@@ -157,7 +157,7 @@ public class OperationViewModel extends AndroidViewModel{
 
     public void saveObject(){
 
-        Operation operation = mOperation.get();
+        OperationEntity operation = mOperation.get();
 
         if(operation == null){
             return;

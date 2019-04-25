@@ -5,7 +5,7 @@ import androidx.room.Query;
 
 import com.epipasha.cashflow.data.entites.AccountEntity;
 import com.epipasha.cashflow.data.entites.CategoryEntity;
-import com.epipasha.cashflow.data.entites.Operation;
+import com.epipasha.cashflow.data.entites.OperationEntity;
 
 import java.util.List;
 
@@ -19,6 +19,6 @@ public interface BackupDao {
     List<CategoryEntity> loadAllCategories();
 
     @Query("SELECT * FROM operations")
-    List<Operation> loadAllOperations();
+    List<OperationEntity> loadAllOperations();
 
 }

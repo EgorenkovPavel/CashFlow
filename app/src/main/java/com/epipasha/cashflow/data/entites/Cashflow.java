@@ -21,7 +21,7 @@ import java.util.Date;
                 parentColumns = "id",
                 childColumns = "category_id",
                 onDelete = ForeignKey.CASCADE),
-        @ForeignKey(entity = Operation.class,
+        @ForeignKey(entity = OperationEntity.class,
                 parentColumns = "id",
                 childColumns = "operation_id",
                 onDelete = ForeignKey.CASCADE)},
