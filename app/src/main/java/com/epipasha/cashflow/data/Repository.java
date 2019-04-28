@@ -1,6 +1,7 @@
 package com.epipasha.cashflow.data;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.LiveDataReactiveStreams;
 
 import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.entites.AccountEntity;
@@ -65,6 +66,11 @@ public class Repository implements DataSource {
             return accounts;
         });
     }
+
+    public LiveData<List<Account>> getAllAccountsLive() {
+        return LiveDataReactiveStreams.fromPublisher(getAllAccounts());
+    }
+
 
 
     public void insertAccount(AccountEntity account) {

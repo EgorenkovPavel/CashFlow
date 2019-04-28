@@ -10,12 +10,13 @@ import android.widget.TextView;
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.Utils;
 import com.epipasha.cashflow.data.complex.AccountWithBalance;
+import com.epipasha.cashflow.data.objects.Account;
 
 import java.util.List;
 
 public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountHolder> {
 
-    private List<AccountWithBalance> mAccounts;
+    private List<Account> mAccounts;
     private ItemClickListener mItemClickListener;
 
     public AccountAdapter(ItemClickListener itemClickListener) {
@@ -36,14 +37,14 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountH
 
     @Override
     public void onBindViewHolder(@NonNull AccountHolder holder, int position) {
-        AccountWithBalance mAccount = mAccounts.get(position);
+        Account mAccount = mAccounts.get(position);
 
         holder.itemView.setTag(mAccount.getId());
         holder.accountTitleView.setText(mAccount.getTitle());
         holder.accountSumView.setText(Utils.formatNumber(mAccount.getSum()));
     }
 
-    public void setAccounts(List<AccountWithBalance> accounts){
+    public void setAccounts(List<Account> accounts){
         this.mAccounts = accounts;
         notifyDataSetChanged();
     }
