@@ -219,6 +219,9 @@ public class Repository implements DataSource {
         }
     }
 
+    public Completable deleteOperation(int id){
+        return mLocalDataSource.deleteOperation(id);
+    }
 
     public void getOperationById(int id, GetOperationCallback callback) {
         mLocalDataSource.getOperationById(id, callback);

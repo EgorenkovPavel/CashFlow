@@ -19,9 +19,15 @@ import com.epipasha.cashflow.data.objects.OperationType;
 import java.util.Date;
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+
 public class OperationMasterViewModel extends AndroidViewModel {
 
-    private DataSource mRepository;
+    private Repository mRepository;
+
+    private CompositeDisposable mDisposable = new CompositeDisposable();
 
     private LiveData<List<AccountWithBalance>> mAccounts;
     private LiveData<List<CategoryEntity>> mAllCategories;
@@ -147,17 +153,12 @@ public class OperationMasterViewModel extends AndroidViewModel {
     }
 
     public void deleteOperation(){
-        mRepository.deleteOperation(operation, new DataSource.DeleteOperationCallback() {
-            @Override
-            public void onOperationDeletedSuccess(int numCol) {
-                mStatus.postValue(Status.OPERATION_DELETED);
-            }
-
-            @Override
-            public void onOperationDeletedFailed() {
-
-            }
-        });
+        mDisposable.add(mRepository.deleteOperation(operation.getId())
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(() -> {
+            mStatus.postValue(Status.OPERATION_DELETED);
+        }));
     }
 
     public void onMoreClicked(){
@@ -194,4 +195,9 @@ public class OperationMasterViewModel extends AndroidViewModel {
         CLOSE
     }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        mDisposable.clear();
+    }
 }

@@ -217,6 +217,13 @@ public class LocalDataSource implements DataSource{
         return res;
     }
 
+    public Completable deleteOperation(int id){
+        return mDb.operationDao().deleteRxOperation(id);
+    }
+
+
+
+
     public void getOperationById(final int id, final DataSource.GetOperationCallback callback){
         Runnable runnable = () -> {
             final OperationEntity operation = mDb.operationDao().getOperationById(id);
