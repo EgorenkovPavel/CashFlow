@@ -9,6 +9,8 @@ import com.epipasha.cashflow.data.objects.OperationType;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+
 @Dao
 public interface AnalyticDao {
 
@@ -115,4 +117,14 @@ public interface AnalyticDao {
             this.sum = sum;
         }
     }
+
+    //RX
+    @Query("SELECT "
+            + "SUM(balance.sum) as sum "
+            + "FROM balance "
+            + "WHERE balance.account_id = :accountId "
+            + "GROUP BY balance.account_id ")
+    Flowable<Integer> getRxAccountBalance(int accountId);
+
+
 }

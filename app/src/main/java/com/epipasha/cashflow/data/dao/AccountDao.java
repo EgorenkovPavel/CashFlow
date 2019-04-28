@@ -93,8 +93,20 @@ public interface AccountDao {
     AccountEntity getAccountById(int id);
 
     //RX
-    @Query("SELECT * FROM accounts WHERE id = :id")
-    Flowable<AccountEntity> getRxAccountById(int id);
+    @Query("SELECT accounts.id as id, "
+            + "accounts.title as title, "
+            + "balance.sum as sum "
+            + "FROM accounts as accounts "
+            + "LEFT OUTER JOIN "
+            + "(SELECT "
+            + "balance.account_id as account_id, "
+            + "SUM(balance.sum) as sum "
+            + "FROM balance "
+            + "GROUP BY balance.account_id) as balance "
+            + "ON accounts.id = balance.account_id "
+            + "WHERE accounts.id = :id "
+            + "ORDER BY title")
+    Flowable<AccountWithBalance> getRxAccountById(int id);
 
     @Insert
     Completable insertRxAccount(AccountEntity account);
@@ -102,6 +114,17 @@ public interface AccountDao {
     @Update
     Completable updateRxAccount(AccountEntity account);
 
-    @Query("SELECT * FROM accounts ORDER BY title")
-    Flowable<List<AccountEntity>> getRxAllAccounts();
+    @Query("SELECT accounts.id as id, "
+            + "accounts.title as title, "
+            + "balance.sum as sum "
+            + "FROM accounts as accounts "
+            + "LEFT OUTER JOIN "
+            + "(SELECT "
+            + "balance.account_id as account_id, "
+            + "SUM(balance.sum) as sum "
+            + "FROM balance "
+            + "GROUP BY balance.account_id) as balance "
+            + "ON accounts.id = balance.account_id "
+            + "ORDER BY title")
+    Flowable<List<AccountWithBalance>> getRxAllAccounts();
 }

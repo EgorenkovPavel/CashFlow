@@ -5,9 +5,9 @@ import android.app.Application;
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.DataSource;
 import com.epipasha.cashflow.data.Repository;
-import com.epipasha.cashflow.data.entites.AccountEntity;
-import com.epipasha.cashflow.data.entites.CategoryEntity;
-import com.epipasha.cashflow.data.entites.OperationEntity;
+import com.epipasha.cashflow.data.objects.Account;
+import com.epipasha.cashflow.data.objects.Category;
+import com.epipasha.cashflow.data.objects.Operation;
 import com.epipasha.cashflow.data.objects.OperationType;
 
 import java.util.ArrayList;
@@ -34,22 +34,21 @@ public class OperationViewModel extends AndroidViewModel{
     private MutableLiveData<Status> mStatus = new MutableLiveData<>();
 
     private Repository mRepository;
-    private ObservableField<OperationEntity> mOperation = new ObservableField<>(
-            new OperationEntity(Calendar.getInstance().getTime(), OperationType.IN, 0, 0, 0, 0));
+    private ObservableField<Operation> mOperation = new ObservableField<>(
+            new Operation(Calendar.getInstance().getTime(), OperationType.IN, null, null, null, 0));
     private ObservableInt activityTitle = new ObservableInt(R.string.new_operation);
     private ObservableBoolean isNew = new ObservableBoolean(true);
 
-    private ObservableField<List<AccountEntity>> mAccounts = new ObservableField<>();
+    private ObservableField<List<Account>> mAccounts = new ObservableField<>();
     private ObservableField<List> mAnalytic = new ObservableField<>();
 
     private ObservableInt mAccountPosition = new ObservableInt(0);
     private ObservableInt mAnalyticPosition = new ObservableInt(0);
 
-    private List<AccountEntity> mRecAccounts = new ArrayList<>();
-    private List<CategoryEntity> mCategoriesIn = new ArrayList<>();
-    private List<CategoryEntity> mCategoriesOut = new ArrayList<>();
+    private List<Account> mRecAccounts = new ArrayList<>();
+    private List<Category> mCategoriesIn = new ArrayList<>();
+    private List<Category> mCategoriesOut = new ArrayList<>();
 
-    //TODO rewrite to OrerationObject
     //TODO Add 1 observer for analytics and onNext(type) get analytic
     //TODO add model to spinner adapters
 
@@ -61,8 +60,8 @@ public class OperationViewModel extends AndroidViewModel{
         mDisposable.add(mRepository.getAllAccounts()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(accountEntities -> {
-                    mAccounts.set(accountEntities);
+                .subscribe(accounts -> {
+                    mAccounts.set(accounts);
                     setAccountPosition();
 
                     setRecAccounts();
@@ -97,7 +96,7 @@ public class OperationViewModel extends AndroidViewModel{
                 }));
     }
 
-    public ObservableField<OperationEntity> getOperation() {
+    public ObservableField<Operation> getOperation() {
         return mOperation;
     }
 
@@ -109,7 +108,7 @@ public class OperationViewModel extends AndroidViewModel{
         return mAnalytic;
     }
 
-    public ObservableField<List<AccountEntity>> getAccounts() {
+    public ObservableField<List<Account>> getAccounts() {
         return mAccounts;
     }
 
@@ -157,7 +156,7 @@ public class OperationViewModel extends AndroidViewModel{
 
     public void saveObject(){
 
-        OperationEntity operation = mOperation.get();
+        Operation operation = mOperation.get();
 
         if(operation == null){
             return;
@@ -168,21 +167,21 @@ public class OperationViewModel extends AndroidViewModel{
             return;
         }
 
-        operation.setAccountId(mAccounts.get().get(mAccountPosition.get()).getId());
+        operation.setAccount(mAccounts.get().get(mAccountPosition.get()));
 
         OperationType type = operation.getType();
 
         switch (type){
             case IN:{
-                operation.setCategoryId(mCategoriesIn.get(mAnalyticPosition.get()).getId());
+                operation.setCategory(mCategoriesIn.get(mAnalyticPosition.get()));
                 break;
             }
             case OUT:{
-                operation.setCategoryId(mCategoriesOut.get(mAnalyticPosition.get()).getId());
+                operation.setCategory(mCategoriesOut.get(mAnalyticPosition.get()));
                 break;
             }
             case TRANSFER:{
-                operation.setRecipientAccountId(mRecAccounts.get(mAnalyticPosition.get()).getId());
+                operation.setRecAccount(mRecAccounts.get(mAnalyticPosition.get()));
                 break;
             }
         }
@@ -208,7 +207,7 @@ public class OperationViewModel extends AndroidViewModel{
 
 
     private void setRecAccounts(){
-        List<AccountEntity> recAccounts = new ArrayList<>(mAccounts.get());
+        List<Account> recAccounts = new ArrayList<>(mAccounts.get());
         recAccounts.remove(mAccountPosition.get());
         mRecAccounts = recAccounts;
     }
@@ -225,9 +224,9 @@ public class OperationViewModel extends AndroidViewModel{
         for (int i=0; i<list.length;i++){
             Object object = list[i];
 
-            if(object instanceof AccountEntity && ((AccountEntity) object).getId() == id){
+            if(object instanceof Account && ((Account) object).getId() == id){
                 return i;
-            }else if(object instanceof CategoryEntity && ((CategoryEntity) object).getId() == id) {
+            }else if(object instanceof Category && ((Category) object).getId() == id) {
                 return i;
             }
         }
@@ -236,7 +235,7 @@ public class OperationViewModel extends AndroidViewModel{
 
     private void setAccountPosition(){
         if(!isNew.get())
-            mAccountPosition.set(getPositionById(mAccounts.get().toArray(), mOperation.get().getAccountId()));
+            mAccountPosition.set(getPositionById(mAccounts.get().toArray(), mOperation.get().getAccount().getId()));
     }
 
     private void setAnalyticPosition(){
@@ -244,15 +243,15 @@ public class OperationViewModel extends AndroidViewModel{
         OperationType type = mOperation.get().getType();
         switch (type){
             case IN:{
-                mAnalyticPosition.set(getPositionById(mCategoriesIn.toArray(), mOperation.get().getCategoryId()));
+                mAnalyticPosition.set(getPositionById(mCategoriesIn.toArray(), mOperation.get().getCategory().getId()));
                 break;
             }
             case OUT:{
-                mAnalyticPosition.set(getPositionById(mCategoriesOut.toArray(), mOperation.get().getCategoryId()));
+                mAnalyticPosition.set(getPositionById(mCategoriesOut.toArray(), mOperation.get().getCategory().getId()));
                 break;
             }
             case TRANSFER:{
-                mAnalyticPosition.set(getPositionById(mRecAccounts.toArray(), mOperation.get().getRecipientAccountId()));
+                mAnalyticPosition.set(getPositionById(mRecAccounts.toArray(), mOperation.get().getRecAccount().getId()));
                 break;
             }
         }

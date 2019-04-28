@@ -11,8 +11,10 @@ import com.epipasha.cashflow.data.entites.OperationEntity;
 import com.epipasha.cashflow.data.complex.OperationWithData;
 import com.epipasha.cashflow.data.objects.Account;
 import com.epipasha.cashflow.data.objects.Category;
+import com.epipasha.cashflow.data.objects.Operation;
 import com.epipasha.cashflow.data.objects.OperationType;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -20,13 +22,13 @@ import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 
-public class Repository implements DataSource{
+public class Repository implements DataSource {
 
     private volatile static Repository INSTANCE = null;
 
     private LocalDataSource mLocalDataSource;
 
-    private Repository(LocalDataSource localDataSource){
+    private Repository(LocalDataSource localDataSource) {
         mLocalDataSource = localDataSource;
     }
 
@@ -44,25 +46,32 @@ public class Repository implements DataSource{
     // ACCOUNTS
     public Flowable<Account> getAccountById(int id) {
         //TODO get sum for account
-        Flowable<AccountEntity> p = mLocalDataSource.getAccountById(id);
-        return p.map(accountEntity -> new Account(accountEntity.getId(), accountEntity.getTitle(), 0));
+        Flowable<AccountWithBalance> p = mLocalDataSource.getAccountById(id);
+        return p.map(accountEntity -> new Account(accountEntity.getId(), accountEntity.getTitle(), accountEntity.getSum()));
     }
 
     public Completable insertOrUpdateAccount(Account account) {
-         return mLocalDataSource.insertOrUpdateAccount(new AccountEntity(account.getId(), account.getTitle()));
+        return mLocalDataSource.insertOrUpdateAccount(new AccountEntity(account.getId(), account.getTitle()));
     }
 
-    public Flowable<List<AccountEntity>> getAllAccounts() {
-        return mLocalDataSource.getAllAccounts();
+    public Flowable<List<Account>> getAllAccounts() {
+        Flowable<List<AccountWithBalance>> p = mLocalDataSource.getAllAccounts();
+        return p.map(accountEntities ->
+        {
+            List<Account> accounts = new ArrayList<>();
+            for (AccountWithBalance account : accountEntities) {
+                accounts.add(new Account(account.getId(), account.getTitle(), account.getSum()));
+            }
+            return accounts;
+        });
     }
 
 
-
-    public void insertAccount(AccountEntity account){
+    public void insertAccount(AccountEntity account) {
         mLocalDataSource.insertAccount(account);
     }
 
-    public void updateAccount(AccountEntity account){
+    public void updateAccount(AccountEntity account) {
         mLocalDataSource.updateAccount(account);
     }
 
@@ -92,19 +101,19 @@ public class Repository implements DataSource{
     }
 
     // CATEGORIES
-    public Flowable<Category> getCategoryById(int id){
+    public Flowable<Category> getCategoryById(int id) {
         Flowable<CategoryEntity> f = mLocalDataSource.getCategoryById(id);
         return f.map(this::toCategory);
     }
 
-    private Category toCategory(CategoryEntity categoryEntity){
-            return new Category(
-                    categoryEntity.getId(),
-                    categoryEntity.getTitle(),
-                    categoryEntity.getType());
+    private Category toCategory(CategoryEntity categoryEntity) {
+        return new Category(
+                categoryEntity.getId(),
+                categoryEntity.getTitle(),
+                categoryEntity.getType());
     }
 
-    private CategoryEntity fromCategory(Category category){
+    private CategoryEntity fromCategory(Category category) {
         return new CategoryEntity(
                 category.getId(),
                 category.getTitle(),
@@ -112,8 +121,14 @@ public class Repository implements DataSource{
     }
 
 
-    public Flowable<List<CategoryEntity>> getCategoriesByType(OperationType type) {
-        return mLocalDataSource.getCategoriesByType(type);
+    public Flowable<List<Category>> getCategoriesByType(OperationType type) {
+        return mLocalDataSource.getCategoriesByType(type).map(categoryEntities -> {
+            List<Category> categories = new ArrayList<>();
+            for (CategoryEntity entity : categoryEntities) {
+                categories.add(toCategory(entity));
+            }
+            return categories;
+        });
     }
 
     public Completable insertOrUpdateCategory(Category category) {
@@ -121,15 +136,15 @@ public class Repository implements DataSource{
     }
 
 
-    public void getCategoryById(int id, GetCategoryCallback callback){
+    public void getCategoryById(int id, GetCategoryCallback callback) {
         mLocalDataSource.getCategoryById(id, callback);
     }
 
-    public void insertCategory(CategoryEntity category){
+    public void insertCategory(CategoryEntity category) {
         mLocalDataSource.insertCategory(category);
     }
 
-    public void updateCategory(CategoryEntity category){
+    public void updateCategory(CategoryEntity category) {
         mLocalDataSource.updateCategory(category);
     }
 
@@ -153,23 +168,61 @@ public class Repository implements DataSource{
     }
 
     // OPERATIONS
-    public Flowable<OperationEntity> getOperationById(int id){
-        return mLocalDataSource.getOperationById(id);
+    public Flowable<Operation> getOperationById(int id) {
+        return mLocalDataSource.getOperationById(id).flatMap(this::toOperation);
     }
 
-    public Single<Integer> insertOrUpdateOperation(OperationEntity operation) {
-        return mLocalDataSource.insertOrUpdateOperation(operation);
+    public Single<Integer> insertOrUpdateOperation(Operation operation) {
+        return mLocalDataSource.insertOrUpdateOperation(
+                new OperationEntity(
+                        operation.getId(),
+                        operation.getDate(),
+                        operation.getType(),
+                        operation.getAccount().getId(),
+                        operation.getCategory() == null ? null : operation.getCategory().getId(),
+                        operation.getRecAccount() == null ? null : operation.getRecAccount().getId(),
+                        operation.getSum()));
     }
 
-    public void getOperationById(int id, GetOperationCallback callback){
+    private Flowable<Operation> toOperation(OperationEntity entity) {
+        if(!entity.getType().equals(OperationType.TRANSFER)) {
+            Flowable<Account> accountFlowable = getAccountById(entity.getAccountId());
+            Flowable<Category> categoryFlowable = getCategoryById(entity.getCategoryId());
+            return Flowable.zip(accountFlowable, categoryFlowable,
+                    (account, category) -> new Operation(
+                            entity.getId(),
+                            entity.getDate(),
+                            entity.getType(),
+                            account,
+                            category,
+                            null,
+                            entity.getSum()));
+        }else{
+            Flowable<Account> accountFlowable = getAccountById(entity.getAccountId());
+            Flowable<Account> recAccountFlowable = getAccountById(entity.getRecipientAccountId());
+            return Flowable.zip(accountFlowable, recAccountFlowable,
+                    (account, recAccount) -> new Operation(
+                            entity.getId(),
+                            entity.getDate(),
+                            entity.getType(),
+                            account,
+                            null,
+                            recAccount,
+                            entity.getSum()));
+
+        }
+    }
+
+
+    public void getOperationById(int id, GetOperationCallback callback) {
         mLocalDataSource.getOperationById(id, callback);
     }
 
-    public void insertOperation(OperationEntity operation, InsertOperationCallback callback){
+    public void insertOperation(OperationEntity operation, InsertOperationCallback callback) {
         mLocalDataSource.insertOperation(operation, callback);
     }
 
-    public void updateOperation(OperationEntity operation, UpdateOperationCallback callback){
+    public void updateOperation(OperationEntity operation, UpdateOperationCallback callback) {
         mLocalDataSource.updateOperation(operation, callback);
     }
 

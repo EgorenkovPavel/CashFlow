@@ -43,7 +43,7 @@ public class LocalDataSource implements DataSource{
     }
 
     // ACCOUNTS
-    public Flowable<AccountEntity> getAccountById(int id){
+    public Flowable<AccountWithBalance> getAccountById(int id){
         return mDb.accountDao().getRxAccountById(id);
     }
 
@@ -54,8 +54,12 @@ public class LocalDataSource implements DataSource{
             return mDb.accountDao().updateRxAccount(account);
     }
 
-    public Flowable<List<AccountEntity>> getAllAccounts(){
+    public Flowable<List<AccountWithBalance>> getAllAccounts(){
         return mDb.accountDao().getRxAllAccounts();
+    }
+
+    public Flowable<Integer> getAccountBalance(int accountId){
+        return mDb.analyticDao().getRxAccountBalance(accountId);
     }
 
 
