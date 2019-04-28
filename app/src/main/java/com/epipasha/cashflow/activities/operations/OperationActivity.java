@@ -2,6 +2,7 @@ package com.epipasha.cashflow.activities.operations;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -31,10 +32,10 @@ public class OperationActivity extends DetailActivity {
     private OperationViewModel model;
     private ActivityOperationBinding binding;
 
-    public static void start(FragmentActivity parentActivity, int id){
-        Intent intent = new Intent(parentActivity, OperationActivity.class);
+    public static void start(Context context, int id){
+        Intent intent = new Intent(context, OperationActivity.class);
         intent.putExtra(OperationActivity.EXTRA_OPERATION_ID, id);
-        parentActivity.startActivity(intent);
+        context.startActivity(intent);
     }
 
     @Override

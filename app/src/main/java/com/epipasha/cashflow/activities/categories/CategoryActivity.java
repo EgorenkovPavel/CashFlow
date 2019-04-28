@@ -1,5 +1,6 @@
 package com.epipasha.cashflow.activities.categories;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -20,10 +21,10 @@ public class CategoryActivity extends DetailActivity {
 
     private CategoryViewModel model;
 
-    public static void start(FragmentActivity parentActivity, int id){
-        Intent intent = new Intent(parentActivity, CategoryActivity.class);
+    public static void start(Context context, int id){
+        Intent intent = new Intent(context, CategoryActivity.class);
         intent.putExtra(CategoryActivity.EXTRA_CATEGORY_ID, id);
-        parentActivity.startActivity(intent);
+        context.startActivity(intent);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.epipasha.cashflow.activities.accounts;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -21,10 +22,10 @@ public class AccountActivity extends DetailActivity {
 
     private AccountViewModel model;
 
-    public static void start(FragmentActivity parentActivity, int id){
-        Intent intent = new Intent(parentActivity, AccountActivity.class);
+    public static void start(Context context, int id){
+        Intent intent = new Intent(context, AccountActivity.class);
         intent.putExtra(AccountActivity.EXTRA_ACCOUNT_ID, id);
-        parentActivity.startActivity(intent);
+        context.startActivity(intent);
     }
 
     @Override
