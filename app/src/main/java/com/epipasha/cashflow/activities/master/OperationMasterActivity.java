@@ -64,42 +64,7 @@ public class OperationMasterActivity extends BaseActivity {
 
         model.getSelectedRepAccount().observe(this, id -> mRecAccountAdapter.setSelectedId(id));
 
-        model.getStatus().observe(this, status -> {
-            if(status == null) return;
-            switch (status){
-                case EMPTY_SUM:{
-                    Snackbar.make(rvAccounts, R.string.no_sum, Snackbar.LENGTH_LONG).show();
-                    break;
-                }
-                case EMPTY_TYPE:{
-                    Snackbar.make(rvAccounts, R.string.no_type, Snackbar.LENGTH_LONG).show();
-                    break;
-                }
-                case EMPTY_ANALYTIC:{
-                    Snackbar.make(rvAccounts, R.string.no_analytic_selected, Snackbar.LENGTH_LONG).show();
-                    break;
-                }
-                case EMPTY_ACCOUNT:{
-                    Snackbar.make(rvAccounts, R.string.no_account_selected, Snackbar.LENGTH_LONG).show();
-                    break;
-                }
-                case OPERATION_SAVED: {
-                    Snackbar snackbar = Snackbar.make(rvAccounts, R.string.operation_created, Snackbar.LENGTH_LONG);
-                    snackbar.setAction(R.string.undo, view -> AppExecutors.getInstance().discIO().execute(() -> model.deleteOperation()));
-                    snackbar.show();
-                    break;
-                }
-                case OPERATION_DELETED:{
-                    Snackbar.make(rvAccounts, R.string.operation_deleted, Snackbar.LENGTH_LONG).show();
-                    break;
-                }
-                case CLOSE:{
-                    setResult(RESULT_OK);
-                    finish();
-                    break;
-                }
-            }
-        });
+        model.getStatus().observe(this, this::onStatusChanged);
     }
 
     private void findViews() {
@@ -135,6 +100,43 @@ public class OperationMasterActivity extends BaseActivity {
         mRecAccountAdapter = new AccountAdapter();
         mRecAccountAdapter.setListener(item -> model.selectRepAccount(item));
         rvRecAccounts.setAdapter(mRecAccountAdapter);
+    }
+
+    private void onStatusChanged(OperationMasterViewModel.Status status){
+        if(status == null) return;
+        switch (status){
+            case EMPTY_SUM:{
+                Snackbar.make(rvAccounts, R.string.no_sum, Snackbar.LENGTH_LONG).show();
+                break;
+            }
+            case EMPTY_TYPE:{
+                Snackbar.make(rvAccounts, R.string.no_type, Snackbar.LENGTH_LONG).show();
+                break;
+            }
+            case EMPTY_ANALYTIC:{
+                Snackbar.make(rvAccounts, R.string.no_analytic_selected, Snackbar.LENGTH_LONG).show();
+                break;
+            }
+            case EMPTY_ACCOUNT:{
+                Snackbar.make(rvAccounts, R.string.no_account_selected, Snackbar.LENGTH_LONG).show();
+                break;
+            }
+            case OPERATION_SAVED: {
+                Snackbar snackbar = Snackbar.make(rvAccounts, R.string.operation_created, Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.undo, view -> AppExecutors.getInstance().discIO().execute(() -> model.deleteOperation()));
+                snackbar.show();
+                break;
+            }
+            case OPERATION_DELETED:{
+                Snackbar.make(rvAccounts, R.string.operation_deleted, Snackbar.LENGTH_LONG).show();
+                break;
+            }
+            case CLOSE:{
+                setResult(RESULT_OK);
+                finish();
+                break;
+            }
+        }
     }
 
     private class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountViewHolder>{
