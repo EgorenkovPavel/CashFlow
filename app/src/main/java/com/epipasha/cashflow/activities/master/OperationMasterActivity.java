@@ -31,12 +31,10 @@ public class OperationMasterActivity extends BaseActivity {
 
     private AccountAdapter mAccountAdapter;
     private CategoryAdapter mCategoryAdapter;
-    private CategoryAdapter mSubcategoryAdapter;
     private AccountAdapter mRecAccountAdapter;
 
     private RecyclerView rvAccounts;
     private RecyclerView rvCategories;
-    private RecyclerView rvSubcategories;
     private RecyclerView rvRecAccounts;
 
     @Override
@@ -60,13 +58,9 @@ public class OperationMasterActivity extends BaseActivity {
 
         model.getCategories().observe(this, categories -> mCategoryAdapter.setItems(categories));
 
-        model.getSubcategories().observe(this, categories -> mSubcategoryAdapter.setItems(categories));
-
         model.getSelectedAccount().observe(this, id -> mAccountAdapter.setSelectedId(id));
 
         model.getSelectedCategory().observe(this, id -> mCategoryAdapter.setSelectedId(id));
-
-        model.getSelectedSubcategory().observe(this, id -> mSubcategoryAdapter.setSelectedId(id));
 
         model.getSelectedRepAccount().observe(this, id -> mRecAccountAdapter.setSelectedId(id));
 
@@ -112,19 +106,16 @@ public class OperationMasterActivity extends BaseActivity {
 
         rvAccounts = findViewById(R.id.rvAccounts);
         rvCategories = findViewById(R.id.rvCategories);
-        rvSubcategories = findViewById(R.id.rvSubcategories);
         rvRecAccounts = findViewById(R.id.rvRecAccounts);
 
         rvAccounts.setHasFixedSize(true);
         rvCategories.setHasFixedSize(true);
-        rvSubcategories.setHasFixedSize(true);
         rvRecAccounts.setHasFixedSize(true);
 
         rvAccounts.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
         rvRecAccounts.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
 
         rvCategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        rvSubcategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
 
         DividerItemDecoration mAccountDividerItemDecoration = new DividerItemDecoration(this, LinearLayoutManager.HORIZONTAL);
         rvAccounts.addItemDecoration(mAccountDividerItemDecoration);
@@ -132,7 +123,6 @@ public class OperationMasterActivity extends BaseActivity {
 
         DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
         rvCategories.addItemDecoration(mDividerItemDecoration);
-        rvSubcategories.addItemDecoration(mDividerItemDecoration);
 
         mAccountAdapter = new AccountAdapter();
         mAccountAdapter.setListener(item -> model.selectAccount(item));
@@ -141,10 +131,6 @@ public class OperationMasterActivity extends BaseActivity {
         mCategoryAdapter = new CategoryAdapter();
         mCategoryAdapter.setListener(item -> model.selectCategory(item));
         rvCategories.setAdapter(mCategoryAdapter);
-
-        mSubcategoryAdapter = new CategoryAdapter();
-        mSubcategoryAdapter.setListener(item -> model.selectSubcategory(item));
-        rvSubcategories.setAdapter(mSubcategoryAdapter);
 
         mRecAccountAdapter = new AccountAdapter();
         mRecAccountAdapter.setListener(item -> model.selectRepAccount(item));

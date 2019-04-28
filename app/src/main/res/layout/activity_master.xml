@@ -156,19 +156,6 @@
                     app:layout_constraintVertical_bias="0.676"
                     tools:listitem="@layout/item_master_category" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvSubcategories"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="4dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/type_normal"
-                    app:layout_constraintBottom_toTopOf="@+id/etSum"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/rvCategories"
-                    app:layout_constraintTop_toBottomOf="@+id/lblAnalytic"
-                    tools:listitem="@layout/item_master_category" />
             </LinearLayout>
 
         </FrameLayout>
