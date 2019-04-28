@@ -58,11 +58,11 @@ public class OperationMasterActivity extends BaseActivity {
 
         model.getCategories().observe(this, categories -> mCategoryAdapter.setItems(categories));
 
-        model.getSelectedAccount().observe(this, id -> mAccountAdapter.setSelectedId(id));
+        model.getSelectedAccount().observe(this, accountWithBalance -> mAccountAdapter.setSelectedId(accountWithBalance));
 
-        model.getSelectedCategory().observe(this, id -> mCategoryAdapter.setSelectedId(id));
+        model.getSelectedCategory().observe(this, categoryEntity -> mCategoryAdapter.setSelectedId(categoryEntity));
 
-        model.getSelectedRepAccount().observe(this, id -> mRecAccountAdapter.setSelectedId(id));
+        model.getSelectedRepAccount().observe(this, accountWithBalance -> mRecAccountAdapter.setSelectedId(accountWithBalance));
 
         model.getStatus().observe(this, this::onStatusChanged);
     }
@@ -176,8 +176,8 @@ public class OperationMasterActivity extends BaseActivity {
             this.listener = listener;
         }
 
-        public void setSelectedId(Integer id){
-            this.selectedId = id;
+        public void setSelectedId(AccountWithBalance accountWithBalance){
+            this.selectedId = accountWithBalance.getId();
             notifyDataSetChanged();
         }
 
@@ -235,8 +235,8 @@ public class OperationMasterActivity extends BaseActivity {
             this.listener = listener;
         }
 
-        public void setSelectedId(Integer id){
-            this.selectedId = id;
+        public void setSelectedId(CategoryEntity categoryEntity){
+            this.selectedId = categoryEntity.getId();
             notifyDataSetChanged();
         }
 

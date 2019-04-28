@@ -33,9 +33,9 @@ public class OperationMasterViewModel extends AndroidViewModel {
     private LiveData<List<CategoryEntity>> mAllCategories;
     private MediatorLiveData<List<CategoryEntity>> mCategories = new MediatorLiveData<>();
 
-    private MutableLiveData<Integer> selectedAccount = new MutableLiveData<>();
-    private MutableLiveData<Integer> selectedCategory = new MutableLiveData<>();
-    private MutableLiveData<Integer> selectedRepAccount = new MutableLiveData<>();
+    private MutableLiveData<AccountWithBalance> selectedAccount = new MutableLiveData<>();
+    private MutableLiveData<CategoryEntity> selectedCategory = new MutableLiveData<>();
+    private MutableLiveData<AccountWithBalance> selectedRepAccount = new MutableLiveData<>();
 
     private MutableLiveData<Status> mStatus = new MutableLiveData<>();
 
@@ -85,24 +85,24 @@ public class OperationMasterViewModel extends AndroidViewModel {
     }
 
     public void selectAccount(AccountWithBalance account){
-        selectedAccount.setValue(account.getId());
+        selectedAccount.setValue(account);
 
-        Integer repAccountId = selectedRepAccount.getValue();
-        if(repAccountId != null && repAccountId == account.getId())
+        AccountWithBalance repAccountId = selectedRepAccount.getValue();
+        if(repAccountId != null && repAccountId.getId() == account.getId())
             selectedRepAccount.setValue(null);
     }
 
     public void selectRepAccount(AccountWithBalance account){
-        Integer accountId = selectedAccount.getValue();
-        if(accountId == null || accountId != account.getId())
-            selectedRepAccount.setValue(account.getId());
+        AccountWithBalance accountId = selectedAccount.getValue();
+        if(accountId == null || accountId.getId() != account.getId())
+            selectedRepAccount.setValue(account);
     }
 
     public void saveOperation(){
 
-        Integer accountId = selectedAccount.getValue();
-        Integer categoryId = selectedCategory.getValue();
-        Integer repAccountId = selectedRepAccount.getValue();
+        Integer accountId = selectedAccount.getValue().getId();
+        Integer categoryId = selectedCategory.getValue().getId();
+        Integer repAccountId = selectedRepAccount.getValue().getId();
 
         OperationType type = mOperation.get().getType();
 
@@ -169,20 +169,20 @@ public class OperationMasterViewModel extends AndroidViewModel {
         return mStatus;
     }
 
-    public MutableLiveData<Integer> getSelectedAccount() {
+    public MutableLiveData<AccountWithBalance> getSelectedAccount() {
         return selectedAccount;
     }
 
-    public MutableLiveData<Integer> getSelectedCategory() {
+    public MutableLiveData<CategoryEntity> getSelectedCategory() {
         return selectedCategory;
     }
 
-    public MutableLiveData<Integer> getSelectedRepAccount() {
+    public MutableLiveData<AccountWithBalance> getSelectedRepAccount() {
         return selectedRepAccount;
     }
 
     public void selectCategory(CategoryEntity category) {
-        selectedCategory.setValue(category.getId());
+        selectedCategory.setValue(category);
     }
 
     public enum Status{
