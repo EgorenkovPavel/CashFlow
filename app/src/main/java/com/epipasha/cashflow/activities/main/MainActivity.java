@@ -73,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(i);
                     break;
                 }
+                default:
+                    throw new IllegalArgumentException("No such tab");
             }
         });
 
