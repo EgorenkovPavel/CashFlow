@@ -1,7 +1,19 @@
 package com.epipasha.cashflow.data.complex;
 
 import androidx.room.ColumnInfo;
+import androidx.room.DatabaseView;
 
+@DatabaseView("SELECT accounts.id as id, "
+        + "accounts.title as title, "
+        + "balance.sum as sum "
+        + "FROM accounts as accounts "
+        + "LEFT OUTER JOIN "
+        + "(SELECT "
+        + "balance.account_id as account_id, "
+        + "SUM(balance.sum) as sum "
+        + "FROM balance "
+        + "GROUP BY balance.account_id) as balance "
+        + "ON accounts.id = balance.account_id ")
 public class AccountWithBalance {
 
     @ColumnInfo(name = "id")
@@ -37,7 +49,4 @@ public class AccountWithBalance {
         return sum;
     }
 
-    public void setSum(int sum) {
-        this.sum = sum;
-    }
 }

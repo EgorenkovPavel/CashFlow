@@ -4,13 +4,13 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.ObservableField;
-import androidx.databinding.ObservableInt;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.Repository;
-import com.epipasha.cashflow.data.entites.AccountEntity;
 import com.epipasha.cashflow.data.objects.Account;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -24,31 +24,35 @@ public class AccountViewModel extends AndroidViewModel {
 
     private final CompositeDisposable mDisposable = new CompositeDisposable();
 
-    private ObservableField<Account> mAccount = new ObservableField<>();
-    private ObservableInt activityTitle = new ObservableInt(R.string.new_account);
+    private MutableLiveData<Integer> activityTitle = new MutableLiveData<>(R.string.new_account);
+    private MediatorLiveData<Account> mCurrentAccount = new MediatorLiveData<>();
 
     public AccountViewModel(@NonNull Application application, Repository repository) {
         super(application);
         mRepository = repository;
-        mAccount.set(new Account());
+
+        activityTitle.postValue(R.string.new_account);
+
+        mCurrentAccount.addSource(new MutableLiveData<>(new Account()), account ->
+                mCurrentAccount.setValue(account));
+
     }
 
     public void start(int accountId){
-        mDisposable.add(mRepository.getAccountById(accountId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(account -> {mAccount.set(account);
-                            activityTitle.set(R.string.account);},
-                        throwable -> {}));
+
+        activityTitle.postValue(R.string.account);
+
+        mCurrentAccount.addSource(mRepository.getAccountById(accountId), account ->
+                mCurrentAccount.setValue(account));
 
     }
 
-    public ObservableInt getActivityTitle() {
+    public LiveData<Account> getCurrentAccount() {
+        return mCurrentAccount;
+    }
+
+    public LiveData<Integer> getActivityTitle() {
         return activityTitle;
-    }
-
-    public ObservableField<Account> getAccount() {
-        return mAccount;
     }
 
     public MutableLiveData<Boolean> getShouldClose() {
@@ -56,13 +60,13 @@ public class AccountViewModel extends AndroidViewModel {
     }
 
     public void saveAccount(){
-        Account account = mAccount.get();
+        Account account = mCurrentAccount.getValue();
 
         if (account == null){
             return;
         }
 
-        mDisposable.add(mRepository.insertOrUpdateAccount(account)
+        mDisposable.add(mRepository.insertOrUpdateRxAccount(account)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> shouldClose.setValue(true)));

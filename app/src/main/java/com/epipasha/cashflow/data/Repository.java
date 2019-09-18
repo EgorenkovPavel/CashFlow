@@ -2,6 +2,7 @@ package com.epipasha.cashflow.data;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.LiveDataReactiveStreams;
+import androidx.lifecycle.Transformations;
 
 import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.entites.AccountEntity;
@@ -45,14 +46,32 @@ public class Repository implements DataSource {
     }
 
     // ACCOUNTS
-    public Flowable<Account> getAccountById(int id) {
-        //TODO get sum for account
-        Flowable<AccountWithBalance> p = mLocalDataSource.getAccountById(id);
-        return p.map(accountEntity -> new Account(accountEntity.getId(), accountEntity.getTitle(), accountEntity.getSum()));
+    public LiveData<Account> getAccountById(int id) {
+        return Transformations.map(mLocalDataSource.getAccountById(id),
+                this::transformToAccount);
     }
 
-    public Completable insertOrUpdateAccount(Account account) {
-        return mLocalDataSource.insertOrUpdateAccount(new AccountEntity(account.getId(), account.getTitle()));
+    private Account transformToAccount(AccountWithBalance accountEntity){
+        return new Account(accountEntity.getId(), accountEntity.getTitle(), accountEntity.getSum());
+    }
+
+    private AccountEntity transformToAccountEntity(Account account){
+        return new AccountEntity(account.getId(), account.getTitle());
+    }
+
+    public void insertOrUpdateAccount(Account account) {
+        mLocalDataSource.insertAccount(transformToAccountEntity(account));
+    }
+
+
+    public Flowable<Account> getRxAccountById(int id) {
+        //TODO get sum for account
+        Flowable<AccountWithBalance> p = mLocalDataSource.getRxAccountById(id);
+        return p.map(this::transformToAccount);
+    }
+
+    public Completable insertOrUpdateRxAccount(Account account) {
+        return mLocalDataSource.insertOrUpdateAccount(transformToAccountEntity(account));
     }
 
     public Flowable<List<Account>> getAllAccounts() {
@@ -192,7 +211,7 @@ public class Repository implements DataSource {
 
     private Flowable<Operation> toOperation(OperationEntity entity) {
         if(!entity.getType().equals(OperationType.TRANSFER)) {
-            Flowable<Account> accountFlowable = getAccountById(entity.getAccountId());
+            Flowable<Account> accountFlowable = getRxAccountById(entity.getAccountId());
             Flowable<Category> categoryFlowable = getCategoryById(entity.getCategoryId());
             return Flowable.zip(accountFlowable, categoryFlowable,
                     (account, category) -> new Operation(
@@ -204,8 +223,8 @@ public class Repository implements DataSource {
                             null,
                             entity.getSum()));
         }else{
-            Flowable<Account> accountFlowable = getAccountById(entity.getAccountId());
-            Flowable<Account> recAccountFlowable = getAccountById(entity.getRecipientAccountId());
+            Flowable<Account> accountFlowable = getRxAccountById(entity.getAccountId());
+            Flowable<Account> recAccountFlowable = getRxAccountById(entity.getRecipientAccountId());
             return Flowable.zip(accountFlowable, recAccountFlowable,
                     (account, recAccount) -> new Operation(
                             entity.getId(),

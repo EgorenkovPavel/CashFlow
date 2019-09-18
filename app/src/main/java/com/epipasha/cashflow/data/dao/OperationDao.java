@@ -136,6 +136,6 @@ public abstract class OperationDao {
     @Query("SELECT * FROM operations WHERE id = :id")
     public abstract Flowable<OperationEntity> getRxOperationById(int id);
 
-    @Delete
-    public abstract Completable deleteRxOperation(int id);
+//    @Delete
+//    public abstract Completable deleteRxOperation(int id);
 }

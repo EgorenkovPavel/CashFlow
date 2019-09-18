@@ -43,15 +43,12 @@ public class LocalDataSource implements DataSource{
     }
 
     // ACCOUNTS
-    public Flowable<AccountWithBalance> getAccountById(int id){
+    public Flowable<AccountWithBalance> getRxAccountById(int id){
         return mDb.accountDao().getRxAccountById(id);
     }
 
     public Completable insertOrUpdateAccount(AccountEntity account) {
-        if(account.getId() == 0)
-            return mDb.accountDao().insertRxAccount(account);
-        else
-            return mDb.accountDao().updateRxAccount(account);
+        return mDb.accountDao().insertOrUpdateAccountRx(account);
     }
 
     public Flowable<List<AccountWithBalance>> getAllAccounts(){
@@ -62,10 +59,13 @@ public class LocalDataSource implements DataSource{
         return mDb.analyticDao().getRxAccountBalance(accountId);
     }
 
+    public LiveData<AccountWithBalance> getAccountById(int id){
+        return mDb.accountDao().getAccountWithBalanceLiveDataById(id);
+    }
 
     public void getAccountById(final int id, final DataSource.GetAccountCallback callback){
         Runnable runnable = () -> {
-            final AccountEntity account = mDb.accountDao().getAccountById(id);
+            final AccountEntity account = mDb.accountDao().getAccountEntityById(id);
 
             mAppExecutors.mainThread().execute(() -> {
                 if (account != null) {
@@ -89,7 +89,7 @@ public class LocalDataSource implements DataSource{
 
     public void getAllAccounts(final GetAccountsCallback callback){
         Runnable runnable = () -> {
-            final List<AccountEntity> accounts = mDb.accountDao().getAllAccounts();
+            final List<AccountEntity> accounts = mDb.accountDao().getAccountEntitiesList();
 
             mAppExecutors.mainThread().execute(() -> {
                 if (accounts != null) {
@@ -106,7 +106,7 @@ public class LocalDataSource implements DataSource{
     @Override
     public void getAllAccountsWithBalance(final GetAccountsWithBalanceCallback callback) {
         Runnable runnable = () -> {
-            final List<AccountWithBalance> accounts = mDb.accountDao().getAllAccountsWithBalance();
+            final List<AccountWithBalance> accounts = mDb.accountDao().getAccountWithBalanceList();
 
             mAppExecutors.mainThread().execute(() -> {
                 if (accounts != null) {
@@ -122,7 +122,7 @@ public class LocalDataSource implements DataSource{
 
     @Override
     public LiveData<List<AccountWithBalance>> loadAllAccountsWithBalance() {
-        return mDb.accountDao().loadAllAccountsWithBalance();
+        return mDb.accountDao().getAccountWithBalanceLiveData();
     }
 
     @Override
@@ -218,7 +218,7 @@ public class LocalDataSource implements DataSource{
     }
 
     public Completable deleteOperation(int id){
-        return mDb.operationDao().deleteRxOperation(id);
+        return null;//mDb.operationDao().deleteRxOperation(id);
     }
 
 

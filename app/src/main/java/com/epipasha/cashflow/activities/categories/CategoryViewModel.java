@@ -36,8 +36,6 @@ public class CategoryViewModel extends AndroidViewModel{
     private ObservableInt mParentCategoryPosition = new ObservableInt(0);
     private ObservableField<List<Category>> mParentCategories = new ObservableField<>();
 
-    private ObservableBoolean isNew = new ObservableBoolean(true);
-
     //TODO Rewrite to CategoryObject
 
     public CategoryViewModel(@NonNull Application application, Repository repository) {
@@ -53,7 +51,6 @@ public class CategoryViewModel extends AndroidViewModel{
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(category -> {
                     mCategory.set(category);
-                    isNew.set(false);
                     activityTitle.set(R.string.category);
                 }, throwable -> {}));
 

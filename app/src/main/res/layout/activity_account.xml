@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data class="com.epipasha.cashflow.activities.ActivityAccountBinding">
+
         <import type="android.view.View" />
 
         <variable
             name="viewmodel"
-            type="com.epipasha.cashflow.activities.accounts.AccountViewModel"/>
+            type="com.epipasha.cashflow.activities.accounts.AccountViewModel" />
 
     </data>
-<LinearLayout
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -27,7 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/actionBarSize"
                 app:popupTheme="@style/AppTheme.PopupOverlay"
-                app:title="@{viewmodel.activityTitle}" />
+                app:title="@{viewmodel.activityTitle}"/>
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -35,9 +36,9 @@
             style="@style/label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
             android:labelFor="@id/account_detail_name"
             android:text="@string/name" />
 
@@ -45,13 +46,14 @@
             android:id="@+id/account_detail_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:background="@drawable/input_field"
             android:ems="10"
             android:inputType="textPersonName"
             android:padding="8dp"
-            android:text="@={viewmodel.account.title}"/>
+            android:text="@={viewmodel.currentAccount.title}" />
 
-</LinearLayout>
+    </LinearLayout>
+
 </layout>

@@ -46,6 +46,7 @@ public class AccountActivity extends DetailActivity {
                 .get(AccountViewModel.class);
 
         binding.setViewmodel(model);
+        binding.setLifecycleOwner(this);
 
         if(savedInstanceState == null) {
             Intent i = getIntent();

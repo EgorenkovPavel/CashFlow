@@ -20,55 +20,30 @@ import io.reactivex.Flowable;
 public interface AccountDao {
 
     @Query("SELECT * FROM accounts ORDER BY title")
-    LiveData<List<AccountEntity>> loadAllAccounts();
+    LiveData<List<AccountEntity>> getAccountEntitiesLiveData();
 
     @Query("SELECT * FROM accounts ORDER BY title")
-    List<AccountEntity> getAllAccounts();
+    List<AccountEntity> getAccountEntitiesList();
+
+    @Query("SELECT * FROM accounts WHERE id = :id")
+    LiveData<AccountEntity> getAccountEntityLiveData(int id);
+
+    @Query("SELECT * FROM accounts WHERE id = :id")
+    AccountEntity getAccountEntityById(int id);
 
     @Query("SELECT * FROM accounts WHERE id != :id ORDER BY title")
-    LiveData<List<AccountEntity>> loadAllAccountsExceptId(int id);
+    LiveData<List<AccountEntity>> getAccountEntitiesLiveDataExceptId(int id);
 
-    @Query("SELECT accounts.id as id, "
-            + "accounts.title as title, "
-            + "balance.sum as sum "
-            + "FROM accounts as accounts "
-            + "LEFT OUTER JOIN "
-            + "(SELECT "
-            + "balance.account_id as account_id, "
-            + "SUM(balance.sum) as sum "
-            + "FROM balance "
-            + "GROUP BY balance.account_id) as balance "
-            + "ON accounts.id = balance.account_id "
-            + "ORDER BY title")
-    LiveData<List<AccountWithBalance>> loadAllAccountsWithBalance();
+    @Query("SELECT * FROM AccountWithBalance WHERE AccountWithBalance.id = :id ORDER BY title")
+    LiveData<AccountWithBalance> getAccountWithBalanceLiveDataById(int id);
 
-    @Query("SELECT accounts.id as id, "
-            + "accounts.title as title, "
-            + "balance.sum as sum "
-            + "FROM accounts as accounts "
-            + "LEFT OUTER JOIN "
-            + "(SELECT "
-            + "balance.account_id as account_id, "
-            + "SUM(balance.sum) as sum "
-            + "FROM balance "
-            + "GROUP BY balance.account_id) as balance "
-            + "ON accounts.id = balance.account_id "
-            + "ORDER BY title")
-    List<AccountWithBalance> getAllAccountsWithBalance();
+    @Query("SELECT * FROM AccountWithBalance ORDER BY title")
+    LiveData<List<AccountWithBalance>> getAccountWithBalanceLiveData();
 
-    @Query("SELECT accounts.id as id, "
-            + "accounts.title as title, "
-            + "balance.sum as sum "
-            + "FROM accounts as accounts "
-            + "LEFT OUTER JOIN "
-            + "(SELECT "
-            + "balance.account_id as account_id, "
-            + "SUM(balance.sum) as sum "
-            + "FROM balance "
-            + "GROUP BY balance.account_id) as balance "
-            + "ON accounts.id = balance.account_id "
-            + "WHERE accounts.id != :id "
-            + "ORDER BY title")
+    @Query("SELECT * FROM AccountWithBalance ORDER BY title")
+    List<AccountWithBalance> getAccountWithBalanceList();
+
+    @Query("SELECT * FROM AccountWithBalance WHERE AccountWithBalance.id != :id ORDER BY title")
     LiveData<List<AccountWithBalance>> loadAllAccountsWithBalanceExceptId(int id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -86,45 +61,18 @@ public interface AccountDao {
     @Query("DELETE FROM accounts")
     void deleteAll();
 
-    @Query("SELECT * FROM accounts WHERE id = :id")
-    LiveData<AccountEntity> loadAccountById(int id);
 
-    @Query("SELECT * FROM accounts WHERE id = :id")
-    AccountEntity getAccountById(int id);
 
     //RX
-    @Query("SELECT accounts.id as id, "
-            + "accounts.title as title, "
-            + "balance.sum as sum "
-            + "FROM accounts as accounts "
-            + "LEFT OUTER JOIN "
-            + "(SELECT "
-            + "balance.account_id as account_id, "
-            + "SUM(balance.sum) as sum "
-            + "FROM balance "
-            + "GROUP BY balance.account_id) as balance "
-            + "ON accounts.id = balance.account_id "
-            + "WHERE accounts.id = :id "
-            + "ORDER BY title")
+    @Query("SELECT * FROM AccountWithBalance WHERE AccountWithBalance.id = :id ORDER BY title")
     Flowable<AccountWithBalance> getRxAccountById(int id);
 
-    @Insert
-    Completable insertRxAccount(AccountEntity account);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    Completable insertOrUpdateAccountRx(AccountEntity account);
 
     @Update
     Completable updateRxAccount(AccountEntity account);
 
-    @Query("SELECT accounts.id as id, "
-            + "accounts.title as title, "
-            + "balance.sum as sum "
-            + "FROM accounts as accounts "
-            + "LEFT OUTER JOIN "
-            + "(SELECT "
-            + "balance.account_id as account_id, "
-            + "SUM(balance.sum) as sum "
-            + "FROM balance "
-            + "GROUP BY balance.account_id) as balance "
-            + "ON accounts.id = balance.account_id "
-            + "ORDER BY title")
+    @Query("SELECT * FROM AccountWithBalance ORDER BY title")
     Flowable<List<AccountWithBalance>> getRxAllAccounts();
 }

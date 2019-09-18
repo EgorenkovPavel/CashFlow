@@ -6,6 +6,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import android.content.Context;
 
+import com.epipasha.cashflow.data.complex.AccountWithBalance;
 import com.epipasha.cashflow.data.dao.AccountDao;
 import com.epipasha.cashflow.data.dao.AnalyticDao;
 import com.epipasha.cashflow.data.dao.BackupDao;
@@ -19,7 +20,15 @@ import com.epipasha.cashflow.data.entites.Cashflow;
 import com.epipasha.cashflow.data.entites.CategoryEntity;
 import com.epipasha.cashflow.data.entites.OperationEntity;
 
-@Database(entities = {AccountEntity.class, CategoryEntity.class, Budget.class, OperationEntity.class, Balance.class, Cashflow.class}, version = 1)
+@Database(entities = {
+        AccountEntity.class,
+        CategoryEntity.class,
+        Budget.class,
+        OperationEntity.class,
+        Balance.class,
+        Cashflow.class},
+        views = {AccountWithBalance.class},
+        version = 1)
 @TypeConverters(DataConverter.class)
 public abstract class AppDatabase extends RoomDatabase{
 
