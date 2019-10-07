@@ -30,7 +30,8 @@ public class CategoryActivity extends DetailActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActivityCategoryBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_category);
+        ActivityCategoryBinding binding = DataBindingUtil
+                .setContentView(this, R.layout.activity_category);
 
         setSupportActionBar(binding.toolbar);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -39,6 +40,7 @@ public class CategoryActivity extends DetailActivity {
                 .get(CategoryViewModel.class);
 
         binding.setViewmodel(model);
+        binding.setLifecycleOwner(this);
 
         if(savedInstanceState == null) {
             Intent i = getIntent();

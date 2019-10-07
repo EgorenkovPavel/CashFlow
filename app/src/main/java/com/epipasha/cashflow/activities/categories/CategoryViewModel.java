@@ -3,20 +3,17 @@ package com.epipasha.cashflow.activities.categories;
 import android.app.Application;
 
 import androidx.annotation.NonNull;
-import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableInt;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.epipasha.cashflow.R;
 import com.epipasha.cashflow.data.Repository;
-import com.epipasha.cashflow.data.entites.CategoryEntity;
 import com.epipasha.cashflow.data.objects.Category;
 import com.epipasha.cashflow.data.objects.OperationType;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -30,11 +27,9 @@ public class CategoryViewModel extends AndroidViewModel{
 
     private CompositeDisposable mDisposable = new CompositeDisposable();
 
-    private ObservableInt activityTitle = new ObservableInt(R.string.new_category);
-    private ObservableField<Category> mCategory = new ObservableField<>(
-            new Category("", OperationType.IN));
-    private ObservableInt mParentCategoryPosition = new ObservableInt(0);
-    private ObservableField<List<Category>> mParentCategories = new ObservableField<>();
+    private MediatorLiveData<Category> mCurrentCategory = new MediatorLiveData<>();
+
+    private MutableLiveData<Integer> activityTitle = new MutableLiveData<>(R.string.new_category);
 
     //TODO Rewrite to CategoryObject
 
@@ -42,27 +37,25 @@ public class CategoryViewModel extends AndroidViewModel{
         super(application);
 
         mRepository = repository;
-        mParentCategories.set(new ArrayList<>());
+
+        activityTitle.postValue(R.string.new_category);
+
+        mCurrentCategory.addSource(new MutableLiveData<>(new Category("", OperationType.IN)),
+                category -> mCurrentCategory.setValue(category));
     }
 
     public void start(int categoryId){
-        mDisposable.add(mRepository.getCategoryById(categoryId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(category -> {
-                    mCategory.set(category);
-                    activityTitle.set(R.string.category);
-                }, throwable -> {}));
+
+        activityTitle.postValue(R.string.category);
+
+        mCurrentCategory.addSource(mRepository.getCategoryById(categoryId),
+                category -> mCurrentCategory.setValue(category));
 
     }
 
     //TODO rewrite loading to rx. wait loading and then set parent id
 
-    public ObservableField<Category> getCategory() {
-        return mCategory;
-    }
-
-    public ObservableInt getActivityTitle() {
+    public LiveData<Integer> getActivityTitle() {
         return activityTitle;
     }
 
@@ -70,14 +63,12 @@ public class CategoryViewModel extends AndroidViewModel{
         return shouldClose;
     }
 
-    public void setOperationType(OperationType type){
-        Category category = mCategory.get();
-        if(category == null) return;
-        category.setType(type);
+    public LiveData<Category> getCurrentCategory() {
+        return mCurrentCategory;
     }
 
     public void saveObject(){
-        Category category = mCategory.get();
+        Category category = mCurrentCategory.getValue();
 
         mDisposable.add(mRepository.insertOrUpdateCategory(category)
         .subscribeOn(Schedulers.io())

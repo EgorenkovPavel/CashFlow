@@ -126,19 +126,23 @@ public class Repository implements DataSource {
     }
 
     // CATEGORIES
-    public Flowable<Category> getCategoryById(int id) {
-        Flowable<CategoryEntity> f = mLocalDataSource.getCategoryById(id);
-        return f.map(this::toCategory);
+    public LiveData<Category> getCategoryById(int id) {
+        return Transformations.map(mLocalDataSource.getCategoryById(id), this::transformToCategory);
     }
 
-    private Category toCategory(CategoryEntity categoryEntity) {
+    public Flowable<Category> getCategoryRxById(int id) {
+        Flowable<CategoryEntity> f = mLocalDataSource.getCategoryRxById(id);
+        return f.map(this::transformToCategory);
+    }
+
+    private Category transformToCategory(CategoryEntity categoryEntity) {
         return new Category(
                 categoryEntity.getId(),
                 categoryEntity.getTitle(),
                 categoryEntity.getType());
     }
 
-    private CategoryEntity fromCategory(Category category) {
+    private CategoryEntity transformToCategoryEntity(Category category) {
         return new CategoryEntity(
                 category.getId(),
                 category.getTitle(),
@@ -150,14 +154,14 @@ public class Repository implements DataSource {
         return mLocalDataSource.getCategoriesByType(type).map(categoryEntities -> {
             List<Category> categories = new ArrayList<>();
             for (CategoryEntity entity : categoryEntities) {
-                categories.add(toCategory(entity));
+                categories.add(transformToCategory(entity));
             }
             return categories;
         });
     }
 
     public Completable insertOrUpdateCategory(Category category) {
-        return mLocalDataSource.insertOrUpdateCategory(fromCategory(category));
+        return mLocalDataSource.insertOrUpdateCategory(transformToCategoryEntity(category));
     }
 
 
@@ -212,7 +216,7 @@ public class Repository implements DataSource {
     private Flowable<Operation> toOperation(OperationEntity entity) {
         if(!entity.getType().equals(OperationType.TRANSFER)) {
             Flowable<Account> accountFlowable = getRxAccountById(entity.getAccountId());
-            Flowable<Category> categoryFlowable = getCategoryById(entity.getCategoryId());
+            Flowable<Category> categoryFlowable = getCategoryRxById(entity.getCategoryId());
             return Flowable.zip(accountFlowable, categoryFlowable,
                     (account, category) -> new Operation(
                             entity.getId(),

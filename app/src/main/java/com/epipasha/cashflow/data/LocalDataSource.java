@@ -131,7 +131,11 @@ public class LocalDataSource implements DataSource{
     }
 
     // CATEGORIES
-    public Flowable<CategoryEntity> getCategoryById(int id){
+    public LiveData<CategoryEntity> getCategoryById(int id){
+        return mDb.categoryDao().loadCategoryById(id);
+    }
+
+    public Flowable<CategoryEntity> getCategoryRxById(int id){
         return mDb.categoryDao().getRxCategoryById(id);
     }
 

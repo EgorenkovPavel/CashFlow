@@ -55,7 +55,7 @@
             android:background="@drawable/input_field"
             android:inputType="text"
             android:padding="8dp"
-            android:text="@={viewmodel.category.title}"/>
+            android:text="@={viewmodel.currentCategory.title}"/>
 
         <TextView
             style="@style/label"
@@ -74,8 +74,8 @@
             <RadioButton
                 android:id="@+id/category_detail_in"
                 style="@style/TypeButton"
-                android:checked="@{viewmodel.category.type == OperationType.IN}"
-                android:onClick="@{() -> viewmodel.setOperationType(OperationType.IN)}"
+                android:checked="@{viewmodel.currentCategory.type == OperationType.IN}"
+                android:onClick="@{() -> viewmodel.currentCategory.setType(OperationType.IN)}"
                 android:text="@string/in"
                 android:textAppearance="@style/TextAppearance.AppCompat.Button"
                 tools:checked="true" />
@@ -83,8 +83,8 @@
             <RadioButton
                 android:id="@+id/category_detail_out"
                 style="@style/TypeButton"
-                android:checked="@{viewmodel.category.type == OperationType.OUT}"
-                android:onClick="@{() -> viewmodel.setOperationType(OperationType.OUT)}"
+                android:checked="@{viewmodel.currentCategory.type == OperationType.OUT}"
+                android:onClick="@{() -> viewmodel.currentCategory.setType(OperationType.OUT)}"
                 android:text="@string/out"
                 android:textAppearance="@style/TextAppearance.AppCompat.Button"/>
 
